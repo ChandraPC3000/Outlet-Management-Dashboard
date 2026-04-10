@@ -72,12 +72,24 @@ if uploaded_file is not None:
         # Analisis Tren Pengajuan
         st.subheader("📈 Tren Pengajuan Bulanan")
         if not df_selection.empty:
-            df_trend = df_selection.set_index('Tgl Pengajuan').resample('M').size().reset_index(name='Jumlah')
-            fig_trend = px.line(df_trend, x='Tgl Pengajuan', y='Jumlah', markers=True, 
-                               title="Volume Pengajuan per Bulan")
-            st.plotly_chart(fig_trend, use_container_width=True)
-            st.info("Insight: Lihat di bulan mana pengajuan paling ramai untuk antisipasi workload.")
-
+            # Cara baru yang lebih stabil daripada .resample()
+            df_trend = df_selection.copy()
+            # Pastikan kolom tanggal bersih dari NaT
+            df_trend = df_trend.dropna(subset=['Tgl Pengajuan'])
+            
+            if not df_trend.empty:
+                # Ambil Bulan dan Tahun saja
+                df_trend['Bulan'] = df_trend['Tgl Pengajuan'].dt.to_period('M').astype(str)
+                df_trend = df_trend.groupby('Bulan').size().reset_index(name='Jumlah')
+                
+                fig_trend = px.line(df_trend, x='Bulan', y='Jumlah', markers=True, 
+                                   title="Volume Pengajuan per Bulan",
+                                   labels={'Bulan': 'Bulan Pengajuan', 'Jumlah': 'Total Unit'})
+                st.plotly_chart(fig_trend, use_container_width=True)
+                st.info("Insight: Grafik ini menunjukkan fluktuasi minat mitra setiap bulannya.")
+            else:
+                st.warning("Tidak ada data tanggal yang valid untuk ditampilkan.")
+                
     with col_row1_2:
         # Analisis SLA per Region
         st.subheader("⏱️ Analisis Kecepatan (SLA) per Region")
