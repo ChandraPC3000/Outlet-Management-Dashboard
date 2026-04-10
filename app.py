@@ -98,6 +98,13 @@ if uploaded_file is not None:
         st.plotly_chart(fig_sla, use_container_width=True)
         st.info("Insight: Kotak yang lebih rendah menunjukkan region tersebut lebih cepat memproses izin.")
 
+# Tambahan: Analisis Tabel Top 5 Per Region (Ringkasan Tekstual)
+    st.subheader("🔝 Ringkasan Top 5 Brand per Region")
+    if not df_selection.empty:
+        summary_df = df_selection.groupby(['Region', 'Nama Brand']).size().reset_index(name='Unit')
+        summary_df = summary_df.sort_values(['Region', 'Unit'], ascending=[True, False]).groupby('Region').head(5)
+        st.table(summary_df)
+    
     st.divider()
 
     col_row2_1, col_row2_2 = st.columns(2)
