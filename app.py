@@ -72,13 +72,10 @@ if uploaded_file is not None:
         # Analisis Tren Pengajuan
         st.subheader("📈 Tren Pengajuan Bulanan")
         if not df_selection.empty:
-            # Cara baru yang lebih stabil daripada .resample()
             df_trend = df_selection.copy()
-            # Pastikan kolom tanggal bersih dari NaT
             df_trend = df_trend.dropna(subset=['Tgl Pengajuan'])
             
             if not df_trend.empty:
-                # Ambil Bulan dan Tahun saja
                 df_trend['Bulan'] = df_trend['Tgl Pengajuan'].dt.to_period('M').astype(str)
                 df_trend = df_trend.groupby('Bulan').size().reset_index(name='Jumlah')
                 
@@ -91,6 +88,20 @@ if uploaded_file is not None:
                 st.warning("Tidak ada data tanggal yang valid untuk ditampilkan.")
                 
     with col_row1_2:
+        # VISUALISASI TAMBAHAN: Top Tenant per Region dengan Angka
+        st.subheader("🏆 Top Brand per Region Terpilih")
+        if not df_selection.empty:
+            df_brand_reg = df_selection.groupby(['Region', 'Nama Brand']).size().reset_index(name='Jumlah')
+            df_brand_reg = df_brand_reg.sort_values(['Region', 'Jumlah'], ascending=[True, False]).groupby('Region').head(10)
+            
+            fig_top_reg = px.bar(
+                df_brand_reg, x='Jumlah', y='Nama Brand', color='Region',
+                orientation='h', text='Jumlah', title="Top Brand & Jumlah Unit per Wilayah",
+                barmode='group'
+            )
+            fig_top_reg.update_traces(textposition='outside')
+            st.plotly_chart(fig_top_reg, use_container_width=True)
+
         # Analisis SLA per Region
         st.subheader("⏱️ Analisis Kecepatan (SLA) per Region")
         fig_sla = px.box(df_selection, x='Region', y='SLA', color='Region',
@@ -98,7 +109,7 @@ if uploaded_file is not None:
         st.plotly_chart(fig_sla, use_container_width=True)
         st.info("Insight: Kotak yang lebih rendah menunjukkan region tersebut lebih cepat memproses izin.")
 
-# Tambahan: Analisis Tabel Top 5 Per Region (Ringkasan Tekstual)
+    # Ringkasan Tabel
     st.subheader("🔝 Ringkasan Top 5 Brand per Region")
     if not df_selection.empty:
         summary_df = df_selection.groupby(['Region', 'Nama Brand']).size().reset_index(name='Unit')
@@ -114,7 +125,8 @@ if uploaded_file is not None:
         brand_count = df_selection['Nama Brand'].value_counts().head(10).reset_index()
         brand_count.columns = ['Nama Brand', 'Jumlah']
         fig_brand = px.bar(brand_count, x='Jumlah', y='Nama Brand', orientation='h', 
-                           color='Jumlah', color_continuous_scale='Reds')
+                           color='Jumlah', color_continuous_scale='Reds', text='Jumlah')
+        fig_brand.update_traces(textposition='outside')
         st.plotly_chart(fig_brand, use_container_width=True)
 
     with col_row2_2:
