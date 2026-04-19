@@ -1,18 +1,9 @@
 import streamlit as st
-from src.processors import apply_sidebar_filters
+from src.Pages_Content import render_explorer
 
-st.set_page_config(layout="wide")
-st.title("🔍 Data Explorer")
-
-if 'main_df' in st.session_state:
-    # Filter Berjenjang di Sidebar
-    df_filtered = apply_sidebar_filters(st.session_state['main_df'])
-
-    # Global Search Bar di Body
-    search_query = st.text_input("Cari kata kunci (No. SPBU, Brand, Tenant):")
-
-    if search_query:
-        mask = df_filtered.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)
-        df_filtered = df_filtered[mask]
-
-    st.dataframe(df_filtered, use_container_width=True)
+# Pastikan data sudah ter-load di session state
+if 'main_df' in st.session_state and st.session_state['main_df'] is not None:
+    # Memanggil fungsi render dari file src/Pages_Content.py
+    render_explorer(st.session_state['main_df'])
+else:
+    st.warning("⚠️ Data baseline belum dimuat. Silakan kembali ke halaman Home (app.py).")
