@@ -13,9 +13,9 @@ def render_summary(df):
     spbu_id = df_selection['No. SPBU'].iloc[0]
     st.title(f"📊 Analisis Izin Prinsip SPBU {spbu_id}")
     
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(8)
     c1.metric("Total Tenant", f"{len(df_selection)} Unit")
-    c2.metric("Total Sewa", display_sewa)
+    c2.metric("Total Sewa", f"Rp {df_selection['Total Harga Sewa'].sum():,.0f}")
     c3.metric("Rerata SLA", f"{df_selection['SLA'].mean():.1f}")
     c4.metric("Jumlah Brand", f"{df_selection['Nama Brand'].nunique()}")
 
