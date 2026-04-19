@@ -32,19 +32,19 @@ def render_summary(df):
     st.title(f"📊 Analisis Izin Prinsip SPBU {spbu_id}")
 
     # 1. BAGIAN LOKASI (Dibuat lebih menarik dengan Container)
+   # 1. BAGIAN LOKASI
     st.subheader("📍 Lokasi Operasional")
     loc1, loc2, loc3 = st.columns(3)
     
     with loc1:
-        with st.container(border=True): # Menambahkan border tipis bawaan
-            st.markdown(f"<div class='loc-box'><strong>REGION</strong><br><h3>{region}</h3></div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown(f"**REGION**\n### {region}")
     with loc2:
         with st.container(border=True):
-            st.markdown(f"<div class='loc-box'><strong>PROVINSI</strong><br><h3>{provinsi}</h3></div>", unsafe_allow_html=True)
+            st.markdown(f"**PROVINSI**\n### {provinsi}")
     with loc3:
         with st.container(border=True):
-            st.markdown(f"<div class='loc-box'><strong>KABUPATEN / KOTA</strong><br><h3>{kota}</h3></div>", unsafe_allow_html=True)
-
+            st.markdown(f"**KABUPATEN / KOTA**\n### {kota}")
     st.divider()
     
     # 2. SCORECARDS (TOTAL TENANT, SEWA, dkk)
