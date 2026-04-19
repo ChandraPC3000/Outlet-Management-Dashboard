@@ -13,9 +13,18 @@ def render_summary(df):
     spbu_id = df_selection['No. SPBU'].iloc[0]
     st.title(f"📊 Analisis Izin Prinsip SPBU {spbu_id}")
     
+    # --- LOGIKA SINGKATAN ANGKA ---
+    total_sewa = df_selection['Total Harga Sewa'].sum()
+    if total_sewa >= 1_000_000_000:
+        display_sewa = f"Rp {total_sewa / 1_000_000_000:.2f} M"
+    elif total_sewa >= 1_000_000:
+        display_sewa = f"Rp {total_sewa / 1_000_000:.1f} Jt"
+    else:
+        display_sewa = f"Rp {total_sewa:,.0f}"
+
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total Tenant", f"{len(df_selection)} Unit")
-    c2.metric("Total Sewa", f"Rp {df_selection['Total Harga Sewa'].sum():,.0f}")
+    c2.metric("Total Sewa", display_sewa) # Menggunakan variabel yang sudah disingkat
     c3.metric("Rerata SLA", f"{df_selection['SLA'].mean():.1f}")
     c4.metric("Jumlah Brand", f"{df_selection['Nama Brand'].nunique()}")
 
@@ -24,14 +33,12 @@ def render_summary(df):
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("💰 Sewa per Brand")
-        # TAMBAHKAN template="plotly_dark"
         fig = px.bar(df_selection, x='Total Harga Sewa', y='Nama Brand', 
                      orientation='h', color='Kategori', template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
         st.subheader("📋 Status")
-        # TAMBAHKAN template="plotly_dark"
         fig_pie = px.pie(df_selection, names='Status', hole=0.3, template="plotly_dark")
         st.plotly_chart(fig_pie, use_container_width=True)
 
