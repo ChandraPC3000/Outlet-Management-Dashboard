@@ -48,7 +48,6 @@
 }
 
 /* 5. Styling Khusus Bagian LOKASI (H3 di dalam kolom) */
-/* Kita buat h3 di area lokasi berwarna putih agar beda dengan angka metrik */
 h3 {
     color: #ffffff !important; 
     font-size: 1.3rem !important;
@@ -92,8 +91,7 @@ hr {
     margin: 1.5rem 0;
 }
 
-/* 9. TAMBAHAN BARU: Custom Shape untuk Container Lokasi */
-/* Ini yang akan membuat tampilan lokasi jadi persegi panjang yang menarik */
+/* 9. Custom Shape untuk Container Lokasi */
 [data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #1c2128 !important;
     border: 1px solid #30363d !important;
@@ -105,6 +103,21 @@ hr {
 [data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #58a6ff !important;
     background-color: #1e252e !important;
+}
+
+/* 10. EFEK SOROT ANIMASI PADA CHART (TAMBAHAN BARU) */
+.stPlotlyChart {
+    background-color: #1c2128;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 15px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stPlotlyChart:hover {
+    border-color: #58a6ff !important;
+    box-shadow: 0 0 25px rgba(88, 166, 255, 0.25);
+    transform: translateY(-3px) scale(1.005);
 }
 
 /* Mengatur spacing di dalam kotak lokasi agar tidak sesak */
