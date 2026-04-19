@@ -1,30 +1,40 @@
 import streamlit as st
 from src.data_loader import load_baseline_data
+from src.pages_content import render_director_summary, render_data_explorer
 
-st.set_page_config(page_title="NFR Analytics Pro", layout="wide", page_icon="📊")
+# Konfigurasi
+st.set_page_config(page_title="NFR Analytics Pro", layout="wide")
 
-# Load data ke session state
+# Load Data
 if 'main_df' not in st.session_state:
     st.session_state['main_df'] = load_baseline_data()
 
-# Sidebar Header & Info Navigasi
-st.sidebar.success("Pilih menu di atas untuk navigasi.")
+df = st.session_state['main_df']
 
-st.title("🚀 Outlet Management Dashboard")
-st.subheader("PT Pertamina Patra Niaga - Non-Fuel Retail (NFR)")
-st.divider()
+# --- SIDEBAR NAVIGASI ---
+st.sidebar.title("📌 Main Menu")
+menu = st.sidebar.radio(
+    "Pilih Halaman:",
+    ("Home", "Director Summary", "Data Explorer")
+)
 
-st.markdown("""
-### Selamat Datang, Chan!
-Dashboard ini menggunakan **Dataset Baseline** (Update: 10 April 2026).
+st.sidebar.divider() # Pemisah antara Menu dan Filter nantinya
 
-**Gunakan menu di sidebar kiri untuk berpindah halaman:**
-1. **Director Summary**: Untuk melihat angka makro dan KPI.
-2. **Data Explorer**: Untuk mencari data spesifik (Global Search).
-""")
+# --- LOGIKA NAVIGASI ---
+if menu == "Home":
+    st.title("🚀 Outlet Management Dashboard")
+    st.subheader("PT Pertamina Patra Niaga - Non-Fuel Retail")
+    st.markdown("""
+    Selamat datang di dashboard analitik NFR. 
+    Silakan pilih menu di samping untuk melihat ringkasan eksekutif atau mencari data detail.
+    """)
+    if df is not None:
+        st.metric("Total Database", f"{len(df):,} Rows")
 
-if st.session_state['main_df'] is not None:
-    df = st.session_state['main_df']
-    col1, col2 = st.columns(2)
-    col1.metric("Total Data Baseline", f"{len(df):,} Rows")
-    col2.metric("Total Revenue", f"Rp {df['Total Harga Sewa'].sum():,.0f}")
+elif menu == "Director Summary":
+    if df is not None:
+        render_director_summary(df)
+
+elif menu == "Data Explorer":
+    if df is not None:
+        render_data_explorer(df)
