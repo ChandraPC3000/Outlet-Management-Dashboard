@@ -1,61 +1,68 @@
-/* 1. Mengatur Background Utama */
+/* 1. Pengaturan Warna Latar Belakang Utama */
 .main {
-    background-color: #f8f9fa;
+    background-color: #0e1117; /* Hitam khas Streamlit Dark */
+    color: #fafafa;
 }
 
-/* 2. Mempercantik Sidebar */
+/* 2. Mempercantik Sidebar (Tema Gelap) */
 [data-testid="stSidebar"] {
-    background-color: #ffffff;
-    border-right: 1px solid #e0e0e0;
+    background-color: #161b22;
+    border-right: 1px solid #30363d;
 }
 
 /* 3. Custom Card untuk Metric (Scorecards) */
 [data-testid="stMetric"] {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease-in-out;
+    background-color: #1c2128;
+    border: 1px solid #30363d;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
 [data-testid="stMetric"]:hover {
     transform: translateY(-5px);
-    border-color: #003366; /* Biru khas Pertamina */
+    border-color: #58a6ff; /* Warna Biru Terang saat Hover */
+    box-shadow: 0 8px 15px rgba(88, 166, 255, 0.1);
 }
 
-/* 4. Mengatur Warna Angka di Metric */
+/* 4. Warna Angka & Label di Metric */
 [data-testid="stMetricValue"] {
-    color: #003366;
-    font-weight: bold;
-    font-size: 1.8rem !important;
+    color: #58a6ff; /* Biru Cyan agar menyala di background gelap */
+    font-weight: 700;
+    font-size: 2rem !important;
 }
 
-/* 5. Mengatur Label Metric */
 [data-testid="stMetricLabel"] {
-    color: #666666;
-    font-size: 0.9rem !important;
+    color: #8b949e; /* Abu-abu terang untuk label */
+    font-size: 0.85rem !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
-/* 6. Mempercantik Tombol (Download Button) */
-.stButton>button {
-    width: 100%;
-    border-radius: 5px;
-    height: 3em;
-    background-color: #003366;
-    color: white;
-    border: none;
+/* 5. Styling untuk Filter Sidebar & Selectbox */
+.stSelectbox label, .stTextInput label {
+    color: #c9d1d9 !important;
+    font-weight: 600;
 }
 
-.stButton>button:hover {
-    background-color: #cc0000; /* Merah khas Pertamina saat hover */
-    color: white;
-}
-
-/* 7. Mengatur Header */
+/* 6. Mempercantik Header */
 h1, h2, h3 {
-    color: #333333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.5px;
+}
+
+/* 7. Pengaturan Tabel agar menyatu dengan tema gelap */
+[data-testid="stDataFrame"] {
+    border: 1px solid #30363d;
+    border-radius: 8px;
+}
+
+/* 8. Divider / Garis Pemisah */
+hr {
+    border: 0;
+    height: 1px;
+    background: #30363d;
+    margin: 2rem 0;
 }
