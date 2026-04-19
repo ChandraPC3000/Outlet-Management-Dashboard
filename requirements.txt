@@ -2,3 +2,7 @@ streamlit
 pandas
 plotly
 openpyxl
+scikit-learn
+statsmodels
+matplotlib
+seaborn
