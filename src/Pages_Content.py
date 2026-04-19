@@ -11,7 +11,7 @@ def render_summary(df):
         return
 
     spbu_id = df_selection['No. SPBU'].iloc[0]
-    st.title(f"📊 Analisis SPBU {spbu_id}")
+    st.title(f"📊 Analisis Izin Prinsip SPBU {spbu_id}")
     
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total Tenant", f"{len(df_selection)} Unit")
