@@ -6,14 +6,14 @@ def load_baseline_data():
     try:
         df = pd.read_excel(file_path, engine='openpyxl')
         
-        # Bersihkan spasi di nama kolom
+        # Bersihkan nama kolom dari spasi liar
         df.columns = df.columns.str.strip()
         
-        # CLEANING No. SPBU: Paksa jadi string dan hapus .0 jika ada
+        # Paksa No. SPBU jadi string murni (menghilangkan .0)
         if 'No. SPBU' in df.columns:
             df['No. SPBU'] = df['No. SPBU'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
             
-        # Konversi Angka
+        # Konversi Angka untuk Scorecard & Chart
         df['Total Harga Sewa'] = pd.to_numeric(df['Total Harga Sewa'], errors='coerce').fillna(0)
         df['SLA'] = pd.to_numeric(df['SLA'], errors='coerce').fillna(0)
         
