@@ -1,22 +1,18 @@
-# src/Pages_Content.py
-
-import streamlit as st
-import plotly.express as px
-from src.processors import apply_sidebar_filters
-
 def render_summary(df):
-    st.title("📊 Director Summary")
+    # PENTING: Jalankan filter dulu
     df_selection = apply_sidebar_filters(df)
-    # ... isi logika chart kamu ...
-
-def render_explorer(df):
-    st.title("🔍 Data Explorer")
-    df_filtered = apply_sidebar_filters(df)
-    # ... isi logika search kamu ...
-
-def render_quality_check(df):
-    st.title("🛠️ Data Quality Check")
-    # Logika untuk menampilkan data yang 'ngaco' (misal: Harga Sewa 0)
-    st.write("Daftar data yang memerlukan validasi ulang:")
-    anomali = df[df['Total Harga Sewa'] == 0]
-    st.dataframe(anomali)
+    
+    # Cek apakah hasil filter ada isinya
+    if not df_selection.empty:
+        st.subheader("📌 Ringkasan Data")
+        c1, c2 = st.columns(2)
+        c1.metric("Total Unit", f"{len(df_selection)} Unit")
+        c2.metric("Total Sewa", f"Rp {df_selection['Total Harga Sewa'].sum():,.0f}")
+        
+        # Contoh chart
+        import plotly.express as px
+        fig = px.bar(df_selection['Region'].value_counts().reset_index(), x='Region', y='count')
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        # Jika kosong, beri peringatan yang jelas
+        st.warning("⚠️ Tidak ada data yang sesuai dengan kombinasi filter tersebut. Coba kurangi filter.")
