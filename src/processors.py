@@ -1,26 +1,29 @@
 import streamlit as st
 
 def apply_spbu_filter(df):
-    st.sidebar.header("🔍 Filter SPBU")
+    st.sidebar.header("🎛️ Filter Panel")
     
-    # Ambil list No. SPBU yang unik
+    # 1. Ambil daftar No. SPBU yang unik dan urutkan
+    # Kita pastikan datanya string agar tidak ada .0 di belakangnya
     list_spbu = sorted(df['No. SPBU'].unique().tolist())
     
-    # Menampilkan dropdown di sidebar
+    # 2. Gunakan selectbox agar No. SPBU muncul sebagai pilihan di navigasi
     selected_spbu = st.sidebar.selectbox(
         "Pilih No. SPBU:",
         options=["-- Pilih SPBU --"] + list_spbu,
-        key="select_spbu_sidebar"
+        key="selector_spbu"
     )
     
     df_filtered = df.copy()
     
+    # 3. Logika Filter
     if selected_spbu != "-- Pilih SPBU --":
-        # Filter ketat (exact match)
         df_filtered = df_filtered[df_filtered['No. SPBU'] == selected_spbu]
-        st.sidebar.success(f"Terpilih: {len(df_filtered)} baris")
+        st.sidebar.success(f"Ditemukan {len(df_filtered)} data tenant.")
     else:
-        # Jika belum pilih, buat dataframe kosong agar dashboard tidak render dulu
-        df_filtered = pd.DataFrame(columns=df.columns)
+        # Jika belum pilih, buat dataframe kosong agar dashboard tidak render prematur
+        df_filtered = df_filtered.iloc[0:0] 
+        st.sidebar.info("Pilih nomor SPBU untuk melihat detail.")
     
+    st.sidebar.divider()
     return df_filtered
