@@ -3,7 +3,6 @@ import plotly.express as px
 from src.processors import apply_spbu_filter
 
 def render_summary(df):
-    # Ambil hasil filter dari sidebar
     df_selection = apply_spbu_filter(df)
     
     if df_selection.empty:
@@ -11,11 +10,9 @@ def render_summary(df):
         st.info("👈 Silakan pilih Nomor SPBU pada dropdown di Filter Panel untuk menampilkan analisis.")
         return
 
-    # Info SPBU yang terpilih
     spbu_id = df_selection['No. SPBU'].iloc[0]
     st.title(f"📊 Analisis SPBU {spbu_id}")
     
-    # Scorecards
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total Tenant", f"{len(df_selection)} Unit")
     c2.metric("Total Sewa", f"Rp {df_selection['Total Harga Sewa'].sum():,.0f}")
@@ -24,16 +21,18 @@ def render_summary(df):
 
     st.divider()
 
-    # Chart & Tabel
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("💰 Sewa per Brand")
-        fig = px.bar(df_selection, x='Total Harga Sewa', y='Nama Brand', orientation='h', color='Kategori')
+        # TAMBAHKAN template="plotly_dark"
+        fig = px.bar(df_selection, x='Total Harga Sewa', y='Nama Brand', 
+                     orientation='h', color='Kategori', template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
         st.subheader("📋 Status")
-        fig_pie = px.pie(df_selection, names='Status', hole=0.3)
+        # TAMBAHKAN template="plotly_dark"
+        fig_pie = px.pie(df_selection, names='Status', hole=0.3, template="plotly_dark")
         st.plotly_chart(fig_pie, use_container_width=True)
 
     st.subheader("📑 Detail Data")
