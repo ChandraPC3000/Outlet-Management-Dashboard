@@ -30,11 +30,11 @@
     box-shadow: 0 8px 15px rgba(88, 166, 255, 0.1);
 }
 
-/* 4. Solusi Teks Kepotong (Total Sewa) */
+/* 4. Solusi Teks Kepotong (Total Sewa & Label) */
 [data-testid="stMetricValue"] {
     color: #58a6ff; 
     font-weight: 700;
-    font-size: 1.6rem !important; /* Dikecilkan sedikit agar muat */
+    font-size: 1.6rem !important; 
     white-space: normal !important;
     word-break: break-word;
     line-height: 1.2;
@@ -48,18 +48,21 @@
 }
 
 /* 5. Styling Khusus Bagian LOKASI (H3 di dalam kolom) */
+/* Kita buat h3 di area lokasi berwarna putih agar beda dengan angka metrik */
 h3 {
-    color: #58a6ff !important; /* Warna biru neon agar seragam */
-    font-size: 1.4rem !important;
+    color: #ffffff !important; 
+    font-size: 1.3rem !important;
     margin-top: 5px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5px !important;
+    font-weight: 600;
 }
 
 /* Label untuk Lokasi (Markdown Bold) */
 strong {
     color: #8b949e;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
+    letter-spacing: 1.2px;
 }
 
 /* 6. Styling untuk Filter Sidebar */
@@ -87,4 +90,24 @@ hr {
     height: 1px;
     background: #30363d;
     margin: 1.5rem 0;
+}
+
+/* 9. TAMBAHAN BARU: Custom Shape untuk Container Lokasi */
+/* Ini yang akan membuat tampilan lokasi jadi persegi panjang yang menarik */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: #1c2128 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
+    transition: all 0.3s ease;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: #58a6ff !important;
+    background-color: #1e252e !important;
+}
+
+/* Mengatur spacing di dalam kotak lokasi agar tidak sesak */
+.loc-box {
+    padding: 5px 10px;
 }
