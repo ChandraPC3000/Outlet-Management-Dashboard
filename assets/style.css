@@ -1,6 +1,6 @@
 /* 1. Pengaturan Warna Latar Belakang Utama */
 .main {
-    background-color: #0e1117; /* Hitam khas Streamlit Dark */
+    background-color: #0e1117; 
     color: #fafafa;
 }
 
@@ -10,59 +10,81 @@
     border-right: 1px solid #30363d;
 }
 
-/* 3. Custom Card untuk Metric (Scorecards) */
+/* 3. Custom Card untuk Metric & Info Lokasi */
+[data-testid="stMetric"], .stMarkdown div[data-testid="stMarkdownContainer"] {
+    transition: all 0.3s ease;
+}
+
+/* Spesifik untuk Box Metric agar tidak potong teks */
 [data-testid="stMetric"] {
     background-color: #1c2128;
     border: 1px solid #30363d;
-    padding: 20px;
+    padding: 15px 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
 }
 
 [data-testid="stMetric"]:hover {
     transform: translateY(-5px);
-    border-color: #58a6ff; /* Warna Biru Terang saat Hover */
+    border-color: #58a6ff;
     box-shadow: 0 8px 15px rgba(88, 166, 255, 0.1);
 }
 
-/* 4. Warna Angka & Label di Metric */
+/* 4. Solusi Teks Kepotong (Total Sewa) */
 [data-testid="stMetricValue"] {
-    color: #58a6ff; /* Biru Cyan agar menyala di background gelap */
+    color: #58a6ff; 
     font-weight: 700;
-    font-size: 2rem !important;
+    font-size: 1.6rem !important; /* Dikecilkan sedikit agar muat */
+    white-space: normal !important;
+    word-break: break-word;
+    line-height: 1.2;
 }
 
 [data-testid="stMetricLabel"] {
-    color: #8b949e; /* Abu-abu terang untuk label */
-    font-size: 0.85rem !important;
+    color: #8b949e;
+    font-size: 0.8rem !important;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-/* 5. Styling untuk Filter Sidebar & Selectbox */
+/* 5. Styling Khusus Bagian LOKASI (H3 di dalam kolom) */
+h3 {
+    color: #58a6ff !important; /* Warna biru neon agar seragam */
+    font-size: 1.4rem !important;
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Label untuk Lokasi (Markdown Bold) */
+strong {
+    color: #8b949e;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+/* 6. Styling untuk Filter Sidebar */
 .stSelectbox label, .stTextInput label {
     color: #c9d1d9 !important;
     font-weight: 600;
 }
 
-/* 6. Mempercantik Header */
-h1, h2, h3 {
+/* 7. Pengaturan Tabel & Header */
+h1, h2 {
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.5px;
 }
 
-/* 7. Pengaturan Tabel agar menyatu dengan tema gelap */
 [data-testid="stDataFrame"] {
     border: 1px solid #30363d;
     border-radius: 8px;
+    background-color: #161b22;
 }
 
-/* 8. Divider / Garis Pemisah */
+/* 8. Divider */
 hr {
     border: 0;
     height: 1px;
     background: #30363d;
-    margin: 2rem 0;
+    margin: 1.5rem 0;
 }
