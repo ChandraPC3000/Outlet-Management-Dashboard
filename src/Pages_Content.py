@@ -31,20 +31,22 @@ def render_summary(df):
     # --- TAMPILAN DASHBOARD ---
     st.title(f"📊 Analisis Izin Prinsip SPBU {spbu_id}")
 
-    # 1. BAGIAN LOKASI (Berada di paling atas)
+    # 1. BAGIAN LOKASI (Dibuat lebih menarik dengan Container)
     st.subheader("📍 Lokasi Operasional")
     loc1, loc2, loc3 = st.columns(3)
     
-    # Gunakan st.info atau custom container agar terlihat berbeda dengan metrik angka
     with loc1:
-        st.markdown(f"**Region** \n### {region}")
+        with st.container(border=True): # Menambahkan border tipis bawaan
+            st.markdown(f"<div class='loc-box'><strong>REGION</strong><br><h3>{region}</h3></div>", unsafe_allow_html=True)
     with loc2:
-        st.markdown(f"**Provinsi** \n### {provinsi}")
+        with st.container(border=True):
+            st.markdown(f"<div class='loc-box'><strong>PROVINSI</strong><br><h3>{provinsi}</h3></div>", unsafe_allow_html=True)
     with loc3:
-        st.markdown(f"**Kabupaten / Kota** \n### {kota}")
+        with st.container(border=True):
+            st.markdown(f"<div class='loc-box'><strong>KABUPATEN / KOTA</strong><br><h3>{kota}</h3></div>", unsafe_allow_html=True)
 
     st.divider()
-
+    
     # 2. SCORECARDS (TOTAL TENANT, SEWA, dkk)
     st.subheader("📈 Key Performance Indicators")
     c1, c2, c3, c4 = st.columns(4)
