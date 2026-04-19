@@ -15,15 +15,6 @@ def render_summary(df):
     
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total Tenant", f"{len(df_selection)} Unit")
-   total_sewa = df_selection['Total Harga Sewa'].sum()
-
-if total_sewa >= 1_000_000_000:
-    display_sewa = f"Rp {total_sewa / 1_000_000_000:.2f} M"
-elif total_sewa >= 1_000_000:
-    display_sewa = f"Rp {total_sewa / 1_000_000:.1f} Jt"
-else:
-    display_sewa = f"Rp {total_sewa:,.0f}"
-
     c2.metric("Total Sewa", display_sewa)
     c3.metric("Rerata SLA", f"{df_selection['SLA'].mean():.1f}")
     c4.metric("Jumlah Brand", f"{df_selection['Nama Brand'].nunique()}")
