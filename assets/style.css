@@ -119,7 +119,3 @@ hr {
     border-color: #444c56; /* Warna border naik sedikit tapi tidak mencolok */
 }
 
-/* Mengatur spacing di dalam kotak lokasi agar tidak sesak */
-.loc-box {
-    padding: 5px 10px;
-}
