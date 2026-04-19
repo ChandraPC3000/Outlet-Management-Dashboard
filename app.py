@@ -1,4 +1,14 @@
 import streamlit as st
+
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# Panggil file CSS-nya
+local_css("assets/style.css")
+
+# Lanjutkan dengan kode dashboard kamu...
+
 from src.data_loader import load_baseline_data
 from src.Pages_Content import render_summary
 
