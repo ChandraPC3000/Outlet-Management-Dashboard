@@ -12,6 +12,11 @@ def load_baseline_data():
         df['Nominal Fee'] = pd.to_numeric(df['Nominal Fee'], errors='coerce').fillna(0)
         df['Tgl Pengajuan'] = pd.to_datetime(df['Tgl Pengajuan'], errors='coerce')
         df['SLA'] = pd.to_numeric(df['SLA'], errors='coerce').fillna(0)
+
+# Membersihkan spasi liar di nama kategori
+for col in ['Region', 'Provinsi', 'Nama Brand', 'Status']:
+    if col in df.columns:
+        df[col] = df[col].astype(str).str.strip()
         
         return df
     except Exception as e:
