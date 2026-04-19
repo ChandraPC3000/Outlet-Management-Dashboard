@@ -1,28 +1,25 @@
 import streamlit as st
 from src.data_loader import load_baseline_data
-# Import fungsi dari file Pages_Content.py di folder src
-from src.Pages_Content import render_summary, render_explorer
+from src.Pages_Content import render_summary
 
 st.set_page_config(page_title="NFR Analytics Pro", layout="wide")
 
 if 'main_df' not in st.session_state:
-    st.session_state['main_df'] = load_baseline_data()
+    with st.spinner('Memuat Data...'):
+        st.session_state['main_df'] = load_baseline_data()
 
 df = st.session_state['main_df']
 
-# --- Navigasi Menu di Sidebar ---
+# Sidebar Menu
 st.sidebar.title("📌 Menu Utama")
-nav_choice = st.sidebar.radio("Navigasi:", ["Home", "Director Summary", "Data Explorer"])
+nav = st.sidebar.radio("Navigasi:", ["Home", "Director Summary"])
 st.sidebar.divider()
 
-if nav_choice == "Home":
+if nav == "Home":
     st.title("🚀 NFR Management System")
-    st.markdown("Selamat datang di sistem automasi data Pertamina Patra Niaga.")
+    st.markdown("Cari No. SPBU melalui menu **Director Summary** untuk melihat analisis detail.")
     if df is not None:
-        st.metric("Total Data Terload", f"{len(df):,} Baris")
+        st.metric("Total Database", f"{len(df):,} Rows")
 
-elif nav_choice == "Director Summary":
+elif nav == "Director Summary":
     render_summary(df)
-
-elif nav_choice == "Data Explorer":
-    render_explorer(df)
