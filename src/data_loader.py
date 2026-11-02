@@ -8,12 +8,17 @@ import pandas as pd
 import streamlit as st
 
 from src.config import (
+    CLASSIFIED_LAHAN_COLUMNS,
     IZIN_DATE_COLUMNS,
     IZIN_FALLBACK_TEXT,
     IZIN_NUMERIC_COLUMNS,
     IZIN_PATH,
     IZIN_REQUIRED,
     IZIN_TEXT_COLUMNS,
+    KETERSEDIAAN_NUMERIC_COLUMNS,
+    KETERSEDIAAN_PATH,
+    KETERSEDIAAN_REQUIRED,
+    KETERSEDIAAN_TEXT_COLUMNS,
     LAHAN_DATE_COLUMNS,
     LAHAN_NUMERIC_COLUMNS,
     LAHAN_PATH,
@@ -79,6 +84,17 @@ def _to_datetime(df: pd.DataFrame, columns: tuple[str, ...]) -> None:
             df[col] = pd.to_datetime(df[col], errors="coerce")
 
 
+def _normalize_phone_value(value):
+    if pd.isna(value):
+        return pd.NA
+    if isinstance(value, float):
+        return str(int(value))
+    if isinstance(value, int):
+        return str(value)
+    teks = str(value).strip()
+    return teks[:-2] if teks.endswith(".0") else teks
+
+
 @st.cache_data(show_spinner="Memuat data Izin Prinsip...")
 def load_izin_prinsip(path: str | None = None) -> pd.DataFrame:
     df = _read_excel(Path(path) if path else IZIN_PATH, IZIN_REQUIRED)
@@ -128,6 +144,45 @@ def load_sewa_lahan(path: str | None = None) -> pd.DataFrame:
     return df
 
 
+@st.cache_data(show_spinner="Memuat Ketersediaan Lahan...")
+def load_ketersediaan(path: str | None = None) -> pd.DataFrame:
+    df = _read_excel(Path(path) if path else KETERSEDIAAN_PATH, KETERSEDIAAN_REQUIRED)
+
+    # Pertahanan berlapis: buang kolom classified bila ada di file.
+    df = df.drop(columns=[c for c in CLASSIFIED_LAHAN_COLUMNS if c in df.columns], errors="ignore")
+
+    for col in KETERSEDIAAN_TEXT_COLUMNS:
+        if col in df.columns:
+            teks = df[col].astype("string").str.strip()
+            df[col] = teks.replace({"#N/A": pd.NA, "": pd.NA})
+
+    _normalize_spbu(df)
+    _to_numeric(df, KETERSEDIAAN_NUMERIC_COLUMNS)
+
+    # Nomor telepon harus tetap teks utuh (pandas membacanya sebagai float).
+    for col in ("Kontak PIC SPBU", "No Kantor SPBU"):
+        if col in df.columns:
+            df[col] = df[col].map(_normalize_phone_value)
+
+    for col in (
+        "Nama Perusahaan",
+        "Provinsi",
+        "Kota/Kab",
+        "Kecamatan",
+        "Desa/Kelurahan",
+        "Alamat",
+        "Road Type",
+        "SES",
+        "Red Ocean",
+        "Blue Ocean",
+        "Status Sewa",
+    ):
+        if col in df.columns:
+            df[col] = df[col].fillna("Tidak diketahui")
+
+    return df
+
+
 def _load_or_stop(loader, label: str) -> pd.DataFrame:
     try:
         return loader()
@@ -150,6 +205,10 @@ def load_lahan_or_stop() -> pd.DataFrame:
 
 def load_sewa_or_stop() -> pd.DataFrame:
     return _load_or_stop(load_sewa_lahan, "sewa")
+
+
+def load_ketersediaan_or_stop() -> pd.DataFrame:
+    return _load_or_stop(load_ketersediaan, "ketersediaan")
 
 
 def load_all() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:

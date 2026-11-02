@@ -2,3 +2,4 @@ streamlit>=1.41,<1.50
 pandas>=2.0,<3.0
 plotly>=5.14,<6.0
 openpyxl>=3.1,<4.0
+XlsxWriter>=3.1,<4.0

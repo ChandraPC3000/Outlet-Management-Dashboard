@@ -15,6 +15,8 @@ IZIN_PATH = DATA_DIR / "Pengajuan NFR Izin Prinsip 02-November-2026.xlsx"
 LAHAN_PATH = DATA_DIR / "NFR Master Lahan 02-November-2026.xlsx"
 SEWA_PATH = DATA_DIR / "Pengajuan NFR Sewa Lahan 02-November-2026.xlsx"
 LEADTIME_PATH = DATA_DIR / "Data Lead Time NFR 02112026.xlsx"
+KETERSEDIAAN_PATH = DATA_DIR / "Ketersediaan Lahan NFR - November 2026.xlsx"
+KETERSEDIAAN_SNAPSHOT = "November 2026"
 
 APP_TITLE = "NFR Analytics Pro"
 APP_ICON = "🚀"
@@ -88,6 +90,54 @@ SEWA_DATE_COLUMNS = (
     "Tanggal Mulai Sewa",
     "Tanggal Berakhir Sewa",
     "Tanggal Berakhir Izin Prinsip",
+)
+
+KETERSEDIAAN_REQUIRED: tuple[str, ...] = (
+    "No. SPBU",
+    "Nama Perusahaan",
+    "Provinsi",
+    "Kota/Kab",
+    "Kecamatan",
+    "Desa/Kelurahan",
+    "Alamat",
+    "Luas (M2)",
+    "Latitude",
+    "Longitude",
+    "Road Type",
+    "SES",
+    "Red Ocean",
+    "Blue Ocean",
+    "Status Sewa",
+    "Kontak PIC SPBU",
+    "No Kantor SPBU",
+    "PSO",
+    "Non PSO",
+    "Total",
+    "PSO2",
+    "Non PSO2",
+    "Total2",
+)
+KETERSEDIAAN_NUMERIC_COLUMNS = (
+    "Luas (M2)",
+    "Latitude",
+    "Longitude",
+    "PSO",
+    "Non PSO",
+    "Total",
+    "PSO2",
+    "Non PSO2",
+    "Total2",
+)
+KETERSEDIAAN_TEXT_COLUMNS = tuple(
+    col for col in KETERSEDIAAN_REQUIRED if col not in KETERSEDIAAN_NUMERIC_COLUMNS
+)
+# Kolom yang tidak boleh tampil / ter-commit (classified).
+CLASSIFIED_LAHAN_COLUMNS = (
+    "Tipe SPBU",
+    "Kelas SPBU",
+    "Harga Sewa (Rp)",
+    "Green Energy Station (GES)",
+    "Fasilitas EV",
 )
 
 # Palet warna senada tema gelap GitHub.

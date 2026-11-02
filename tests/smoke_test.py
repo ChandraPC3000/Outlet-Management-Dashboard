@@ -17,6 +17,31 @@ from streamlit.testing.v1 import AppTest  # noqa: E402
 TOTAL_IZIN = "46.003"
 
 
+def test_ketersediaan_data() -> None:
+    from src.config import CLASSIFIED_LAHAN_COLUMNS
+    from src.data_loader import load_ketersediaan
+    from src.exports import build_ketersediaan_excel
+
+    df = load_ketersediaan()
+    assert not set(CLASSIFIED_LAHAN_COLUMNS) & set(df.columns), "kolom classified bocor"
+    assert {"Kontak PIC SPBU", "No Kantor SPBU"} <= set(df.columns)
+    assert len(df) > 5_000
+    assert df["Kontak PIC SPBU"].dropna().astype(str).str.isdigit().all()
+
+    import io
+
+    import openpyxl
+
+    wb = openpyxl.load_workbook(io.BytesIO(build_ketersediaan_excel(df.head(20))))
+    ws = wb["Ketersediaan Lahan"]
+    header = [ws.cell(4, c).value for c in range(3, 26)]
+    assert "No Kantor SPBU" in header
+    assert not set(CLASSIFIED_LAHAN_COLUMNS) & set(header)
+    assert [str(m) for m in ws.merged_cells.ranges] == ["T3:V3", "W3:Y3"]
+    assert ws.freeze_panes == "T5"
+    wb.close()
+
+
 def _run(page: str) -> AppTest:
     app = AppTest.from_file(str(ROOT / page), default_timeout=240).run()
     assert not app.exception, f"{page} melempar exception: {[e.message for e in app.exception]}"
@@ -91,6 +116,23 @@ def test_lead_time() -> None:
     assert len(app.get("download_button")) >= 1
 
 
+def test_ketersediaan_page() -> None:
+    app = _run("src/pages/ketersediaan.py")
+    judul = [t.value for t in app.title]
+    assert judul and "Ketersediaan Lahan" in judul[0], judul
+    metrics = {m.label: m.value for m in app.metric}
+    for label in ("Lahan Tersedia", "Jumlah SPBU", "Total Luas", "PIC Lengkap"):
+        assert label in metrics, metrics
+    assert metrics["Lahan Tersedia"] == "5.583", metrics
+    assert len(app.get("plotly_chart")) >= 5
+    assert len(app.get("download_button")) == 2
+
+    prov = app.multiselect(key="ket_prov")
+    prov.select(prov.options[0]).run()
+    assert not app.exception
+    assert int(app.metric[0].value.replace(".", "")) < 5_732
+
+
 if __name__ == "__main__":
     for test in (
         test_home,
@@ -98,6 +140,8 @@ if __name__ == "__main__":
         test_data_explorer,
         test_lahan_sewa,
         test_lead_time,
+        test_ketersediaan_data,
+        test_ketersediaan_page,
     ):
         test()
         print(f"PASS {test.__name__}")

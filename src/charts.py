@@ -422,3 +422,92 @@ def top_brand_sewa(sewa: pd.DataFrame, top_n: int = 10) -> go.Figure:
     fig.update_yaxes(categoryorder="total ascending")
     fig.update_traces(textposition="outside", cliponaxis=False)
     return _finalize(fig, height=400, showlegend=False)
+
+
+# --- Ketersediaan lahan ------------------------------------------------------
+def top_provinsi_lahan(ringkasan: pd.DataFrame, top_n: int = 10) -> go.Figure:
+    data = ringkasan.nlargest(top_n, "Jumlah Lahan").sort_values("Jumlah Lahan")
+    fig = px.bar(
+        data,
+        x="Jumlah Lahan",
+        y="Provinsi",
+        orientation="h",
+        text="Jumlah Lahan",
+        color_discrete_sequence=[PALETTE[0]],
+        labels={"Provinsi": "", "Jumlah Lahan": "Jumlah lahan tersedia"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=380, showlegend=False)
+
+
+def road_type_bar(df: pd.DataFrame) -> go.Figure:
+    data = (
+        df["Road Type"]
+        .value_counts()
+        .rename_axis("Road Type")
+        .reset_index(name="Jumlah")
+    )
+    fig = px.bar(
+        data,
+        x="Jumlah",
+        y="Road Type",
+        orientation="h",
+        text="Jumlah",
+        color_discrete_sequence=[PALETTE[5]],
+        labels={"Road Type": "", "Jumlah": "Jumlah lahan"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=340, showlegend=False)
+
+
+def ses_bar(df: pd.DataFrame) -> go.Figure:
+    urutan = ["High", "Medium High", "Medium Low", "Low", "Tidak diketahui"]
+    data = (
+        df["SES Dominan"]
+        .value_counts()
+        .reindex(urutan, fill_value=0)
+        .rename_axis("SES Dominan")
+        .reset_index(name="Jumlah")
+    )
+    fig = px.bar(
+        data,
+        x="SES Dominan",
+        y="Jumlah",
+        text="Jumlah",
+        color="SES Dominan",
+        color_discrete_sequence=list(PALETTE),
+        labels={"SES Dominan": "", "Jumlah": "Jumlah lahan"},
+    )
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=340, showlegend=False)
+
+
+def volume_spbu_bar(spbu: pd.DataFrame, top_n: int = 10) -> go.Figure:
+    data = spbu.nlargest(top_n, "Total").sort_values("Total")
+    fig = px.bar(
+        data,
+        x="Total",
+        y="Label",
+        orientation="h",
+        text="Total",
+        color_discrete_sequence=[PALETTE[1]],
+        labels={"Label": "", "Total": "Volume (KL/bulan)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=380, showlegend=False)
+
+
+def luas_bar(kategori: pd.DataFrame) -> go.Figure:
+    fig = px.bar(
+        kategori,
+        x="Kelompok Luas (m²)",
+        y="Jumlah Lahan",
+        text="Jumlah Lahan",
+        color_discrete_sequence=[PALETTE[4]],
+        labels={"Jumlah Lahan": "Jumlah lahan"},
+    )
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=340, showlegend=False)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 import pandas as pd
 
@@ -303,3 +305,87 @@ def sewa_ringkasan(sewa: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
     return grouped.sort_values("Nilai Sewa (Rp)", ascending=False)
+
+
+# --- Ketersediaan lahan ------------------------------------------------------
+def parse_ses(value) -> tuple[str, float]:
+    """Ambil kategori SES dominan dan porsi High dari teks seperti
+    'High (82.21%), Medium Low (17.79%)'."""
+    teks = "" if pd.isna(value) else str(value)
+    if not teks or teks.strip() in ("#N/A", "Tidak diketahui"):
+        return "Tidak diketahui", 0.0
+
+    temuan = re.findall(r"([A-Za-z ]+?)\s*\(([\d.]+)\s*%\)", teks)
+    if not temuan:
+        return "Tidak diketahui", 0.0
+
+    skor = {label.strip(): float(nilai) for label, nilai in temuan}
+    dominan = max(skor, key=skor.get)
+    return dominan, skor.get("High", 0.0)
+
+
+def prepare_ketersediaan(df: pd.DataFrame) -> pd.DataFrame:
+    hasil = df.copy()
+    parsed = hasil["SES"].map(parse_ses)
+    hasil["SES Dominan"] = [item[0] for item in parsed]
+    hasil["SES High (%)"] = [item[1] for item in parsed]
+    hasil["PIC Lengkap"] = hasil["Kontak PIC SPBU"].notna() & hasil["No Kantor SPBU"].notna()
+    return hasil
+
+
+def ketersediaan_ringkasan(df: pd.DataFrame) -> pd.DataFrame:
+    """Ringkasan per provinsi. Volume dihitung sekali per SPBU."""
+    lahan = (
+        df.groupby("Provinsi")
+        .agg(
+            **{
+                "Jumlah Lahan": ("No. SPBU", "size"),
+                "Jumlah SPBU": ("No. SPBU", "nunique"),
+                "Luas (M2)": ("Luas (M2)", "sum"),
+            }
+        )
+        .reset_index()
+    )
+    spbu = df.drop_duplicates("No. SPBU")
+    volume = (
+        spbu.groupby("Provinsi")
+        .agg(
+            **{
+                "Volume (KL/bln)": ("Total", "sum"),
+                "Transaksi/bln": ("Total2", "sum"),
+                "PIC Lengkap (%)": ("PIC Lengkap", lambda s: round(float(s.mean()) * 100, 1)),
+            }
+        )
+        .reset_index()
+    )
+    hasil = lahan.merge(volume, on="Provinsi", how="left").fillna(0)
+    return hasil.sort_values("Jumlah Lahan", ascending=False)
+
+
+def volume_per_spbu(df: pd.DataFrame) -> pd.DataFrame:
+    """Satu baris per SPBU (volume tidak boleh dijumlahkan per lahan)."""
+    spbu = df.drop_duplicates("No. SPBU").copy()
+    spbu["Label"] = spbu["No. SPBU"].astype(str) + " · " + spbu["Kota/Kab"].astype(str)
+    return spbu
+
+
+def luas_kategori(df: pd.DataFrame) -> pd.DataFrame:
+    bins = [0, 5, 10, 25, 50, 100, 500, np.inf]
+    labels = ["0–5", "5–10", "10–25", "25–50", "50–100", "100–500", ">500"]
+    kelompok = pd.cut(df["Luas (M2)"], bins=bins, labels=labels, include_lowest=True)
+    hasil = kelompok.value_counts().reindex(labels, fill_value=0).rename_axis("Kelompok Luas (m²)")
+    return hasil.reset_index(name="Jumlah Lahan")
+
+
+def ketersediaan_kpi(df: pd.DataFrame) -> dict:
+    spbu = df.drop_duplicates("No. SPBU")
+    return {
+        "lahan": len(df),
+        "spbu": int(df["No. SPBU"].nunique()),
+        "provinsi": int(df.loc[df["Provinsi"] != "Tidak diketahui", "Provinsi"].nunique()),
+        "luas": float(df["Luas (M2)"].sum()),
+        "median_luas": float(df["Luas (M2)"].median()) if len(df) else 0.0,
+        "volume": float(spbu["Total"].sum()),
+        "rerata_volume": float(spbu["Total"].mean()) if len(spbu) else 0.0,
+        "pic_lengkap": float(spbu["PIC Lengkap"].mean() * 100) if len(spbu) else 0.0,
+    }
