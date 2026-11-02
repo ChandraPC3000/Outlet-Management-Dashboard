@@ -1,41 +1,42 @@
+"""Entry point: konfigurasi halaman, CSS global, dan navigasi aplikasi."""
+
+from __future__ import annotations
+
 import streamlit as st
-from src.data_loader import load_baseline_data
-from src.Pages_Content import render_summary
 
-# 1. HARUS PALING ATAS (Perintah Streamlit pertama)
-st.set_page_config(page_title="NFR Analytics Pro", layout="wide")
+from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH
+from src.data_loader import load_data_or_stop
 
-# 2. Fungsi CSS ditaruh setelah config
-def local_css(file_name):
+st.set_page_config(
+    page_title=APP_TITLE,
+    page_icon=APP_ICON,
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+
+def inject_css(path) -> None:
+    """Sisipkan file CSS kustom ke aplikasi."""
     try:
-        with open(file_name) as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+        st.markdown(f"<style>{path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
-        st.error(f"File {file_name} tidak ditemukan. Pastikan folder assets sudah benar.")
+        st.warning(f"File style `{path}` tidak ditemukan. Tampilan memakai tema bawaan.")
 
-# Panggil file CSS-nya
-local_css("assets/style.css")
 
-# 3. Load Data ke Session State
-if 'main_df' not in st.session_state:
-    with st.spinner('Memuat Data...'):
-        st.session_state['main_df'] = load_baseline_data()
+inject_css(STYLE_PATH)
 
-df = st.session_state['main_df']
+if LOGO_PATH.exists():
+    st.logo(str(LOGO_PATH), size="large")
 
-# 4. Sidebar Menu
-st.sidebar.title("📌 Menu Utama")
-nav = st.sidebar.radio("Navigasi:", ["Home", "Director Summary"])
-st.sidebar.divider()
+# Muat data sekali di awal; halaman lain memakai cache yang sama sehingga
+# tetap aman walau dibuka langsung lewat URL.
+load_data_or_stop()
 
-if nav == "Home":
-    st.title("🚀 NFR Management System")
-    st.markdown("Cari No. SPBU melalui menu **Director Summary** untuk melihat analisis detail.")
-    if df is not None:
-        st.metric("Total Database", f"{len(df):,} Rows")
-        
-elif nav == "Director Summary":
-    if df is not None:
-        render_summary(df)
-    else:
-        st.error("Data gagal dimuat. Cek file Excel Anda.")
+navigation = st.navigation(
+    [
+        st.Page("src/pages/home.py", title="Home", icon="🏠", default=True),
+        st.Page("src/pages/director_summary.py", title="Director Summary", icon="📊"),
+        st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
+    ]
+)
+navigation.run()

@@ -1,121 +1,167 @@
-/* 1. Pengaturan Warna Latar Belakang Utama */
-.main {
-    background-color: #0e1117; 
-    color: #fafafa;
+/* ============================================================
+   NFR Analytics Pro - tema gelap
+   Dasar warna juga diatur di .streamlit/config.toml
+   ============================================================ */
+
+:root {
+    --bg: #0e1117;
+    --surface: #161b22;
+    --surface-2: #1c2128;
+    --border: #30363d;
+    --border-hover: #58a6ff;
+    --text: #fafafa;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --radius: 12px;
 }
 
-/* 2. Mempercantik Sidebar (Tema Gelap) */
+/* 1. Latar utama */
+.stApp {
+    background: radial-gradient(circle at 20% 0%, #131a24 0%, var(--bg) 45%) fixed;
+    color: var(--text);
+}
+
+/* 2. Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #161b22;
-    border-right: 1px solid #30363d;
+    background-color: var(--surface);
+    border-right: 1px solid var(--border);
 }
 
-/* 3. Custom Card untuk Metric & Info Lokasi */
-[data-testid="stMetric"], .stMarkdown div[data-testid="stMarkdownContainer"] {
-    transition: all 0.3s ease;
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+    color: #c9d1d9;
 }
 
-/* Spesifik untuk Box Metric agar tidak potong teks */
+/* 3. Navigasi antar halaman */
+[data-testid="stSidebarNav"] a {
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[data-testid="stSidebarNav"] a:hover {
+    background-color: rgba(88, 166, 255, 0.12);
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+    background-color: rgba(88, 166, 255, 0.18);
+}
+
+/* 4. Kartu metric */
 [data-testid="stMetric"] {
-    background-color: #1c2128;
-    border: 1px solid #30363d;
-    padding: 15px 20px;
-    border-radius: 12px;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 [data-testid="stMetric"]:hover {
-    transform: translateY(-5px);
-    border-color: #58a6ff;
-    box-shadow: 0 8px 15px rgba(88, 166, 255, 0.1);
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+    box-shadow: 0 8px 18px rgba(88, 166, 255, 0.12);
 }
 
-/* 4. Solusi Teks Kepotong (Total Sewa & Label) */
 [data-testid="stMetricValue"] {
-    color: #58a6ff; 
+    color: var(--accent);
     font-weight: 700;
-    font-size: 1.6rem !important; 
+    font-size: 1.55rem !important;
     white-space: normal !important;
     word-break: break-word;
     line-height: 1.2;
 }
 
 [data-testid="stMetricLabel"] {
-    color: #8b949e;
-    font-size: 0.8rem !important;
+    color: var(--text-muted);
+    font-size: 0.78rem !important;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-/* 5. Styling Khusus Bagian LOKASI (H3 di dalam kolom) */
-h3 {
-    color: #ffffff !important; 
-    font-size: 1.3rem !important;
-    margin-top: 5px !important;
-    margin-bottom: 5px !important;
-    font-weight: 600;
+/* 5. Judul */
+h1, h2, h3 {
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", sans-serif;
+    letter-spacing: -0.4px;
 }
 
-/* Label untuk Lokasi (Markdown Bold) */
-strong {
-    color: #8b949e;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+h1 {
+    font-weight: 700;
 }
 
-/* 6. Styling untuk Filter Sidebar */
-.stSelectbox label, .stTextInput label {
+/* 6. Grafik Plotly sebagai kartu */
+.stPlotlyChart {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    transition: border-color 0.25s ease;
+}
+
+.stPlotlyChart:hover {
+    border-color: #444c56;
+}
+
+/* 7. Tabel */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background-color: var(--surface);
+    overflow: hidden;
+}
+
+/* 8. Input & selectbox */
+.stSelectbox label,
+.stMultiSelect label,
+.stTextInput label,
+.stDateInput label {
     color: #c9d1d9 !important;
     font-weight: 600;
 }
 
-/* 7. Pengaturan Tabel & Header */
-h1, h2 {
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.5px;
-}
-
-[data-testid="stDataFrame"] {
-    border: 1px solid #30363d;
+/* 9. Tombol */
+.stButton button,
+.stDownloadButton button {
     border-radius: 8px;
-    background-color: #161b22;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-/* 8. Divider */
+.stButton button:hover,
+.stDownloadButton button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* 10. Divider */
 hr {
     border: 0;
     height: 1px;
-    background: #30363d;
+    background: var(--border);
     margin: 1.5rem 0;
 }
 
-/* 9. Custom Shape untuk Container Lokasi */
-[data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #1c2128 !important;
-    border: 1px solid #30363d !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-    transition: all 0.3s ease;
+/* 11. Tab */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
 }
 
-[data-testid="stVerticalBlockBorderWrapper"]:hover {
-    border-color: #58a6ff !important;
-    background-color: #1e252e !important;
+.stTabs [data-baseweb="tab"] {
+    border-radius: 8px 8px 0 0;
 }
 
-/* Update Bagian 10 di style.css */
-.stPlotlyChart {
-    background-color: #1c2128;
-    border: 1px solid #30363d;
-    border-radius: 12px;
-    padding: 15px;
-    /* Kita hilangkan transform scale agar kotaknya tidak ikut membal */
-    transition: border-color 0.3s ease;
+/* 12. Expander */
+[data-testid="stExpander"] {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
 }
 
-.stPlotlyChart:hover {
-    border-color: #444c56; /* Warna border naik sedikit tapi tidak mencolok */
+/* 13. Alert */
+[data-testid="stAlert"] {
+    border-radius: 10px;
 }
 
+/* 14. Sembunyikan tombol Deploy agar tampilan dashboard lebih bersih */
+[data-testid="stAppDeployButton"] {
+    display: none;
+}
