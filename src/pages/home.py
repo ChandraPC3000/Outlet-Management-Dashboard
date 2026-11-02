@@ -1,68 +1,97 @@
-"""Halaman Home: ringkasan cepat seluruh dataset."""
+"""Halaman Home: ringkasan seluruh ekosistem data NFR."""
 
 from __future__ import annotations
 
 import streamlit as st
 
+from src import analytics as an
 from src import charts
-from src.data_loader import load_data_or_stop
+from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
 
-df = load_data_or_stop()
+izin, lahan_mentah, sewa_mentah = load_all()
+snapshot = an.snapshot_date(izin)
+ldf = an.prepare_leadtime(izin, snapshot)
+lahan = an.prepare_lahan(lahan_mentah, izin)
+sewa = an.prepare_sewa(sewa_mentah, izin, snapshot)
+
+tersewa = int(lahan["Tersewa"].sum())
+tersedia = int(lahan["Tersedia"].sum())
+occupancy = tersewa / (tersewa + tersedia) * 100 if (tersewa + tersedia) else 0
+pending = int((ldf["Kelompok"] == "Pending").sum())
+berjalan = int(sewa["Berjalan"].sum())
 
 st.title("🚀 NFR Management System")
 st.caption(
-    "Dashboard pengajuan **Izin Prinsip** tenant Non-Fuel Retail (NFR) di SPBU Pertamina."
+    "Dashboard gabungan **Izin Prinsip**, **Master Lahan**, **Sewa Lahan**, dan "
+    f"**Lead Time** · snapshot data {snapshot:%d %B %Y}."
 )
 
-kolom = st.columns(4)
-kolom[0].metric("Total Pengajuan", f"{format_angka(len(df))} baris")
-kolom[1].metric("Jumlah SPBU", format_angka(df["No. SPBU"].nunique()))
-kolom[2].metric("Jumlah Tenant", format_angka(df["Nama Tenant"].nunique()))
-kolom[3].metric("Total Nilai Sewa", format_rupiah(df["Total Harga Sewa"].sum()))
+baris1 = st.columns(3)
+baris1[0].metric("Total Pengajuan Izin", f"{format_angka(len(izin))} baris")
+baris1[1].metric("Jumlah SPBU", format_angka(izin["No. SPBU"].nunique()))
+baris1[2].metric("Izin Pending", format_angka(pending))
+
+baris2 = st.columns(3)
+baris2[0].metric("Lahan Tersewa", f"{format_angka(tersewa)} lahan")
+baris2[1].metric("Occupancy Lahan", f"{format_angka(occupancy, 1)}%")
+baris2[2].metric("Nilai Sewa Lahan", format_rupiah(lahan["Harga Sewa (Rp)"].sum()))
+
+baris3 = st.columns(3)
+baris3[0].metric("Kontrak Sewa Berjalan", format_angka(berjalan))
+baris3[1].metric("Nilai Sewa Berjalan", format_rupiah(sewa.loc[sewa["Berjalan"], "Total Harga Sewa"].sum()))
+baris3[2].metric(
+    "Kontrak Berakhir ≤90 Hari",
+    format_angka(int(((sewa["Sisa Hari"] >= 0) & (sewa["Sisa Hari"] <= 90)).sum())),
+)
 
 st.divider()
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🗺️ Sebaran per Region")
-    st.plotly_chart(charts.region_bar(df), use_container_width=True)
+    st.subheader("🏗️ Posisi Tahapan Izin Prinsip")
+    st.plotly_chart(charts.funnel_tahapan(an.leadtime_funnel(ldf)), use_container_width=True)
 with kanan:
-    st.subheader("📋 Komposisi Status")
-    st.plotly_chart(charts.status_donut(df), use_container_width=True)
+    st.subheader("📋 Komposisi Status Pengajuan")
+    st.plotly_chart(charts.status_donut(izin), use_container_width=True)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🏷️ Top 10 Kategori")
-    st.plotly_chart(charts.kategori_bar(df, top_n=10), use_container_width=True)
+    st.subheader("🏞️ Occupancy Lahan per Region")
+    st.plotly_chart(charts.occupancy_region(an.lahan_ringkasan(lahan)), use_container_width=True)
 with kanan:
     st.subheader("📈 Tren Pengajuan per Bulan")
-    st.plotly_chart(charts.tren_pengajuan(df), use_container_width=True)
+    st.plotly_chart(charts.tren_pengajuan(izin), use_container_width=True)
+
+kiri, kanan = st.columns(2)
+with kiri:
+    st.subheader("⏳ Kontrak Sewa Berakhir 12 Bulan")
+    st.plotly_chart(charts.expiry_timeline(sewa, snapshot), use_container_width=True)
+with kanan:
+    st.subheader("💰 Nilai Sewa per Kategori")
+    st.plotly_chart(charts.nilai_kategori_sewa(sewa), use_container_width=True)
 
 st.divider()
 
-with st.expander("ℹ️ Cara pakai & informasi dataset", expanded=False):
+with st.expander("ℹ️ Panduan & sumber data", expanded=False):
     st.markdown(
-        """
-        **Cara pakai**
+        f"""
+        **Halaman**
 
-        1. Buka **📊 Director Summary** untuk melihat analisis satu SPBU.
-           Pilih nomor SPBU pada panel filter di sidebar.
-        2. Buka **🔎 Data Explorer** untuk menelusuri seluruh data dengan filter
-           Region, Kategori, Status, Tipe Brand, kata kunci, dan rentang tanggal.
-        3. Setiap halaman menyediakan tombol unduh CSV sesuai hasil filter.
+        - **📍 Director Summary** — analisis satu SPBU: izin prinsip, lahan, sewa,
+          dan lead time outlet tersebut.
+        - **🔎 Data Explorer** — telusuri seluruh pengajuan izin dengan filter.
+        - **🏞️ Lahan & Sewa** — occupancy lahan, nilai sewa, kontrak yang segera berakhir.
+        - **⏱️ Lead Time** — funnel tahapan, aging pending, SLA, dan prioritas tindak lanjut.
 
-        **Sumber data**
+        **Sumber data (snapshot {snapshot:%d %B %Y})**
 
-        File `Data/Pengajuan NFR Izin Prinsip 10-April-2026.xlsx` yang dibaca
-        otomatis saat aplikasi pertama kali dibuka. Data di-cache, jadi file
-        hanya dibaca sekali per proses.
+        | Dataset | Baris |
+        |---|---:|
+        | Pengajuan NFR Izin Prinsip | {format_angka(len(izin))} |
+        | NFR Master Lahan | {format_angka(len(lahan_mentah))} |
+        | Pengajuan NFR Sewa Lahan | {format_angka(len(sewa_mentah))} |
 
-        **Catatan kualitas data**
-
-        - Sebagian baris memiliki `ID Pengajuan` duplikat (data mentah tidak
-          dihapus otomatis agar angka tetap sesuai sumber).
-        - `Total Harga Sewa` kosong di sebagian kecil baris dan dihitung sebagai 0.
-        - `SLA` mayoritas bernilai 0.
+        Data dimuat sekali per sesi lalu di-cache. File Excel berada di folder `Data/`.
         """
     )

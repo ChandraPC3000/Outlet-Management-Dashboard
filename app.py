@@ -37,6 +37,8 @@ navigation = st.navigation(
         st.Page("src/pages/home.py", title="Home", icon="🏠", default=True),
         st.Page("src/pages/director_summary.py", title="Director Summary", icon="📊"),
         st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
+        st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa", icon="🏞️"),
+        st.Page("src/pages/lead_time.py", title="Lead Time", icon="⏱️"),
     ]
 )
 navigation.run()

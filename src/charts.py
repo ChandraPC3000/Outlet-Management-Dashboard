@@ -9,6 +9,15 @@ import plotly.graph_objects as go
 from src.config import PALETTE, PLOTLY_TEMPLATE
 from src.formatting import BULAN_SINGKAT
 
+KELOMPOK_WARNA = {
+    "Pending": "#d29922",
+    "Terbit / Beroperasi": "#3fb950",
+    "Telah Berakhir": "#58a6ff",
+    "Ditolak / Batal": "#f85149",
+    "Draft": "#8b949e",
+    "Lainnya": "#8b949e",
+}
+
 
 def _finalize(
     fig: go.Figure,
@@ -34,6 +43,7 @@ def _finalize(
     return fig
 
 
+# --- Izin prinsip ------------------------------------------------------------
 def sewa_per_brand(df: pd.DataFrame, top_n: int = 15) -> go.Figure:
     """Bar horizontal total harga sewa per brand."""
     data = (
@@ -165,3 +175,250 @@ def brand_terbanyak(df: pd.DataFrame, top_n: int = 10) -> go.Figure:
     fig.update_yaxes(categoryorder="total ascending")
     fig.update_traces(textposition="outside", cliponaxis=False)
     return _finalize(fig, height=max(340, 32 * len(data) + 80), showlegend=False)
+
+
+# --- Lead time ---------------------------------------------------------------
+def funnel_tahapan(funnel: pd.DataFrame) -> go.Figure:
+    """Bar bertumpuk komposisi status tiap tahapan."""
+    kolom = [c for c in KELOMPOK_WARNA if c in funnel.columns]
+    data = funnel.melt(
+        id_vars="Tahapan",
+        value_vars=kolom,
+        var_name="Kelompok",
+        value_name="Jumlah",
+    )
+    fig = px.bar(
+        data,
+        x="Tahapan",
+        y="Jumlah",
+        color="Kelompok",
+        barmode="stack",
+        color_discrete_map=KELOMPOK_WARNA,
+        labels={"Tahapan": "", "Jumlah": "Jumlah pengajuan"},
+    )
+    fig.update_xaxes(tickangle=-15)
+    return _finalize(fig, height=380)
+
+
+def aging_tahapan(stage: pd.DataFrame) -> go.Figure:
+    """Bar horizontal median & P90 umur pengajuan per tahapan."""
+    data = stage.melt(
+        id_vars="Tahap",
+        value_vars=["Median Umur (hari)", "P90 Umur (hari)"],
+        var_name="Ukuran",
+        value_name="Hari",
+    )
+    fig = px.bar(
+        data,
+        x="Hari",
+        y="Tahap",
+        color="Ukuran",
+        barmode="group",
+        orientation="h",
+        text="Hari",
+        color_discrete_sequence=[PALETTE[0], PALETTE[3]],
+        labels={"Tahap": "", "Hari": "Hari"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=max(320, 60 * len(stage) + 80))
+
+
+def aging_status(aging: pd.DataFrame) -> go.Figure:
+    """Bar horizontal median umur per status pending."""
+    data = aging.sort_values("Median Umur (hari)")
+    fig = px.bar(
+        data,
+        x="Median Umur (hari)",
+        y="Status",
+        orientation="h",
+        color="Tahap",
+        text="Median Umur (hari)",
+        color_discrete_sequence=list(PALETTE),
+        labels={"Status": "", "Median Umur (hari)": "Median umur (hari)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=max(360, 42 * len(data) + 90))
+
+
+def pending_region(region: pd.DataFrame) -> go.Figure:
+    """Bar bertumpuk jumlah pending per region."""
+    tahap = [c for c in region.columns if c not in ("Region", "TOTAL")]
+    data = region.melt(id_vars="Region", value_vars=tahap, var_name="Tahap", value_name="Jumlah")
+    fig = px.bar(
+        data,
+        x="Jumlah",
+        y="Region",
+        orientation="h",
+        color="Tahap",
+        barmode="stack",
+        color_discrete_sequence=list(PALETTE),
+        labels={"Region": "", "Jumlah": "Jumlah pending"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    return _finalize(fig, height=max(340, 42 * len(region) + 90))
+
+
+# --- Lahan & sewa ------------------------------------------------------------
+def occupancy_region(lahan_region: pd.DataFrame) -> go.Figure:
+    """Bar bertumpuk lahan tersewa vs tersedia per region."""
+    data = lahan_region.melt(
+        id_vars="Region",
+        value_vars=["Tersewa", "Tersedia"],
+        var_name="Status",
+        value_name="Jumlah",
+    )
+    fig = px.bar(
+        data,
+        x="Jumlah",
+        y="Region",
+        orientation="h",
+        color="Status",
+        barmode="stack",
+        color_discrete_map={"Tersewa": PALETTE[1], "Tersedia": PALETTE[7]},
+        labels={"Region": "", "Jumlah": "Jumlah lahan"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    return _finalize(fig, height=380)
+
+
+def approval_lahan(lahan: pd.DataFrame) -> go.Figure:
+    data = (
+        lahan["Status Approval"]
+        .value_counts()
+        .rename_axis("Status")
+        .reset_index(name="Jumlah")
+        .nlargest(8, "Jumlah")
+    )
+    fig = px.bar(
+        data,
+        x="Jumlah",
+        y="Status",
+        orientation="h",
+        text="Jumlah",
+        color_discrete_sequence=[PALETTE[4]],
+        labels={"Status": "", "Jumlah": "Jumlah lahan"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=360, showlegend=False)
+
+
+def top_tenant_sewa(lahan: pd.DataFrame, top_n: int = 10) -> go.Figure:
+    data = (
+        lahan.groupby("Tenant", as_index=False)["Harga Sewa (Rp)"]
+        .sum()
+        .nlargest(top_n, "Harga Sewa (Rp)")
+    )
+    fig = px.bar(
+        data,
+        x="Harga Sewa (Rp)",
+        y="Tenant",
+        orientation="h",
+        text="Harga Sewa (Rp)",
+        color_discrete_sequence=[PALETTE[5]],
+        labels={"Tenant": "", "Harga Sewa (Rp)": "Nilai sewa (Rp)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=400, showlegend=False)
+
+
+def scatter_luas_sewa(lahan: pd.DataFrame) -> go.Figure:
+    data = lahan[lahan["Harga Sewa (Rp)"] > 0]
+    if len(data) > 3000:
+        data = data.sample(3000, random_state=42)
+    fig = px.scatter(
+        data,
+        x="Luas (M2)",
+        y="Harga Sewa (Rp)",
+        color="Status Sewa",
+        hover_name="Tenant",
+        hover_data={"No. SPBU": True, "Kode Lahan": True},
+        color_discrete_map={"Tersewa": PALETTE[1], "Tersedia": PALETTE[7]},
+        labels={"Luas (M2)": "Luas (m²)", "Harga Sewa (Rp)": "Nilai sewa (Rp)"},
+        opacity=0.55,
+        log_x=True,
+        log_y=True,
+    )
+    fig.update_traces(marker=dict(size=6, line=dict(width=0)))
+    return _finalize(fig, height=400)
+
+
+def sewa_status_donut(sewa: pd.DataFrame) -> go.Figure:
+    data = sewa["Status Sewa"].value_counts().rename_axis("Status").reset_index(name="Jumlah")
+    fig = px.pie(
+        data,
+        names="Status",
+        values="Jumlah",
+        hole=0.45,
+        color_discrete_sequence=list(PALETTE),
+    )
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent",
+        hovertemplate="%{label}<br>%{value:,} kontrak<extra></extra>",
+    )
+    return _finalize(fig, height=360)
+
+
+def expiry_timeline(sewa: pd.DataFrame, snapshot: pd.Timestamp, bulan: int = 12) -> go.Figure:
+    akhir = snapshot + pd.DateOffset(months=bulan)
+    data = sewa[
+        (sewa["Tanggal Berakhir Sewa"] >= snapshot) & (sewa["Tanggal Berakhir Sewa"] <= akhir)
+    ]
+    urutan = pd.period_range(snapshot, akhir, freq="M")
+    label = [f"{BULAN_SINGKAT[p.month - 1]} {p.year}" for p in urutan]
+    hitung = (
+        data["Tanggal Berakhir Sewa"].dt.to_period("M").value_counts().reindex(urutan, fill_value=0)
+    )
+    fig = px.bar(
+        x=label,
+        y=list(hitung.values),
+        labels={"x": "Bulan berakhir", "y": "Jumlah kontrak"},
+        color_discrete_sequence=[PALETTE[2]],
+        text=list(hitung.values),
+    )
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=340, showlegend=False)
+
+
+def nilai_kategori_sewa(sewa: pd.DataFrame, top_n: int = 10) -> go.Figure:
+    data = (
+        sewa.groupby("Kategori Utama", as_index=False)["Total Harga Sewa"]
+        .sum()
+        .nlargest(top_n, "Total Harga Sewa")
+    )
+    fig = px.bar(
+        data,
+        x="Total Harga Sewa",
+        y="Kategori Utama",
+        orientation="h",
+        text="Total Harga Sewa",
+        color_discrete_sequence=[PALETTE[3]],
+        labels={"Kategori Utama": "", "Total Harga Sewa": "Nilai sewa (Rp)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=400, showlegend=False)
+
+
+def top_brand_sewa(sewa: pd.DataFrame, top_n: int = 10) -> go.Figure:
+    data = (
+        sewa.groupby("Nama Brand", as_index=False)["Total Harga Sewa"]
+        .sum()
+        .nlargest(top_n, "Total Harga Sewa")
+    )
+    fig = px.bar(
+        data,
+        x="Total Harga Sewa",
+        y="Nama Brand",
+        orientation="h",
+        text="Total Harga Sewa",
+        color_discrete_sequence=[PALETTE[0]],
+        labels={"Nama Brand": "", "Total Harga Sewa": "Nilai sewa (Rp)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=400, showlegend=False)
