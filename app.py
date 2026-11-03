@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
+import importlib
 import streamlit as st
 
+from src import analytics as _analytics
+from src import charts as _charts
 from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH
 from src.data_loader import load_data_or_stop
+
+# Streamlit Cloud kadang mempertahankan cache modul lama setelah redeploy,
+# sehingga fungsi baru (mis. charts.bvt_map) belum terdaftar. Modul ini murni
+# (tanpa cache data), jadi aman di-reload setiap run.
+importlib.reload(_analytics)
+importlib.reload(_charts)
 
 st.set_page_config(
     page_title=APP_TITLE,
