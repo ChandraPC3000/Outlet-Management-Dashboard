@@ -53,6 +53,8 @@ def load_spbu_master() -> pd.DataFrame:
     for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Status Operasi", "Status Level"):
         if kolom in df.columns:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     return df.reset_index(drop=True)
 
 
@@ -67,6 +69,8 @@ def load_bvt() -> pd.DataFrame:
     for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Road Type", "SES", "Red Ocean", "Blue Ocean", "Kelas BVT", "Sumber Tilok", "Status Level"):
         if kolom in df.columns:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     return df.reset_index(drop=True)
 
 
@@ -128,6 +132,9 @@ def enrich_with_master(df: pd.DataFrame, include_tipe: bool = True) -> pd.DataFr
         else:
             mask = _blank_mask(hasil["Tipe SPBU"]) & hasil["m_Tipe SPBU"].notna()
             hasil.loc[mask, "Tipe SPBU"] = hasil.loc[mask, "m_Tipe SPBU"]
+
+    if "Status Level" not in hasil.columns:
+        hasil["Status Level"] = "Tidak diketahui"
 
     if "Reguler" not in hasil.columns:
         hasil["Reguler"] = hasil["m_Reguler"]

@@ -75,6 +75,8 @@ def classify_status(status: str) -> str:
 def prepare_leadtime(izin: pd.DataFrame, snapshot: pd.Timestamp | None = None) -> pd.DataFrame:
     """Tambahkan kolom turunan untuk analisis lead time dan aging."""
     df = izin.copy()
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     snap = snapshot or snapshot_date(df)
 
     df["Tahap"] = df["Status"].map(STAGE_MAP).fillna("Lainnya")
@@ -253,6 +255,8 @@ def attach_region(df: pd.DataFrame, izin: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_lahan(lahan: pd.DataFrame, izin: pd.DataFrame) -> pd.DataFrame:
     df = attach_region(lahan, izin)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     df["Status Sewa"] = df["Status Sewa"].replace({" - ": "Tidak Diketahui"})
     df["Tersewa"] = df["Status Sewa"].eq("Tersewa")
     df["Tersedia"] = df["Status Sewa"].eq("Tersedia")
@@ -261,6 +265,8 @@ def prepare_lahan(lahan: pd.DataFrame, izin: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_sewa(sewa: pd.DataFrame, izin: pd.DataFrame, snapshot: pd.Timestamp) -> pd.DataFrame:
     df = attach_region(sewa, izin)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     df["Sisa Hari"] = (df["Tanggal Berakhir Sewa"] - snapshot).dt.days
     df["Berjalan"] = df["Status Sewa"].eq("Berjalan")
     df["Kategori Utama"] = (
@@ -530,6 +536,8 @@ def sewa_nilai_spbu(sewa: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
 # --- Management fee ----------------------------------------------------------
 def prepare_fee(izin: pd.DataFrame) -> pd.DataFrame:
     df = izin.copy()
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
     df["Fee Ratio (%)"] = (
         df["Nominal Fee"] / df["Total Harga Sewa"].replace(0, np.nan) * 100
     )

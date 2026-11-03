@@ -7,13 +7,19 @@ import streamlit as st
 
 from src import analytics as _analytics
 from src import charts as _charts
+from src import data_loader as _data_loader
+from src import filters as _filters
 from src import map_lokasi as _map_lokasi
+from src import master_data as _master_data
+from src import spbu_universe as _spbu_universe
 from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH
-from src.data_loader import load_data_or_stop
 
-# Streamlit Cloud kadang mempertahankan cache modul lama setelah redeploy,
-# sehingga fungsi baru (mis. charts.bvt_map) belum terdaftar. Modul ini murni
-# (tanpa cache data), jadi aman di-reload setiap run.
+# Streamlit Cloud kadang mempertahankan cache modul lama setelah redeploy.
+# Reload modul (termasuk loader) agar skema/kolom baru langsung terpakai.
+importlib.reload(_master_data)
+importlib.reload(_data_loader)
+importlib.reload(_spbu_universe)
+importlib.reload(_filters)
 importlib.reload(_analytics)
 importlib.reload(_charts)
 importlib.reload(_map_lokasi)
@@ -38,6 +44,8 @@ inject_css(STYLE_PATH)
 
 if LOGO_PATH.exists():
     st.logo(str(LOGO_PATH), size="large")
+
+load_data_or_stop = _data_loader.load_data_or_stop
 
 # Muat data sekali di awal; halaman lain memakai cache yang sama sehingga
 # tetap aman walau dibuka langsung lewat URL.

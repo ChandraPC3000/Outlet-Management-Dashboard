@@ -108,7 +108,10 @@ def load_izin_prinsip(path: str | None = None) -> pd.DataFrame:
         df[col] = df[col].fillna("Tidak Diketahui")
 
     df["Periode"] = df["Tgl Pengajuan"].dt.to_period("M").dt.to_timestamp()
-    return enrich_with_master(df)
+    df = enrich_with_master(df)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
+    return df
 
 
 @st.cache_data(show_spinner="Memuat Master Lahan...")
@@ -125,7 +128,10 @@ def load_master_lahan(path: str | None = None) -> pd.DataFrame:
     df["Status Sewa"] = df["Status Sewa"].fillna("Tidak Diketahui")
     df["Status Approval"] = df["Status Approval"].fillna("Tidak Diketahui")
     df["Tenant"] = df["Tenant"].fillna("-")
-    return enrich_with_master(df)
+    df = enrich_with_master(df)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
+    return df
 
 
 @st.cache_data(show_spinner="Memuat Pengajuan Sewa Lahan...")
@@ -142,7 +148,10 @@ def load_sewa_lahan(path: str | None = None) -> pd.DataFrame:
     for col in ("Status Sewa", "Status Izin Prinsip"):
         if col in df.columns:
             df[col] = df[col].fillna("Tidak Diketahui")
-    return enrich_with_master(df)
+    df = enrich_with_master(df)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
+    return df
 
 
 @st.cache_data(show_spinner="Memuat Ketersediaan Lahan...")
@@ -181,7 +190,10 @@ def load_ketersediaan(path: str | None = None) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].fillna("Tidak diketahui")
 
-    return enrich_with_master(df, include_tipe=False)
+    df = enrich_with_master(df, include_tipe=False)
+    if "Status Level" not in df.columns:
+        df["Status Level"] = "Tidak diketahui"
+    return df
 
 
 def _load_or_stop(loader, label: str) -> pd.DataFrame:
