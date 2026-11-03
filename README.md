@@ -154,6 +154,8 @@ yang masih tersedia untuk outlet baru.
   **V**). Tersedia untuk 5.678 baris (98,6% SPBU).
 - **Lahan 0 m²** disembunyikan secara default (149 baris) dan bisa dimunculkan
   lewat checkbox filter.
+- **Luas lahan** memakai **slider rentang min–max** (bukan angka minimum saja),
+  sehingga bisa langsung digeser untuk memilih interval luas tertentu.
 - **Kolom classified tidak pernah ditampilkan/diekspor:** harga sewa, tipe
   SPBU, kelas SPBU, GES, dan fasilitas EV.
 

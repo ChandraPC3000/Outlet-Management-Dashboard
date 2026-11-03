@@ -57,19 +57,28 @@ with st.expander("🔎 Filter lahan tersedia", expanded=True):
         "Road Type", sorted(df["Road Type"].dropna().unique()), key="ket_road"
     )
 
-    f4, f5, f6 = st.columns(3)
+    f4, f5 = st.columns(2)
     ses = f4.multiselect(
         "SES Dominan",
         ["High", "Medium High", "Medium Low", "Low", "Tidak diketahui"],
         key="ket_ses",
     )
-    min_luas = f5.number_input(
-        "Luas minimum (m²)", min_value=0.0, value=0.0, step=10.0, key="ket_min_luas"
-    )
-    cari = f6.text_input(
+    cari = f5.text_input(
         "Cari No SPBU / perusahaan / alamat",
         placeholder="contoh: Indomaret atau 3416421",
         key="ket_cari",
+    )
+
+    max_luas = max(1, int(df["Luas (M2)"].max() + 0.999))
+    luas_range = st.slider(
+        "Rentang Luas lahan (m²)",
+        min_value=0,
+        max_value=max_luas,
+        value=(0, max_luas),
+        step=1,
+        format="%d",
+        key="ket_luas_range",
+        help="Geser kedua ujung untuk menentukan luas minimum dan maksimum.",
     )
 
     f7, f8, f9 = st.columns(3)
@@ -106,8 +115,10 @@ if road:
     tampil = tampil[tampil["Road Type"].isin(road)]
 if ses:
     tampil = tampil[tampil["SES Dominan"].isin(ses)]
-if min_luas > 0:
-    tampil = tampil[tampil["Luas (M2)"] >= min_luas]
+luas_min, luas_max = luas_range
+tampil = tampil[
+    (tampil["Luas (M2)"] >= luas_min) & (tampil["Luas (M2)"] <= luas_max)
+]
 if cari.strip():
     kata = cari.strip()
     cocok = tampil["No. SPBU"].astype("string").str.contains(kata, case=False, na=False, regex=False)
@@ -231,8 +242,10 @@ if road:
     deskripsi_filter.append("Road Type: " + ", ".join(road))
 if ses:
     deskripsi_filter.append("SES Dominan: " + ", ".join(ses))
-if min_luas:
-    deskripsi_filter.append(f"Luas minimum: {min_luas:,.0f} m²".replace(",", "."))
+if luas_min > 0 or luas_max < max_luas:
+    deskripsi_filter.append(
+        f"Luas: {luas_min:,.0f}–{luas_max:,.0f} m²".replace(",", ".")
+    )
 if min_volume:
     deskripsi_filter.append(f"Volume minimum: {min_volume:,.0f} KL/bln".replace(",", "."))
 if cari.strip():
