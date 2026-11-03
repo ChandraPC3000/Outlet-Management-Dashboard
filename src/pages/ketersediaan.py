@@ -70,16 +70,30 @@ with st.expander("🔎 Filter lahan tersedia", expanded=True):
     )
 
     max_luas = max(1, int(df["Luas (M2)"].max() + 0.999))
-    luas_range = st.slider(
-        "Rentang Luas lahan (m²)",
-        min_value=0,
-        max_value=max_luas,
-        value=(0, max_luas),
-        step=1,
-        format="%d",
-        key="ket_luas_range",
-        help="Geser kedua ujung untuk menentukan luas minimum dan maksimum.",
+    f6, f7 = st.columns(2)
+    luas_min = f6.number_input(
+        "Luas minimum (m²)",
+        min_value=0.0,
+        max_value=float(max_luas),
+        value=0.0,
+        step=1.0,
+        format="%.1f",
+        key="ket_luas_min",
+        help="Ketik langsung angka minimum, atau gunakan panah naik/turun.",
     )
+    luas_max = f7.number_input(
+        "Luas maksimum (m²)",
+        min_value=0.0,
+        max_value=float(max_luas),
+        value=float(max_luas),
+        step=1.0,
+        format="%.1f",
+        key="ket_luas_max",
+        help="Ketik langsung angka maksimum, atau gunakan panah naik/turun.",
+    )
+    if luas_min > luas_max:
+        luas_min, luas_max = luas_max, luas_min
+        st.caption("Rentang dibalik otomatis: nilai minimum lebih besar dari maksimum.")
 
     f7, f8, f9 = st.columns(3)
     hanya_pic = f7.checkbox("Hanya SPBU dengan PIC lengkap", value=False, key="ket_pic")
@@ -115,7 +129,7 @@ if road:
     tampil = tampil[tampil["Road Type"].isin(road)]
 if ses:
     tampil = tampil[tampil["SES Dominan"].isin(ses)]
-luas_min, luas_max = luas_range
+luas_min, luas_max = float(luas_min), float(luas_max)
 tampil = tampil[
     (tampil["Luas (M2)"] >= luas_min) & (tampil["Luas (M2)"] <= luas_max)
 ]
