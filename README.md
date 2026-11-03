@@ -106,8 +106,10 @@ ada tidak ditimpa.
   **Non-Reguler**.
 
 **Peta & tilok:** peta memakai **Folium + tile OpenStreetMap** (marker cluster).
-Koordinat diambil dari master Lembaga Penyalur; jika tidak valid, fallback ke
-BVT. Kolom Longitude/Latitude pada file BVT asli tertukar dan sudah dikoreksi.
+Saat zoom out (≤5) hanya tampil **8 lingkaran besar per region** (Sumbagut s/d
+Maluku Papua) dengan label dan komposisi BVT; zoom in menampilkan titik/cluster
+SPBU. Koordinat diambil dari master Lembaga Penyalur; jika tidak valid, fallback
+ke BVT. Kolom Longitude/Latitude pada file BVT asli tertukar dan sudah dikoreksi.
 Setiap SPBU punya tautan **Google Maps** (`https://www.google.com/maps?q=lat,lon`)
 untuk verifikasi. Geocoding massal ke Google Maps membutuhkan API key.
 

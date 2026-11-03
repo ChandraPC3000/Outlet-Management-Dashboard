@@ -213,9 +213,10 @@ tab_peta, tab_bvt, tab_tabel = st.tabs(
 with tab_peta:
     st.subheader("🗺️ Peta Lokasi SPBU")
     st.caption(
-        "Warna titik = kelas BVT. Peta memakai tile **OpenStreetMap**. Koordinat berasal "
-        "dari master Lembaga Penyalur (fallback BVT); gunakan tautan Google Maps di tabel "
-        "untuk verifikasi posisi."
+        "Warna titik = kelas BVT. Peta memakai tile **OpenStreetMap**. Saat **zoom out "
+        "(≤5)** hanya tampil 8 lingkaran besar per region; **zoom in** menampilkan "
+        "titik/cluster SPBU. Koordinat berasal dari master Lembaga Penyalur (fallback BVT); "
+        "gunakan tautan Google Maps di tabel untuk verifikasi posisi."
     )
     st.markdown(
         "🔵 **Blue Ocean** &nbsp;·&nbsp; 🟡 **Peluang Campuran** &nbsp;·&nbsp; "
