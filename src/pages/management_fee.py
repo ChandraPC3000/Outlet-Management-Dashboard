@@ -8,9 +8,11 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop
 from src.formatting import format_angka, format_rupiah
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
 fee_semua = an.prepare_fee(izin)
+universe = universe_ringkasan(load_spbu_universe())
 
 st.title("💳 Management Fee")
 st.caption(
@@ -122,8 +124,14 @@ kpi1[3].metric("Median Fee", format_rupiah(dasar.loc[dasar["Nominal Fee"] > 0, "
 
 kpi2 = st.columns(3)
 kpi2[0].metric("Brand Unik", format_angka(dasar["Nama Brand"].nunique()))
-kpi2[1].metric("SPBU Unik", format_angka(dasar["No. SPBU"].nunique()))
+kpi2[1].metric("SPBU dengan Fee", format_angka(dasar["No. SPBU"].nunique()))
 kpi2[2].metric("Pengajuan Ber-fee", f"{format_angka(persen_ber_fee, 1)}%")
+
+st.caption(
+    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing)."
+)
 
 if hanya_fee:
     st.caption(

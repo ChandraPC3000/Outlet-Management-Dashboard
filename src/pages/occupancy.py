@@ -8,10 +8,12 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop, load_lahan_or_stop
 from src.formatting import format_angka
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
 lahan = an.prepare_lahan(load_lahan_or_stop(), izin)
 occ_semua = an.occupancy_per_spbu(lahan)
+universe = universe_ringkasan(load_spbu_universe())
 
 st.title("📈 Occupancy Rate Lahan")
 st.caption(
@@ -90,7 +92,7 @@ rendah = int((occ["Occupancy (%)"] < 50).sum())
 baris1 = st.columns(4)
 baris1[0].metric("Occupancy Total", f"{format_angka(occupancy, 1)}%")
 baris1[1].metric("Rata-rata per SPBU", f"{format_angka(rata_rata, 1)}%")
-baris1[2].metric("Jumlah SPBU", format_angka(len(occ)))
+baris1[2].metric("SPBU dengan Lahan", format_angka(len(occ)))
 baris1[3].metric("Total Lahan", format_angka(total))
 
 baris2 = st.columns(4)
@@ -102,6 +104,12 @@ baris2[3].metric("SPBU < 50%", format_angka(rendah))
 st.caption(
     "**Occupancy Total** = total tersewa ÷ total lahan (weighted, sama dengan angka region). "
     "**Rata-rata per SPBU** = rata-rata persentase tiap SPBU."
+)
+st.caption(
+    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing); occupancy hanya untuk SPBU "
+    "yang memiliki data lahan."
 )
 
 st.divider()

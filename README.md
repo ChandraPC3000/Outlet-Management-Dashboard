@@ -11,7 +11,7 @@ Snapshot data: **2 November 2026** · Ketersediaan lahan: **November 2026**.
 
 | Halaman | Yang bisa dilihat |
 | --- | --- |
-| **🏠 Home** | KPI lintas dataset (46.003 pengajuan, 5.616 SPBU, occupancy lahan 83,1%, nilai sewa lahan Rp 1,20 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
+| **🏠 Home** | KPI lintas dataset (46.003 pengajuan, **6.591 SPBU universe**, occupancy lahan 83,1%, nilai sewa lahan Rp 1,20 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
 | **📊 Director Summary** | Analisis satu SPBU: lokasi, KPI izin, sewa per brand, status pengajuan, lahan & kontrak sewa outlet tersebut, aging/lead time, dan detail lengkap |
 | **🔎 Data Explorer** | Telusuri seluruh pengajuan izin dengan filter Region, Kategori, Status, Tipe Brand, kata kunci, dan rentang tanggal; unduh CSV |
 | **🧭 Ketersediaan Lahan** | Daftar lahan tersedia untuk mitra: filter provinsi/kota/road type/SES/luas/volume/PIC, analisis sebaran, dan unduh Excel format mitra |
@@ -83,6 +83,11 @@ dan peta.
 13 Oktober 2026*:
 - 15.103 SPBU; **6.525 SPBU Reguler**; sisanya PERTASHOP, SPBU Kompak, Mini,
   Modular, SPBUN, SPBB, AMT, dan SPBU T.
+- **Total SPBU universe = 6.591** = 6.525 Reguler + **66 SPBU existing** di luar
+  Reguler yang muncul di file izin/lahan/sewa/ketersediaan (union, bukan
+  penjumlahan). Angka ini dipakai di KPI Home.
+- Halaman lain tetap menampilkan jumlah SPBU sesuai konteks datanya (mis. “SPBU
+  dengan Fee”, “SPBU dengan Lahan”) dan mencantumkan denominator universe 6.591.
 - `Tipe SPBU` dinormalisasi: COCO, CODO, DODO; varian `CODO I`, `CODO II`,
   `CODO Lite` dilebur menjadi `CODO`.
 - Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.
@@ -149,6 +154,7 @@ src/
 ├── data_loader.py              # load + validasi + cache seluruh dataset
 ├── analytics.py                # lead time, lahan, sewa, ketersediaan, PIC
 ├── master_data.py              # master SPBU, BVT, enrichment kolom kosong
+├── spbu_universe.py            # total SPBU Reguler + existing (6.591)
 ├── charts.py                   # builder grafik Plotly
 ├── filters.py                  # filter sidebar
 ├── formatting.py               # format rupiah/angka/tanggal

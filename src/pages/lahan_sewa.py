@@ -8,16 +8,19 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin, lahan_mentah, sewa_mentah = load_all()
 snapshot = an.snapshot_date(izin)
 lahan = an.prepare_lahan(lahan_mentah, izin)
 sewa = an.prepare_sewa(sewa_mentah, izin, snapshot)
+universe = universe_ringkasan(load_spbu_universe())
 
 st.title("🏞️ Lahan & Sewa")
 st.caption(
     f"Analisis {format_angka(len(lahan))} lahan dan {format_angka(len(sewa))} kontrak sewa "
-    f"per snapshot {snapshot:%d %B %Y}."
+    f"per snapshot {snapshot:%d %B %Y} · {format_angka(lahan['No. SPBU'].nunique())} SPBU "
+    f"dengan lahan · total universe {format_angka(universe['total'])} SPBU."
 )
 
 tab_lahan, tab_sewa = st.tabs(["🏞️ Master Lahan", "📄 Sewa Lahan"])

@@ -8,8 +8,10 @@ from src import charts
 from src.data_loader import load_data_or_stop
 from src.filters import global_filters
 from src.formatting import format_angka, format_rupiah
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 df = load_data_or_stop()
+universe = universe_ringkasan(load_spbu_universe())
 
 st.title("🔎 Data Explorer")
 st.caption(
@@ -33,9 +35,16 @@ st.caption(
 
 kpi = st.columns(4)
 kpi[0].metric("Baris Data", format_angka(len(filtered)))
-kpi[1].metric("SPBU Unik", format_angka(filtered["No. SPBU"].nunique()))
+kpi[1].metric("SPBU di Data", format_angka(filtered["No. SPBU"].nunique()))
 kpi[2].metric("Brand Unik", format_angka(filtered["Nama Brand"].nunique()))
 kpi[3].metric("Total Nilai Sewa", format_rupiah(filtered["Total Harga Sewa"].sum()))
+
+st.caption(
+    f"Total SPBU universe: **{format_angka(universe['total'])}** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing). "
+    "KPI **SPBU di Data** menghitung SPBU yang punya baris pada hasil filter."
+)
 
 tab_visual, tab_tabel, tab_ringkasan = st.tabs(
     ["📈 Visualisasi", "📑 Tabel", "🧾 Ringkasan"]

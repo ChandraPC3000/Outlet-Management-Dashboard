@@ -8,8 +8,11 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin, lahan_mentah, sewa_mentah = load_all()
+universe = load_spbu_universe()
+info_universe = universe_ringkasan(universe)
 snapshot = an.snapshot_date(izin)
 ldf = an.prepare_leadtime(izin, snapshot)
 lahan = an.prepare_lahan(lahan_mentah, izin)
@@ -30,8 +33,15 @@ st.caption(
 
 baris1 = st.columns(3)
 baris1[0].metric("Total Pengajuan Izin", f"{format_angka(len(izin))} baris")
-baris1[1].metric("Jumlah SPBU", format_angka(izin["No. SPBU"].nunique()))
+baris1[1].metric("Jumlah SPBU", format_angka(info_universe["total"]))
 baris1[2].metric("Izin Pending", format_angka(pending))
+
+st.caption(
+    f"**{format_angka(info_universe['reguler'])} SPBU Reguler** + "
+    f"**{format_angka(info_universe['existing_ekstra'])} SPBU existing** di luar Reguler "
+    "(dari file izin, lahan, sewa, dan ketersediaan) = "
+    f"**{format_angka(info_universe['total'])} total SPBU universe**."
+)
 
 baris2 = st.columns(3)
 baris2[0].metric("Lahan Tersewa", f"{format_angka(tersewa)} lahan")

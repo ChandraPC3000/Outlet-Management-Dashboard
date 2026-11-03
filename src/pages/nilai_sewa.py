@@ -8,10 +8,12 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop, load_sewa_or_stop
 from src.formatting import format_angka, format_rupiah
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
 snapshot = an.snapshot_date(izin)
 sewa_semua = an.prepare_sewa(load_sewa_or_stop(), izin, snapshot)
+universe = universe_ringkasan(load_spbu_universe())
 
 st.title("💰 Nilai Sewa Lahan")
 st.caption(
@@ -113,6 +115,13 @@ kpi[2].metric("Rata-rata / Kontrak", format_rupiah(total / len(tampil)))
 kpi[3].metric("Median / Kontrak", format_rupiah(tampil["Total Harga Sewa"].median()))
 kpi[4].metric("Brand Unik", format_angka(tampil["Nama Brand"].nunique()))
 kpi[5].metric("Tenant Unik", format_angka(tampil["Nama Tenant"].nunique()))
+
+st.caption(
+    f"**{format_angka(tampil['No. SPBU'].nunique())} SPBU** memiliki kontrak pada filter ini · "
+    f"total SPBU universe **{format_angka(universe['total'])}** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing)."
+)
 
 st.divider()
 

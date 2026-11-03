@@ -12,10 +12,12 @@ from src.data_loader import load_data_or_stop
 from src.formatting import format_angka
 from src.map_lokasi import build_map
 from src.master_data import load_bvt, load_spbu_master, top_kategori
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
 master = load_spbu_master()
 bvt = load_bvt()
+universe = universe_ringkasan(load_spbu_universe())
 
 # Basis = master SPBU (15.103) + data BVT; SPBU tanpa BVT tetap tampil.
 bvt_fields = bvt[
@@ -185,6 +187,13 @@ kpi2[0].metric("Red Ocean", format_angka(red))
 kpi2[1].metric("Peluang Campuran", format_angka(campuran))
 kpi2[2].metric("Median Blue Score", f"{format_angka(data['Blue Ocean Score (%)'].median(), 1)}%")
 kpi2[3].metric("BVT Coverage", f"{format_angka(bvt_coverage, 1)}%")
+
+st.caption(
+    f"Total SPBU universe: **{format_angka(universe['total'])}** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing). Halaman ini default "
+    "menampilkan **Reguler**; pilih Semua untuk seluruh master."
+)
 
 top_red = top_kategori(data, "Red Ocean", 8)
 top_blue = top_kategori(data, "Blue Ocean", 8)

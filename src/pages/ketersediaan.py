@@ -10,9 +10,11 @@ from src.config import KETERSEDIAAN_SNAPSHOT
 from src.data_loader import load_ketersediaan_or_stop
 from src.exports import KOLOM_MITRA, build_ketersediaan_excel
 from src.formatting import format_angka
+from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 df_semua = load_ketersediaan_or_stop()
 df = an.prepare_ketersediaan(df_semua)
+universe = universe_ringkasan(load_spbu_universe())
 
 
 @st.cache_data(show_spinner="Menyiapkan file Excel...")
@@ -108,7 +110,7 @@ if tampil.empty:
 kpi = an.ketersediaan_kpi(tampil)
 baris1 = st.columns(4)
 baris1[0].metric("Lahan Tersedia", format_angka(kpi["lahan"]))
-baris1[1].metric("Jumlah SPBU", format_angka(kpi["spbu"]))
+baris1[1].metric("SPBU dengan Lahan Tersedia", format_angka(kpi["spbu"]))
 baris1[2].metric("Provinsi", format_angka(kpi["provinsi"]))
 baris1[3].metric("Total Luas", f"{format_angka(kpi['luas'])} m²")
 
@@ -117,6 +119,13 @@ baris2[0].metric("Median Luas", f"{format_angka(kpi['median_luas'], 1)} m²")
 baris2[1].metric("Total Volume", f"{format_angka(kpi['volume'])} KL/bln")
 baris2[2].metric("Rerata Volume/SPBU", f"{format_angka(kpi['rerata_volume'])} KL/bln")
 baris2[3].metric("PIC Lengkap", f"{format_angka(kpi['pic_lengkap'], 1)}%")
+
+st.caption(
+    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"({format_angka(universe['reguler'])} Reguler + "
+    f"{format_angka(universe['existing_ekstra'])} existing); KPI SPBU menghitung outlet "
+    "yang memiliki lahan tersedia pada filter ini."
+)
 
 if tanpa_nol and jumlah_nol:
     st.caption(f"{format_angka(jumlah_nol)} lahan berluas 0 m² disembunyikan oleh filter.")

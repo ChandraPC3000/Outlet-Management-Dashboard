@@ -55,6 +55,7 @@ def test_home() -> None:
     assert judul and "NFR Management System" in judul[0], judul
     metrics = {m.label: m.value for m in app.metric}
     assert metrics["Total Pengajuan Izin"] == f"{TOTAL_IZIN} baris", metrics
+    assert metrics["Jumlah SPBU"] == "6.591", metrics
     assert len(app.get("plotly_chart")) >= 6
 
 
@@ -121,7 +122,7 @@ def test_ketersediaan_page() -> None:
     judul = [t.value for t in app.title]
     assert judul and "Ketersediaan Lahan" in judul[0], judul
     metrics = {m.label: m.value for m in app.metric}
-    for label in ("Lahan Tersedia", "Jumlah SPBU", "Total Luas", "PIC Lengkap"):
+    for label in ("Lahan Tersedia", "SPBU dengan Lahan Tersedia", "Total Luas", "PIC Lengkap"):
         assert label in metrics, metrics
     assert metrics["Lahan Tersedia"] == "5.583", metrics
     assert len(app.get("plotly_chart")) >= 5
@@ -138,7 +139,7 @@ def test_occupancy_page() -> None:
     judul = [t.value for t in app.title]
     assert judul and "Occupancy Rate" in judul[0], judul
     metrics = {m.label: m.value for m in app.metric}
-    for label in ("Occupancy Total", "Rata-rata per SPBU", "Jumlah SPBU", "Total Lahan"):
+    for label in ("Occupancy Total", "Rata-rata per SPBU", "SPBU dengan Lahan", "Total Lahan"):
         assert label in metrics, metrics
     assert metrics["Occupancy Total"] == "83,1%", metrics
     assert len(app.get("plotly_chart")) >= 6
