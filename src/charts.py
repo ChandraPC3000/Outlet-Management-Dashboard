@@ -7,7 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from src.config import PALETTE, PLOTLY_TEMPLATE
-from src.formatting import BULAN_SINGKAT
+from src.formatting import BULAN_SINGKAT, format_rupiah
 
 KELOMPOK_WARNA = {
     "Pending": "#d29922",
@@ -508,6 +508,235 @@ def luas_bar(kategori: pd.DataFrame) -> go.Figure:
         text="Jumlah Lahan",
         color_discrete_sequence=[PALETTE[4]],
         labels={"Jumlah Lahan": "Jumlah lahan"},
+    )
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=340, showlegend=False)
+
+
+# --- Occupancy rate ----------------------------------------------------------
+def occupancy_gauge(value: float) -> go.Figure:
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=value,
+            number={"suffix": "%", "valueformat": ".1f", "font": {"size": 40, "color": "#fafafa"}},
+            gauge={
+                "axis": {"range": [0, 100], "tickcolor": "#8b949e"},
+                "bar": {"color": "#58a6ff", "thickness": 0.28},
+                "bgcolor": "rgba(0,0,0,0)",
+                "borderwidth": 0,
+                "steps": [
+                    {"range": [0, 50], "color": "rgba(248,81,73,0.35)"},
+                    {"range": [50, 75], "color": "rgba(210,153,34,0.35)"},
+                    {"range": [75, 90], "color": "rgba(88,166,255,0.25)"},
+                    {"range": [90, 100], "color": "rgba(63,185,80,0.35)"},
+                ],
+                "threshold": {
+                    "line": {"color": "#fafafa", "width": 2},
+                    "thickness": 0.75,
+                    "value": value,
+                },
+            },
+        )
+    )
+    fig.update_layout(
+        template=PLOTLY_TEMPLATE,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter, Segoe UI, sans-serif", color="#c9d1d9"),
+        height=300,
+        margin=dict(l=20, r=20, t=20, b=10),
+    )
+    return fig
+
+
+def occupancy_status_donut(status: pd.DataFrame) -> go.Figure:
+    warna = {"Penuh (100%)": PALETTE[1], "Sebagian": PALETTE[2], "Kosong (0%)": PALETTE[3]}
+    fig = px.pie(
+        status,
+        names="Status",
+        values="Jumlah SPBU",
+        hole=0.5,
+        color="Status",
+        color_discrete_map=warna,
+    )
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent",
+        hovertemplate="%{label}<br>%{value:,} SPBU<extra></extra>",
+    )
+    return _finalize(fig, height=300)
+
+
+def occupancy_bar(data: pd.DataFrame, level: str) -> go.Figure:
+    data = data.sort_values("Occupancy (%)")
+    teks = [f"{nilai:.1f}%".replace(".", ",") for nilai in data["Occupancy (%)"]]
+    fig = px.bar(
+        data,
+        x="Occupancy (%)",
+        y=level,
+        orientation="h",
+        text=teks,
+        custom_data=["Jumlah SPBU", "Total Lahan", "Tersewa"],
+        color="Occupancy (%)",
+        color_continuous_scale=["#f85149", "#d29922", "#58a6ff", "#3fb950"],
+        range_color=(0, 100),
+        labels={level: "", "Occupancy (%)": "Occupancy (%)"},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(
+        textposition="outside",
+        cliponaxis=False,
+        hovertemplate=(
+            "%{y}<br>Occupancy: %{x:.1f}%<br>SPBU: %{customdata[0]:,}"
+            "<br>Total lahan: %{customdata[1]:,}<br>Tersewa: %{customdata[2]:,}<extra></extra>"
+        ),
+    )
+    return _finalize(fig, height=max(360, 34 * len(data) + 100), showlegend=False)
+
+
+def occupancy_heatmap(pivot: pd.DataFrame) -> go.Figure:
+    fig = px.imshow(
+        pivot,
+        aspect="auto",
+        color_continuous_scale="Blues",
+        labels={"x": "Rentang occupancy", "y": "", "color": "Jumlah SPBU"},
+        text_auto=True,
+    )
+    fig.update_xaxes(side="top")
+    fig.update_coloraxes(showscale=False)
+    return _finalize(fig, height=max(340, 32 * len(pivot) + 120), showlegend=False)
+
+
+def occupancy_scatter(occ: pd.DataFrame) -> go.Figure:
+    fig = px.scatter(
+        occ,
+        x="Total Lahan",
+        y="Occupancy (%)",
+        size="Tersewa",
+        color="Occupancy (%)",
+        color_continuous_scale=["#f85149", "#d29922", "#58a6ff", "#3fb950"],
+        range_color=(0, 100),
+        hover_name="No. SPBU",
+        hover_data={"Region": True, "Kab./Kota": True, "Tersewa": True, "Tersedia": True},
+        labels={"Total Lahan": "Total lahan per SPBU", "Occupancy (%)": "Occupancy (%)"},
+        opacity=0.7,
+    )
+    fig.update_traces(
+        marker=dict(line=dict(width=0.5, color="rgba(255,255,255,0.25)")),
+        hovertemplate=(
+            "SPBU %{hovertext}<br>%{customdata[0]} · %{customdata[1]}"
+            "<br>Total lahan: %{x}<br>Occupancy: %{y:.1f}%"
+            "<br>Tersewa: %{customdata[2]} · Tersedia: %{customdata[3]}<extra></extra>"
+        ),
+    )
+    return _finalize(fig, height=400, showlegend=False)
+
+
+def occupancy_top_bar(data: pd.DataFrame, terendah: bool = False) -> go.Figure:
+    data = data.sort_values("Occupancy (%)", ascending=not terendah)
+    warna = PALETTE[3] if terendah else PALETTE[1]
+    teks = [f"{nilai:.1f}%".replace(".", ",") for nilai in data["Occupancy (%)"]]
+    fig = px.bar(
+        data,
+        x="Occupancy (%)",
+        y="Label",
+        orientation="h",
+        text=teks,
+        color_discrete_sequence=[warna],
+        labels={"Occupancy (%)": "Occupancy (%)", "Label": ""},
+        custom_data=["Total Lahan", "Tersewa", "Tersedia"],
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(
+        textposition="outside",
+        cliponaxis=False,
+        hovertemplate=(
+            "%{y}<br>Occupancy: %{x:.1f}%<br>Total lahan: %{customdata[0]}"
+            "<br>Tersewa: %{customdata[1]} · Tersedia: %{customdata[2]}<extra></extra>"
+        ),
+    )
+    return _finalize(fig, height=380, showlegend=False)
+
+
+# --- Nilai (sewa & fee) ------------------------------------------------------
+def bar_nilai(
+    data: pd.DataFrame,
+    dimensi: str,
+    nilai: str,
+    label: str,
+    top_n: int | None = None,
+    warna: str | None = None,
+) -> go.Figure:
+    tabel = data.nlargest(top_n, nilai) if top_n else data
+    tabel = tabel.sort_values(nilai)
+    teks = [format_rupiah(n) for n in tabel[nilai]]
+    fig = px.bar(
+        tabel,
+        x=nilai,
+        y=dimensi,
+        orientation="h",
+        text=teks,
+        color_discrete_sequence=[warna or PALETTE[0]],
+        labels={dimensi: "", nilai: label},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=max(340, 38 * len(tabel) + 90), showlegend=False)
+
+
+def pie_nilai(data: pd.DataFrame, dimensi: str, nilai: str, label: str) -> go.Figure:
+    fig = px.pie(
+        data,
+        names=dimensi,
+        values=nilai,
+        hole=0.45,
+        color_discrete_sequence=list(PALETTE),
+    )
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent",
+        hovertemplate="%{label}<br>%{value:,.0f}<extra></extra>",
+    )
+    return _finalize(fig, height=360)
+
+
+def heatmap_nilai(pivot: pd.DataFrame, label: str) -> go.Figure:
+    fig = px.imshow(
+        pivot,
+        aspect="auto",
+        color_continuous_scale="Blues",
+        labels={"x": "", "y": "", "color": label},
+    )
+    fig.update_xaxes(side="top")
+    return _finalize(fig, height=max(380, 30 * len(pivot) + 120), showlegend=False)
+
+
+def tren_nilai(data: pd.DataFrame, x: str, y: str, label: str) -> go.Figure:
+    fig = px.area(
+        data,
+        x=x,
+        y=y,
+        markers=True,
+        color_discrete_sequence=[PALETTE[0]],
+        labels={x: "Bulan", y: label},
+    )
+    fig.update_traces(
+        line=dict(width=2),
+        fillcolor="rgba(88,166,255,0.15)",
+        hovertemplate="%{x|%b %Y}<br>%{y:,.0f}<extra></extra>",
+    )
+    return _finalize(fig, height=340, showlegend=False)
+
+
+def bar_jumlah(data: pd.DataFrame, x: str, y: str, label: str, warna: str | None = None) -> go.Figure:
+    fig = px.bar(
+        data,
+        x=x,
+        y=y,
+        text=y,
+        color_discrete_sequence=[warna or PALETTE[2]],
+        labels={x: "", y: label},
     )
     fig.update_traces(textposition="outside", cliponaxis=False)
     return _finalize(fig, height=340, showlegend=False)

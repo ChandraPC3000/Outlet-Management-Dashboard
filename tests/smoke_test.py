@@ -133,6 +133,61 @@ def test_ketersediaan_page() -> None:
     assert int(app.metric[0].value.replace(".", "")) < 5_732
 
 
+def test_occupancy_page() -> None:
+    app = _run("src/pages/occupancy.py")
+    judul = [t.value for t in app.title]
+    assert judul and "Occupancy Rate" in judul[0], judul
+    metrics = {m.label: m.value for m in app.metric}
+    for label in ("Occupancy Total", "Rata-rata per SPBU", "Jumlah SPBU", "Total Lahan"):
+        assert label in metrics, metrics
+    assert metrics["Occupancy Total"] == "83,1%", metrics
+    assert len(app.get("plotly_chart")) >= 6
+    assert len(app.dataframe) >= 1
+
+    region = app.multiselect(key="occ_region")
+    region.select(region.options[0]).run()
+    assert not app.exception
+    assert int(app.metric[2].value.replace(".", "")) < 5_916
+
+
+def test_occupancy_formula() -> None:
+    from src import analytics as an
+    from src.data_loader import load_izin_prinsip, load_master_lahan
+
+    izin = load_izin_prinsip()
+    lahan = an.prepare_lahan(load_master_lahan(), izin)
+    occ = an.occupancy_per_spbu(lahan)
+    assert len(occ) > 5_000
+    assert (occ["Tersewa"] + occ["Tersedia"] == occ["Total Lahan"]).all()
+    assert occ["Occupancy (%)"].between(0, 100).all()
+    weighted = occ["Tersewa"].sum() / occ["Total Lahan"].sum() * 100
+    assert abs(weighted - 83.13) < 0.1, weighted
+
+
+def test_nilai_sewa_page() -> None:
+    app = _run("src/pages/nilai_sewa.py")
+    judul = [t.value for t in app.title]
+    assert judul and "Nilai Sewa" in judul[0], judul
+    metrics = {m.label: m.value for m in app.metric}
+    for label in ("Total Nilai Sewa", "Jumlah Kontrak", "Brand Unik"):
+        assert label in metrics, metrics
+    assert len(app.get("plotly_chart")) >= 8
+    assert len(app.dataframe) >= 1
+    assert len(app.get("download_button")) >= 1
+
+
+def test_management_fee_page() -> None:
+    app = _run("src/pages/management_fee.py")
+    judul = [t.value for t in app.title]
+    assert judul and "Management Fee" in judul[0], judul
+    metrics = {m.label: m.value for m in app.metric}
+    for label in ("Total Management Fee", "Transaksi Ber-fee", "Pengajuan Ber-fee"):
+        assert label in metrics, metrics
+    assert len(app.get("plotly_chart")) >= 8
+    assert len(app.dataframe) >= 1
+    assert len(app.get("download_button")) >= 1
+
+
 if __name__ == "__main__":
     for test in (
         test_home,
@@ -142,6 +197,10 @@ if __name__ == "__main__":
         test_lead_time,
         test_ketersediaan_data,
         test_ketersediaan_page,
+        test_occupancy_formula,
+        test_occupancy_page,
+        test_nilai_sewa_page,
+        test_management_fee_page,
     ):
         test()
         print(f"PASS {test.__name__}")

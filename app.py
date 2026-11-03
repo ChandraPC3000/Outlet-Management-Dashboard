@@ -33,13 +33,26 @@ if LOGO_PATH.exists():
 load_data_or_stop()
 
 navigation = st.navigation(
-    [
-        st.Page("src/pages/home.py", title="Home", icon="🏠", default=True),
-        st.Page("src/pages/director_summary.py", title="Director Summary", icon="📊"),
-        st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
-        st.Page("src/pages/ketersediaan.py", title="Ketersediaan Lahan", icon="🧭"),
-        st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa", icon="🏞️"),
-        st.Page("src/pages/lead_time.py", title="Lead Time", icon="⏱️"),
-    ]
+    {
+        "Ringkasan": [
+            st.Page("src/pages/home.py", title="Home", icon="🏠", default=True),
+            st.Page("src/pages/director_summary.py", title="Director Summary", icon="📊"),
+        ],
+        "Lahan & Mitra": [
+            st.Page("src/pages/ketersediaan.py", title="Ketersediaan Lahan", icon="🧭"),
+            st.Page("src/pages/occupancy.py", title="Occupancy Rate", icon="📈"),
+            st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa", icon="🏞️"),
+        ],
+        "Komersial": [
+            st.Page("src/pages/nilai_sewa.py", title="Nilai Sewa", icon="💰"),
+            st.Page("src/pages/management_fee.py", title="Management Fee", icon="💳"),
+        ],
+        "Eksplorasi": [
+            st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
+        ],
+        "Operasional": [
+            st.Page("src/pages/lead_time.py", title="Lead Time", icon="⏱️"),
+        ],
+    }
 )
 navigation.run()

@@ -23,8 +23,9 @@ berjalan = int(sewa["Berjalan"].sum())
 
 st.title("🚀 NFR Management System")
 st.caption(
-    "Dashboard gabungan **Izin Prinsip**, **Master Lahan**, **Sewa Lahan**, dan "
-    f"**Lead Time** · snapshot data {snapshot:%d %B %Y}."
+    "Dashboard gabungan **Izin Prinsip**, **Lahan**, **Sewa**, **Occupancy**, "
+    "**Nilai Sewa**, **Management Fee**, dan **Lead Time** · "
+    f"snapshot data {snapshot:%d %B %Y}."
 )
 
 baris1 = st.columns(3)
@@ -81,7 +82,11 @@ with st.expander("ℹ️ Panduan & sumber data", expanded=False):
         - **📍 Director Summary** — analisis satu SPBU: izin prinsip, lahan, sewa,
           dan lead time outlet tersebut.
         - **🔎 Data Explorer** — telusuri seluruh pengajuan izin dengan filter.
+        - **🧭 Ketersediaan Lahan** — daftar lahan siap tawarkan ke mitra + unduh Excel.
+        - **📈 Occupancy Rate** — persentase lahan tersewa per SPBU dan per wilayah.
         - **🏞️ Lahan & Sewa** — occupancy lahan, nilai sewa, kontrak yang segera berakhir.
+        - **💰 Nilai Sewa** — analisis nilai sewa per wilayah, kategori, tipe brand, brand, tren.
+        - **💳 Management Fee** — analisis Nominal Fee per wilayah, kategori, brand, status, tren.
         - **⏱️ Lead Time** — funnel tahapan, aging pending, SLA, dan prioritas tindak lanjut.
 
         **Sumber data (snapshot {snapshot:%d %B %Y})**

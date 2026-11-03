@@ -186,6 +186,32 @@ with tab_sewa:
         st.subheader("🏷️ Top 10 Brand by Nilai Sewa")
         st.plotly_chart(charts.top_brand_sewa(tampil_s), use_container_width=True)
 
+    kiri, kanan = st.columns(2)
+    with kiri:
+        st.subheader("🏷️ Nilai Sewa per Tipe Brand")
+        st.plotly_chart(
+            charts.pie_nilai(
+                an.sewa_nilai_by(tampil_s, "Jenis Brand"),
+                "Jenis Brand",
+                "Nilai Sewa (Rp)",
+                "Nilai sewa (Rp)",
+            ),
+            use_container_width=True,
+        )
+    with kanan:
+        st.subheader("🧩 Top 10 Sub Kategori")
+        st.plotly_chart(
+            charts.bar_nilai(
+                an.sewa_nilai_by(tampil_s, "Sub Kategori"),
+                "Sub Kategori",
+                "Nilai Sewa (Rp)",
+                "Nilai sewa (Rp)",
+                top_n=10,
+                warna="#39c5cf",
+            ),
+            use_container_width=True,
+        )
+
     st.subheader("📑 Detail Kontrak Sewa")
     kolom_s = [
         "No. SPBU",

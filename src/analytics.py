@@ -266,7 +266,11 @@ def prepare_sewa(sewa: pd.DataFrame, izin: pd.DataFrame, snapshot: pd.Timestamp)
     df["Kategori Utama"] = (
         df["Kategori/Sub Kategori"].astype("string").str.split("/").str[0].str.strip()
     )
+    df["Sub Kategori"] = (
+        df["Kategori/Sub Kategori"].astype("string").str.split("/").str[1].str.strip()
+    )
     df["Berakhir Bulan"] = df["Tanggal Berakhir Sewa"].dt.to_period("M").dt.to_timestamp()
+    df["Bulan Mulai"] = df["Tanggal Mulai Sewa"].dt.to_period("M").dt.to_timestamp()
     return df
 
 
@@ -389,3 +393,203 @@ def ketersediaan_kpi(df: pd.DataFrame) -> dict:
         "rerata_volume": float(spbu["Total"].mean()) if len(spbu) else 0.0,
         "pic_lengkap": float(spbu["PIC Lengkap"].mean() * 100) if len(spbu) else 0.0,
     }
+
+
+# --- Occupancy rate ----------------------------------------------------------
+def occupancy_per_spbu(lahan: pd.DataFrame) -> pd.DataFrame:
+    """Occupancy per SPBU = lahan tersewa / (tersewa + tersedia)."""
+    grouped = (
+        lahan.groupby("No. SPBU", as_index=False)
+        .agg(
+            Region=("Region", "first"),
+            Provinsi=("Provinsi", "first"),
+            **{"Kab./Kota": ("Kab./Kota", "first")},
+            Tersewa=("Tersewa", "sum"),
+            Tersedia=("Tersedia", "sum"),
+        )
+    )
+    grouped["Total Lahan"] = grouped["Tersewa"] + grouped["Tersedia"]
+    grouped = grouped[grouped["Total Lahan"] > 0].copy()
+    grouped["Occupancy (%)"] = grouped["Tersewa"] / grouped["Total Lahan"] * 100
+    return grouped.reset_index(drop=True)
+
+
+def occupancy_by(occ: pd.DataFrame, level: str) -> pd.DataFrame:
+    grouped = (
+        occ.groupby(level, as_index=False)
+        .agg(
+            **{
+                "Jumlah SPBU": ("No. SPBU", "nunique"),
+                "Tersewa": ("Tersewa", "sum"),
+                "Tersedia": ("Tersedia", "sum"),
+                "Total Lahan": ("Total Lahan", "sum"),
+                "Rata-rata Occupancy": ("Occupancy (%)", "mean"),
+                "SPBU Penuh": ("Occupancy (%)", lambda s: int((s >= 99.999).sum())),
+            }
+        )
+    )
+    grouped["Occupancy (%)"] = grouped["Tersewa"] / grouped["Total Lahan"].replace(0, np.nan) * 100
+    grouped["% SPBU Penuh"] = (
+        grouped["SPBU Penuh"] / grouped["Jumlah SPBU"].replace(0, np.nan) * 100
+    )
+    return grouped.sort_values("Occupancy (%)", ascending=False)
+
+
+OCCUPANCY_BUCKETS = ["0–20", "20–40", "40–60", "60–80", "80–100"]
+
+
+def occupancy_bucket(df: pd.DataFrame) -> pd.Series:
+    return pd.cut(
+        df["Occupancy (%)"],
+        bins=[-0.01, 20, 40, 60, 80, 100],
+        labels=OCCUPANCY_BUCKETS,
+        include_lowest=True,
+    )
+
+
+def occupancy_distribution(occ: pd.DataFrame) -> pd.DataFrame:
+    kelompok = occupancy_bucket(occ)
+    hasil = kelompok.value_counts().reindex(OCCUPANCY_BUCKETS, fill_value=0)
+    return hasil.rename_axis("Rentang Occupancy (%)").reset_index(name="Jumlah SPBU")
+
+
+def occupancy_heatmap(occ: pd.DataFrame, level: str = "Region") -> pd.DataFrame:
+    data = occ.copy()
+    data["Rentang"] = occupancy_bucket(data)
+    pivot = pd.crosstab(data[level], data["Rentang"])
+    for kolom in OCCUPANCY_BUCKETS:
+        if kolom not in pivot.columns:
+            pivot[kolom] = 0
+    return pivot[OCCUPANCY_BUCKETS]
+
+
+def occupancy_status(occ: pd.DataFrame) -> pd.DataFrame:
+    penuh = int((occ["Occupancy (%)"] >= 99.999).sum())
+    kosong = int((occ["Occupancy (%)"] <= 0.001).sum())
+    sebagian = len(occ) - penuh - kosong
+    return pd.DataFrame(
+        {
+            "Status": ["Penuh (100%)", "Sebagian", "Kosong (0%)"],
+            "Jumlah SPBU": [penuh, sebagian, kosong],
+        }
+    )
+
+
+def occupancy_top(occ: pd.DataFrame, top_n: int = 10, terendah: bool = False) -> pd.DataFrame:
+    data = occ.sort_values("Occupancy (%)", ascending=terendah).head(top_n)
+    data = data.copy()
+    data["Label"] = data["No. SPBU"].astype(str) + " · " + data["Kab./Kota"].astype(str)
+    return data
+
+
+# --- Nilai sewa lahan --------------------------------------------------------
+def sewa_nilai_by(sewa: pd.DataFrame, dimensi: str) -> pd.DataFrame:
+    grouped = (
+        sewa.groupby(dimensi, as_index=False)
+        .agg(
+            **{
+                "Nilai Sewa (Rp)": ("Total Harga Sewa", "sum"),
+                "Kontrak": ("Total Harga Sewa", "size"),
+                "Rata-rata (Rp)": ("Total Harga Sewa", "mean"),
+                "Median (Rp)": ("Total Harga Sewa", "median"),
+            }
+        )
+    )
+    return grouped.sort_values("Nilai Sewa (Rp)", ascending=False)
+
+
+def sewa_nilai_tren(sewa: pd.DataFrame) -> pd.DataFrame:
+    data = sewa.dropna(subset=["Bulan Mulai"])
+    grouped = (
+        data.groupby("Bulan Mulai", as_index=False)
+        .agg(**{"Nilai Sewa (Rp)": ("Total Harga Sewa", "sum"), "Kontrak": ("Total Harga Sewa", "size")})
+    )
+    return grouped.sort_values("Bulan Mulai")
+
+
+def sewa_nilai_heatmap(sewa: pd.DataFrame) -> pd.DataFrame:
+    pivot = sewa.pivot_table(
+        index="Kategori Utama",
+        columns="Jenis Brand",
+        values="Total Harga Sewa",
+        aggfunc="sum",
+        fill_value=0,
+    )
+    urutan = pivot.sum(axis=1).sort_values(ascending=False).index
+    return pivot.loc[urutan]
+
+
+def sewa_nilai_spbu(sewa: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
+    grouped = (
+        sewa.groupby("No. SPBU", as_index=False)
+        .agg(**{"Nilai Sewa (Rp)": ("Total Harga Sewa", "sum"), "Kontrak": ("Total Harga Sewa", "size")})
+    )
+    return grouped.nlargest(top_n, "Nilai Sewa (Rp)")
+
+
+# --- Management fee ----------------------------------------------------------
+def prepare_fee(izin: pd.DataFrame) -> pd.DataFrame:
+    df = izin.copy()
+    df["Fee Ratio (%)"] = (
+        df["Nominal Fee"] / df["Total Harga Sewa"].replace(0, np.nan) * 100
+    )
+    return df
+
+
+def fee_by(df: pd.DataFrame, dimensi: str) -> pd.DataFrame:
+    grouped = (
+        df.groupby(dimensi, as_index=False)
+        .agg(
+            **{
+                "Total Fee (Rp)": ("Nominal Fee", "sum"),
+                "Transaksi Ber-fee": ("Nominal Fee", lambda s: int((s > 0).sum())),
+                "Rata-rata Fee (Rp)": ("Nominal Fee", lambda s: s[s > 0].mean()),
+                "Median Fee (Rp)": ("Nominal Fee", lambda s: s[s > 0].median()),
+            }
+        )
+    )
+    return grouped.sort_values("Total Fee (Rp)", ascending=False)
+
+
+def fee_tren(df: pd.DataFrame) -> pd.DataFrame:
+    data = df.dropna(subset=["Periode"])
+    grouped = (
+        data.groupby("Periode", as_index=False)
+        .agg(**{"Total Fee (Rp)": ("Nominal Fee", "sum"), "Transaksi Ber-fee": ("Nominal Fee", lambda s: int((s > 0).sum()))})
+    )
+    return grouped.sort_values("Periode")
+
+
+FEE_BUCKETS = ["<1 jt", "1–5 jt", "5–10 jt", "10–25 jt", "25–50 jt", "50–100 jt", ">100 jt"]
+
+
+def fee_distribution(df: pd.DataFrame) -> pd.DataFrame:
+    data = df[df["Nominal Fee"] > 0]
+    kelompok = pd.cut(
+        data["Nominal Fee"],
+        bins=[0, 1_000_000, 5_000_000, 10_000_000, 25_000_000, 50_000_000, 100_000_000, np.inf],
+        labels=FEE_BUCKETS,
+        include_lowest=True,
+    )
+    hasil = kelompok.value_counts().reindex(FEE_BUCKETS, fill_value=0)
+    return hasil.rename_axis("Rentang Fee").reset_index(name="Jumlah Transaksi")
+
+
+def fee_heatmap(df: pd.DataFrame) -> pd.DataFrame:
+    pivot = df.pivot_table(
+        index="Kategori",
+        columns="Tipe Brand",
+        values="Nominal Fee",
+        aggfunc="sum",
+        fill_value=0,
+    )
+    urutan = pivot.sum(axis=1).sort_values(ascending=False).index
+    return pivot.loc[urutan]
+
+
+def fee_spbu(df: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
+    grouped = (
+        df.groupby("No. SPBU", as_index=False)
+        .agg(**{"Total Fee (Rp)": ("Nominal Fee", "sum"), "Transaksi Ber-fee": ("Nominal Fee", lambda s: int((s > 0).sum()))})
+    )
+    return grouped.nlargest(top_n, "Total Fee (Rp)")
