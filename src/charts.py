@@ -740,3 +740,120 @@ def bar_jumlah(data: pd.DataFrame, x: str, y: str, label: str, warna: str | None
     )
     fig.update_traces(textposition="outside", cliponaxis=False)
     return _finalize(fig, height=340, showlegend=False)
+
+
+# --- LOKASI Intelligence -----------------------------------------------------
+def bvt_map(df: pd.DataFrame) -> go.Figure:
+    fig = px.scatter_mapbox(
+        df,
+        lat="Latitude",
+        lon="Longitude",
+        color="Kelas BVT",
+        color_discrete_map={
+            "Blue Ocean": "#3fb950",
+            "Peluang Campuran": "#d29922",
+            "Red Ocean": "#f85149",
+            "Tidak ada data BVT": "#8b949e",
+            "Tidak diketahui": "#8b949e",
+        },
+        hover_name="No. SPBU",
+        hover_data={
+            "Nama SPBU": True,
+            "Kota/Kabupaten": True,
+            "Road Type": True,
+            "Blue Ocean Score (%)": ":.1f",
+            "Red Count": True,
+            "Blue Count": True,
+            "Latitude": False,
+            "Longitude": False,
+        },
+        zoom=3.15,
+        center={"lat": -2.4, "lon": 118.0},
+        mapbox_style="open-street-map",
+        opacity=0.78,
+        height=620,
+        labels={"Kelas BVT": "Kelas"},
+    )
+    fig.update_traces(marker=dict(size=7, opacity=0.8))
+    fig.update_layout(
+        template=PLOTLY_TEMPLATE,
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter, Segoe UI, sans-serif", size=11, color="#c9d1d9"),
+        margin=dict(l=0, r=0, t=0, b=0),
+        legend=dict(orientation="h", yanchor="bottom", y=0.01, x=0.01, bgcolor="rgba(14,17,23,0.75)"),
+    )
+    return fig
+
+
+def bvt_donut(df: pd.DataFrame) -> go.Figure:
+    urutan = ["Blue Ocean", "Peluang Campuran", "Red Ocean", "Tidak ada data BVT"]
+    data = (
+        df["Kelas BVT"]
+        .value_counts()
+        .reindex(urutan, fill_value=0)
+        .rename_axis("Kelas BVT")
+        .reset_index(name="Jumlah")
+    )
+    fig = px.pie(
+        data,
+        names="Kelas BVT",
+        values="Jumlah",
+        hole=0.45,
+        color="Kelas BVT",
+        color_discrete_map={
+            "Blue Ocean": "#3fb950",
+            "Peluang Campuran": "#d29922",
+            "Red Ocean": "#f85149",
+            "Tidak ada data BVT": "#8b949e",
+        },
+    )
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent",
+        hovertemplate="%{label}<br>%{value:,} SPBU<extra></extra>",
+    )
+    return _finalize(fig, height=340)
+
+
+def bvt_provinsi(df: pd.DataFrame, top_n: int = 12) -> go.Figure:
+    total = df["Provinsi"].value_counts().nlargest(top_n).index
+    data = (
+        df[df["Provinsi"].isin(total)]
+        .groupby(["Provinsi", "Kelas BVT"])
+        .size()
+        .reset_index(name="Jumlah")
+    )
+    urutan = total[::-1].tolist()
+    fig = px.bar(
+        data,
+        x="Jumlah",
+        y="Provinsi",
+        orientation="h",
+        color="Kelas BVT",
+        barmode="stack",
+        color_discrete_map={
+            "Blue Ocean": "#3fb950",
+            "Peluang Campuran": "#d29922",
+            "Red Ocean": "#f85149",
+            "Tidak ada data BVT": "#8b949e",
+        },
+        labels={"Provinsi": "", "Jumlah": "Jumlah SPBU"},
+    )
+    fig.update_yaxes(categoryorder="array", categoryarray=urutan)
+    return _finalize(fig, height=max(380, 34 * len(total) + 100))
+
+
+def bar_hitung(data: pd.DataFrame, dimensi: str, nilai: str, label: str, warna: str | None = None) -> go.Figure:
+    tabel = data.sort_values(nilai)
+    fig = px.bar(
+        tabel,
+        x=nilai,
+        y=dimensi,
+        orientation="h",
+        text=nilai,
+        color_discrete_sequence=[warna or PALETTE[0]],
+        labels={dimensi: "", nilai: label},
+    )
+    fig.update_yaxes(categoryorder="total ascending")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    return _finalize(fig, height=max(340, 36 * len(tabel) + 90), showlegend=False)

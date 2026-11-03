@@ -188,6 +188,39 @@ def test_management_fee_page() -> None:
     assert len(app.get("download_button")) >= 1
 
 
+def test_master_data() -> None:
+    from src.master_data import load_bvt, load_spbu_master
+
+    master = load_spbu_master()
+    bvt = load_bvt()
+    assert len(master) > 15_000
+    assert int(master["Reguler"].sum()) == 6_525
+    assert "PIC" not in " ".join(master.columns)
+    assert len(bvt) > 6_500
+    assert bvt["Latitude"].between(-12, 7).all()
+    assert bvt["Longitude"].between(94, 142).all()
+    assert set(bvt["Kelas BVT"]).issubset({"Blue Ocean", "Peluang Campuran", "Red Ocean"})
+    assert bvt["Blue Ocean Score (%)"].between(0, 100).all()
+
+
+def test_lokasi_page() -> None:
+    app = _run("src/pages/lokasi.py")
+    judul = [t.value for t in app.title]
+    assert judul and "LOKASI Intelligence" in judul[0], judul
+    metrics = {m.label: m.value for m in app.metric}
+    for label in ("Total SPBU", "Blue Ocean", "Red Ocean", "Blue Ocean Share"):
+        assert label in metrics, metrics
+    assert metrics["Total SPBU"] == "6.525", metrics
+    assert len(app.get("plotly_chart")) >= 6
+    assert len(app.dataframe) >= 2
+    assert len(app.get("download_button")) >= 1
+
+    region = app.multiselect(key="lok_region")
+    region.select(region.options[0]).run()
+    assert not app.exception
+    assert int(app.metric[0].value.replace(".", "")) < 6_525
+
+
 if __name__ == "__main__":
     for test in (
         test_home,
@@ -201,6 +234,8 @@ if __name__ == "__main__":
         test_occupancy_page,
         test_nilai_sewa_page,
         test_management_fee_page,
+        test_master_data,
+        test_lokasi_page,
     ):
         test()
         print(f"PASS {test.__name__}")

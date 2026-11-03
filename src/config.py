@@ -17,6 +17,8 @@ SEWA_PATH = DATA_DIR / "Pengajuan NFR Sewa Lahan 02-November-2026.xlsx"
 LEADTIME_PATH = DATA_DIR / "Data Lead Time NFR 02112026.xlsx"
 KETERSEDIAAN_PATH = DATA_DIR / "Ketersediaan Lahan NFR - November 2026.xlsx"
 KETERSEDIAAN_SNAPSHOT = "November 2026"
+SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
+BVT_PATH = DATA_DIR / "bvt_spbu.csv"
 
 APP_TITLE = "NFR Analytics Pro"
 APP_ICON = "🚀"

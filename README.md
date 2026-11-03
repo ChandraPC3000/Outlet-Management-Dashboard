@@ -18,6 +18,7 @@ Snapshot data: **2 November 2026** · Ketersediaan lahan: **November 2026**.
 | **📈 Occupancy Rate** | Persentase lahan tersewa per SPBU (tersewa ÷ (tersewa + tersedia)), gauge, sebaran SPBU penuh/sebagian/kosong, occupancy per Region/Provinsi/Kab-Kota, heatmap, scatter, top/bottom SPBU |
 | **💰 Nilai Sewa** | Nilai sewa per Region/Provinsi/Kab-Kota, kategori, sub kategori, tipe brand, brand, status, top SPBU, heatmap kategori × tipe brand, dan tren bulanan |
 | **💳 Management Fee** | `Nominal Fee` per wilayah, kategori, tipe brand, brand, status, top SPBU, heatmap, tren bulanan, sebaran nilai fee, dan rasio fee terhadap harga sewa |
+| **🗺️ LOKASI Intelligence** | Peta GIS SPBU + BVT Red/Blue Ocean, skor peluang, kategori pesaing/peluang, filter Reguler/Non-Reguler, tipe SPBU, wilayah, road type, SES, dan tautan Google Maps |
 | **🏞️ Lahan & Sewa** | Occupancy lahan per region, status approval, top tenant by nilai sewa, sebaran luas vs harga, kontrak sewa berjalan, jadwal berakhir 12 bulan, nilai sewa per kategori/tipe brand |
 | **⏱️ Lead Time** | Funnel tahapan, aging pending per tahap/status, kepatuhan SLA (`Batas`), pending per region, daftar pending terlama, unduh CSV |
 
@@ -32,6 +33,8 @@ File yang dibaca aplikasi ada di folder `Data/`:
 | `Pengajuan NFR Sewa Lahan 02-November-2026.xlsx` | 26.704 | 21.091 kontrak berjalan, status izin, periode & nilai sewa |
 | `Data Lead Time NFR 02112026.xlsx` | 10 sheet | Resume, funnel, aging per tahap/status, detail pending, dataset turunan, metodologi |
 | `Ketersediaan Lahan NFR - November 2026.xlsx` | 5.732 | Lahan tersedia + PIC (sanitized, tanpa kolom classified) |
+| `spbu_master.csv` | 15.103 | Master SPBU dari List Lembaga Penyalur: jenis lembaga, tipe SPBU, wilayah, koordinat (tanpa PIC) |
+| `bvt_spbu.csv` | 6.787 | BVT 34 provinsi: Red/Blue Ocean, skor, kelas, road type, SES, koordinat |
 
 ## Occupancy rate
 
@@ -71,6 +74,43 @@ SPBU, heatmap kategori × tipe brand, tren bulanan, serta sebaran nilai fee.
 - `Fee Ratio (%) = Nominal Fee ÷ Total Harga Sewa × 100`; hanya indikasi karena
   rasio bisa ekstrem saat harga sewa 0.
 
+## LOKASI Intelligence, master & BVT
+
+Halaman **🗺️ LOKASI Intelligence** menggabungkan master SPBU, BVT 34 provinsi,
+dan peta.
+
+**Master SPBU** (`spbu_master.csv`) berasal dari *List Lembaga Penyalur
+13 Oktober 2026*:
+- 15.103 SPBU; **6.525 SPBU Reguler**; sisanya PERTASHOP, SPBU Kompak, Mini,
+  Modular, SPBUN, SPBB, AMT, dan SPBU T.
+- `Tipe SPBU` dinormalisasi: COCO, CODO, DODO; varian `CODO I`, `CODO II`,
+  `CODO Lite` dilebur menjadi `CODO`.
+- Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.
+
+**Enrichment otomatis:** semua loader (Izin Prinsip, Master Lahan, Sewa Lahan,
+Ketersediaan Lahan) mengisi kolom kosong/`#N/A`/`-`/`NULL` dari master:
+Provinsi, Kota/Kabupaten, Kecamatan, Desa/Kelurahan, Alamat, Latitude, Longitude,
+Nama SPBU, Jenis Lembaga Penyalur, Tipe SPBU, dan flag Reguler. Nilai yang sudah
+ada tidak ditimpa.
+
+**BVT** (`bvt_spbu.csv`) dari *SPBU_All_34_Provinces_20261016*:
+- 6.787 SPBU, 34 provinsi; Red Ocean 3.176, Blue Ocean 2.517, Peluang Campuran
+  1.094.
+- **Red Ocean** = bisnis sekitar yang sudah jenuh/banyak pesaing; **Blue Ocean**
+  = kategori usaha yang masih minim pesaing.
+- `Blue Ocean Score (%) = Blue Count ÷ (Red Count + Blue Count) × 100`;
+  ≥50 Blue Ocean, 1–49 Peluang Campuran, 0 Red Ocean.
+- Rekomendasi utama untuk mitra adalah **Blue Ocean**; **Red Ocean** tetap
+  disediakan sebagai pilihan praktik lapangan/owner.
+- Cakupan default **Reguler** (6.525 SPBU), bisa diganti **Semua** atau
+  **Non-Reguler**.
+
+**Peta & tilok:** peta memakai OpenStreetMap. Koordinat diambil dari master
+Lembaga Penyalur; jika tidak valid, fallback ke BVT. Kolom Longitude/Latitude
+pada file BVT asli tertukar dan sudah dikoreksi. Setiap SPBU punya tautan
+**Google Maps** (`https://www.google.com/maps?q=lat,lon`) untuk verifikasi.
+Geocoding massal ke Google Maps membutuhkan API key.
+
 ## Ketersediaan lahan untuk mitra
 
 Halaman **🧭 Ketersediaan Lahan** dipakai saat mitra meminta daftar lahan NFR
@@ -106,6 +146,7 @@ src/
 ├── config.py                   # path dataset, kolom wajib, palet warna
 ├── data_loader.py              # load + validasi + cache seluruh dataset
 ├── analytics.py                # lead time, lahan, sewa, ketersediaan, PIC
+├── master_data.py              # master SPBU, BVT, enrichment kolom kosong
 ├── charts.py                   # builder grafik Plotly
 ├── filters.py                  # filter sidebar
 ├── formatting.py               # format rupiah/angka/tanggal
@@ -119,10 +160,12 @@ src/
     ├── lahan_sewa.py
     ├── nilai_sewa.py
     ├── management_fee.py
+    ├── lokasi.py
     └── lead_time.py
 scripts/
 ├── build_lead_time.py          # regenerasi file lead time Excel
-└── build_ketersediaan.py       # sanitasi + gabung PIC ketersediaan lahan
+├── build_ketersediaan.py       # sanitasi + gabung PIC ketersediaan lahan
+└── build_lokasi.py             # master SPBU + dataset BVT
 tests/smoke_test.py             # smoke test AppTest
 Data/                           # dataset yang dipakai aplikasi
 assets/style.css                # tema gelap
@@ -154,9 +197,9 @@ python scripts/build_ketersediaan.py
 python tests/smoke_test.py
 ```
 
-Menjalankan 9 halaman lewat `streamlit.testing.v1.AppTest` (tanpa browser),
-termasuk uji kolom classified tidak bocor, rumus occupancy, dan struktur file
-Excel mitra.
+Menjalankan 10 halaman lewat `streamlit.testing.v1.AppTest` (tanpa browser),
+termasuk uji kolom classified tidak bocor, rumus occupancy, master/BVT, dan
+struktur file Excel mitra.
 
 ## Metodologi lead time
 

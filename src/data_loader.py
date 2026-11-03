@@ -28,6 +28,7 @@ from src.config import (
     SEWA_PATH,
     SEWA_REQUIRED,
 )
+from src.master_data import enrich_with_master
 
 
 class DataLoadError(RuntimeError):
@@ -107,7 +108,7 @@ def load_izin_prinsip(path: str | None = None) -> pd.DataFrame:
         df[col] = df[col].fillna("Tidak Diketahui")
 
     df["Periode"] = df["Tgl Pengajuan"].dt.to_period("M").dt.to_timestamp()
-    return df
+    return enrich_with_master(df)
 
 
 @st.cache_data(show_spinner="Memuat Master Lahan...")
@@ -124,7 +125,7 @@ def load_master_lahan(path: str | None = None) -> pd.DataFrame:
     df["Status Sewa"] = df["Status Sewa"].fillna("Tidak Diketahui")
     df["Status Approval"] = df["Status Approval"].fillna("Tidak Diketahui")
     df["Tenant"] = df["Tenant"].fillna("-")
-    return df
+    return enrich_with_master(df)
 
 
 @st.cache_data(show_spinner="Memuat Pengajuan Sewa Lahan...")
@@ -141,7 +142,7 @@ def load_sewa_lahan(path: str | None = None) -> pd.DataFrame:
     for col in ("Status Sewa", "Status Izin Prinsip"):
         if col in df.columns:
             df[col] = df[col].fillna("Tidak Diketahui")
-    return df
+    return enrich_with_master(df)
 
 
 @st.cache_data(show_spinner="Memuat Ketersediaan Lahan...")
@@ -180,7 +181,7 @@ def load_ketersediaan(path: str | None = None) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].fillna("Tidak diketahui")
 
-    return df
+    return enrich_with_master(df, include_tipe=False)
 
 
 def _load_or_stop(loader, label: str) -> pd.DataFrame:

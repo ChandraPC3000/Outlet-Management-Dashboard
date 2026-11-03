@@ -47,6 +47,9 @@ navigation = st.navigation(
             st.Page("src/pages/nilai_sewa.py", title="Nilai Sewa", icon="💰"),
             st.Page("src/pages/management_fee.py", title="Management Fee", icon="💳"),
         ],
+        "Lokasi & BVT": [
+            st.Page("src/pages/lokasi.py", title="LOKASI Intelligence", icon="🗺️"),
+        ],
         "Eksplorasi": [
             st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
         ],

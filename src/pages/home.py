@@ -87,6 +87,7 @@ with st.expander("ℹ️ Panduan & sumber data", expanded=False):
         - **🏞️ Lahan & Sewa** — occupancy lahan, nilai sewa, kontrak yang segera berakhir.
         - **💰 Nilai Sewa** — analisis nilai sewa per wilayah, kategori, tipe brand, brand, tren.
         - **💳 Management Fee** — analisis Nominal Fee per wilayah, kategori, brand, status, tren.
+        - **🗺️ LOKASI Intelligence** — peta SPBU + BVT Red/Blue Ocean dan tautan Google Maps.
         - **⏱️ Lead Time** — funnel tahapan, aging pending, SLA, dan prioritas tindak lanjut.
 
         **Sumber data (snapshot {snapshot:%d %B %Y})**
