@@ -7,7 +7,12 @@ import re
 import pandas as pd
 import streamlit as st
 
-from src.config import BVT_PATH, SPBU_MASTER_PATH
+from src.config import DATA_DIR
+
+# Tidak bergantung pada konstanta baru di config agar tetap aman saat Streamlit
+# Cloud memakai cache modul lama setelah redeploy.
+SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
+BVT_PATH = DATA_DIR / "bvt_spbu.csv"
 
 EMPTY_TEXT = {
     "",
