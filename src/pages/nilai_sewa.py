@@ -63,13 +63,18 @@ with st.expander("🔎 Filter nilai sewa", expanded=True):
         "Status Sewa", sorted(sewa_semua["Status Sewa"].dropna().unique()), key="ns_status"
     )
 
-    f7, f8 = st.columns([1, 2])
+    f7, f8, f9 = st.columns([1, 1, 2])
     status_izin = f7.multiselect(
         "Status Izin Prinsip",
         sorted(sewa_semua["Status Izin Prinsip"].dropna().unique()),
         key="ns_status_izin",
     )
-    cari = f8.text_input(
+    status_level = f8.multiselect(
+        "Status Level",
+        sorted(sewa_semua["Status Level"].dropna().unique()),
+        key="ns_status_level",
+    )
+    cari = f9.text_input(
         "Cari tenant / brand / No SPBU", placeholder="contoh: Indomaret", key="ns_cari"
     )
 
@@ -96,6 +101,8 @@ if status_sewa:
     tampil = tampil[tampil["Status Sewa"].isin(status_sewa)]
 if status_izin:
     tampil = tampil[tampil["Status Izin Prinsip"].isin(status_izin)]
+if status_level:
+    tampil = tampil[tampil["Status Level"].isin(status_level)]
 if cari.strip():
     kata = cari.strip()
     cocok = tampil["Nama Tenant"].astype("string").str.contains(kata, case=False, na=False, regex=False)

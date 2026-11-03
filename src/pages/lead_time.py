@@ -35,6 +35,14 @@ tahap = f2.multiselect(
 )
 status = f3.multiselect("Status", sorted(ldf["Status"].dropna().unique()), key="lt_status")
 
+f4, f5 = st.columns(2)
+brand = f4.multiselect(
+    "Tipe Brand", sorted(ldf["Tipe Brand"].dropna().unique()), key="lt_brand"
+)
+status_level = f5.multiselect(
+    "Status Level", sorted(ldf["Status Level"].dropna().unique()), key="lt_status_level"
+)
+
 tampil = ldf
 if region:
     tampil = tampil[tampil["Region"].isin(region)]
@@ -42,6 +50,10 @@ if tahap:
     tampil = tampil[tampil["Tahapan"].isin(tahap)]
 if status:
     tampil = tampil[tampil["Status"].isin(status)]
+if brand:
+    tampil = tampil[tampil["Tipe Brand"].isin(brand)]
+if status_level:
+    tampil = tampil[tampil["Status Level"].isin(status_level)]
 
 if tampil.empty:
     st.warning("Tidak ada data yang cocok dengan filter.")

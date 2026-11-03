@@ -33,7 +33,7 @@ File yang dibaca aplikasi ada di folder `Data/`:
 | `Pengajuan NFR Sewa Lahan 02-November-2026.xlsx` | 26.704 | 21.091 kontrak berjalan, status izin, periode & nilai sewa |
 | `Data Lead Time NFR 02112026.xlsx` | 10 sheet | Resume, funnel, aging per tahap/status, detail pending, dataset turunan, metodologi |
 | `Ketersediaan Lahan NFR - November 2026.xlsx` | 5.732 | Lahan tersedia + PIC (sanitized, tanpa kolom classified) |
-| `spbu_master.csv` | 15.103 | Master SPBU dari List Lembaga Penyalur: jenis lembaga, tipe SPBU, wilayah, koordinat (tanpa PIC) |
+| `spbu_master.csv` | 15.103 | Master SPBU dari List Lembaga Penyalur + Status Level DDMS: jenis lembaga, tipe SPBU, wilayah, koordinat (tanpa PIC) |
 | `bvt_spbu.csv` | 6.787 | BVT 34 provinsi: Red/Blue Ocean, skor, kelas, road type, SES, koordinat |
 
 ## Occupancy rate
@@ -91,6 +91,20 @@ dan peta.
 - `Tipe SPBU` dinormalisasi: COCO, CODO, DODO; varian `CODO I`, `CODO II`,
   `CODO Lite` dilebur menjadi `CODO`.
 - Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.
+
+**Filter Status Level & Tipe Brand** ada di seluruh halaman analisis:
+
+- **Status Level** diambil dari `datatarikanmasterddms_terupdate` karena kolom
+  `Status Level` di List Lembaga Penyalur seluruhnya `-`. Nilai yang dipakai:
+  Pasti Pas, Diamond, Type A, Type B, Non Standard.
+- **Tipe Brand** (Nasional, Lokal, UMKM, Internasional, Pameran) tidak tersedia
+  di List maupun DDMS, sehingga diambil dari kolom `Tipe Brand` pada Izin
+  Prinsip dan `Jenis Brand` pada Sewa Lahan.
+- Pada halaman level SPBU (Occupancy, Ketersediaan Lahan, Master Lahan, LOKASI
+  Intelligence, Director Summary), filter **Tipe Brand** berarti “SPBU yang
+  memiliki tenant dengan tipe brand tersebut”.
+- Pada halaman transaksi (Data Explorer, Management Fee, Nilai Sewa, Lead Time),
+  filter Tipe Brand memfilter baris transaksi secara langsung.
 
 **Enrichment otomatis:** semua loader (Izin Prinsip, Master Lahan, Sewa Lahan,
 Ketersediaan Lahan) mengisi kolom kosong/`#N/A`/`-`/`NULL` dari master:
@@ -198,6 +212,10 @@ python scripts/build_ketersediaan.py
 `build_ketersediaan.py` membutuhkan dua file mentah lokal (tidak di-commit):
 `Ketersediaan Lahan NFR - November 2026.xlsx` dan `List Lembaga Penyalur
 13 Oktober 2026.xlsx`. Output-nya adalah versi sanitized di `Data/`.
+
+`build_lokasi.py` membutuhkan `List Lembaga Penyalur 13 Oktober 2026.xlsx`,
+`SPBU_All_34_Provinces_20261016.xlsx`, dan `datatarikanmasterddms_terupdate.xlsx`
+(untuk Status Level), lalu menulis `spbu_master.csv` + `bvt_spbu.csv`.
 
 ### Smoke test
 

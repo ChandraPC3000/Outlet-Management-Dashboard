@@ -50,7 +50,7 @@ def load_spbu_master() -> pd.DataFrame:
     df["Latitude"] = pd.to_numeric(df["Latitude"], errors="coerce")
     df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
     df["Reguler"] = df["Reguler"].astype(str).str.lower().isin(("true", "1", "yes"))
-    for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Status Operasi"):
+    for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Status Operasi", "Status Level"):
         if kolom in df.columns:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
     return df.reset_index(drop=True)
@@ -64,7 +64,7 @@ def load_bvt() -> pd.DataFrame:
     for kolom in ("Latitude", "Longitude", "Red Count", "Blue Count", "Blue Ocean Score (%)"):
         df[kolom] = pd.to_numeric(df[kolom], errors="coerce")
     df["Reguler"] = df["Reguler"].astype(str).str.lower().isin(("true", "1", "yes"))
-    for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Road Type", "SES", "Red Ocean", "Blue Ocean", "Kelas BVT", "Sumber Tilok"):
+    for kolom in ("Nama SPBU", "Jenis Lembaga Penyalur", "Tipe SPBU", "Provinsi", "Kota/Kabupaten", "Kecamatan", "Desa/Kelurahan", "Alamat", "Road Type", "SES", "Red Ocean", "Blue Ocean", "Kelas BVT", "Sumber Tilok", "Status Level"):
         if kolom in df.columns:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
     return df.reset_index(drop=True)
@@ -112,7 +112,10 @@ def enrich_with_master(df: pd.DataFrame, include_tipe: bool = True) -> pd.DataFr
     for target, sumber in (
         ("Nama SPBU", "m_Nama SPBU"),
         ("Jenis Lembaga Penyalur", "m_Jenis Lembaga Penyalur"),
+        ("Status Level", "m_Status Level"),
     ):
+        if sumber not in hasil.columns:
+            continue
         if target not in hasil.columns:
             hasil[target] = hasil[sumber]
         else:

@@ -9,6 +9,7 @@ from src import charts
 from src.data_loader import load_all
 from src.filters import SPBU_COLUMN, spbu_selector
 from src.formatting import format_angka, format_hari, format_rupiah, format_tanggal
+from src.spbu_universe import brand_types, spbu_ids_for_brands
 
 izin, lahan_mentah, sewa_mentah = load_all()
 snapshot = an.snapshot_date(izin)
@@ -19,7 +20,27 @@ sewa = an.prepare_sewa(sewa_mentah, izin, snapshot)
 st.title("📊 Director Summary")
 st.caption("Pilih nomor SPBU di panel filter untuk melihat analisis outlet secara menyeluruh.")
 
-selected = spbu_selector(izin)
+with st.sidebar:
+    st.header("🎛️ Filter Panel")
+    status_level = st.multiselect(
+        "Status Level",
+        sorted(izin["Status Level"].dropna().unique()),
+        key="ds_status_level",
+    )
+    brand = st.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key="ds_brand",
+        help="Membatasi pilihan SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
+izin_pilih = izin
+if status_level:
+    izin_pilih = izin_pilih[izin_pilih["Status Level"].isin(status_level)]
+if brand:
+    izin_pilih = izin_pilih[izin_pilih["No. SPBU"].isin(spbu_ids_for_brands(brand))]
+
+selected = spbu_selector(izin_pilih, show_header=False)
 
 if selected is None:
     st.info(
@@ -28,7 +49,7 @@ if selected is None:
     )
     st.subheader("SPBU dengan tenant terbanyak")
     top_spbu = (
-        izin[SPBU_COLUMN]
+        izin_pilih[SPBU_COLUMN]
         .value_counts()
         .head(10)
         .rename_axis("No. SPBU")

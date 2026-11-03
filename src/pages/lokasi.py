@@ -12,7 +12,7 @@ from src.data_loader import load_data_or_stop
 from src.formatting import format_angka
 from src.map_lokasi import build_map
 from src.master_data import load_bvt, load_spbu_master, top_kategori
-from src.spbu_universe import load_spbu_universe, universe_ringkasan
+from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin = load_data_or_stop()
 master = load_spbu_master()
@@ -133,6 +133,19 @@ with st.expander("🔎 Filter lokasi & BVT", expanded=True):
         key="lok_kelas",
     )
 
+    f9, f10 = st.columns(2)
+    status_level = f9.multiselect(
+        "Status Level",
+        sorted(bvt_semua["Status Level"].dropna().unique()),
+        key="lok_status_level",
+    )
+    brand = f10.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key="lok_brand",
+        help="Memfilter SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
     cari = st.text_input(
         "Cari No SPBU / nama SPBU / kota / alamat",
         placeholder="contoh: 14233120 atau Banda Aceh",
@@ -158,6 +171,10 @@ if road:
     data = data[data["Road Type"].isin(road)]
 if kelas:
     data = data[data["Kelas BVT"].isin(kelas)]
+if status_level:
+    data = data[data["Status Level"].isin(status_level)]
+if brand:
+    data = data[data["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 if cari.strip():
     kata = cari.strip()
     cocok = data["No. SPBU"].astype("string").str.contains(kata, case=False, na=False, regex=False)

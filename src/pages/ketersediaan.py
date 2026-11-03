@@ -10,7 +10,7 @@ from src.config import KETERSEDIAAN_SNAPSHOT
 from src.data_loader import load_ketersediaan_or_stop
 from src.exports import KOLOM_MITRA, build_ketersediaan_excel
 from src.formatting import format_angka
-from src.spbu_universe import load_spbu_universe, universe_ringkasan
+from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 df_semua = load_ketersediaan_or_stop()
 df = an.prepare_ketersediaan(df_semua)
@@ -77,6 +77,19 @@ with st.expander("🔎 Filter lahan tersedia", expanded=True):
         "Volume minimum (KL/bln)", min_value=0.0, value=0.0, step=1000.0, key="ket_volume"
     )
 
+    f10, f11 = st.columns(2)
+    status_level = f10.multiselect(
+        "Status Level",
+        sorted(df["Status Level"].dropna().unique()),
+        key="ket_status_level",
+    )
+    brand = f11.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key="ket_brand",
+        help="Memfilter SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
 tampil = df.copy()
 if provinsi:
     tampil = tampil[tampil["Provinsi"].isin(provinsi)]
@@ -98,6 +111,10 @@ if hanya_pic:
     tampil = tampil[tampil["PIC Lengkap"]]
 if min_volume > 0:
     tampil = tampil[tampil["Total"].fillna(0) >= min_volume]
+if status_level:
+    tampil = tampil[tampil["Status Level"].isin(status_level)]
+if brand:
+    tampil = tampil[tampil["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
 jumlah_nol = int((tampil["Luas (M2)"] <= 0).sum())
 if tanpa_nol:

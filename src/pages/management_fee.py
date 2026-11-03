@@ -62,19 +62,24 @@ with st.expander("🔎 Filter management fee", expanded=True):
         "Status", sorted(fee_semua["Status"].dropna().unique()), key="mf_status"
     )
 
-    f7, f8 = st.columns([1, 2])
+    f7, f8, f9 = st.columns([1, 1, 2])
     tahapan = f7.multiselect(
         "Tahapan", sorted(fee_semua["Tahapan"].dropna().unique()), key="mf_tahapan"
     )
-    cari = f8.text_input(
+    status_level = f8.multiselect(
+        "Status Level",
+        sorted(fee_semua["Status Level"].dropna().unique()),
+        key="mf_status_level",
+    )
+    cari = f9.text_input(
         "Cari tenant / brand / No SPBU", placeholder="contoh: Alfamart", key="mf_cari"
     )
 
-    f9, f10 = st.columns([1, 2])
-    hanya_fee = f9.checkbox(
+    f10, f11 = st.columns([1, 2])
+    hanya_fee = f10.checkbox(
         "Hanya transaksi ber-fee", value=True, key="mf_hanya_fee"
     )
-    level = f10.radio(
+    level = f11.radio(
         "Agregasi wilayah",
         ["Region", "Provinsi", "Kab./Kota"],
         index=0,
@@ -95,6 +100,8 @@ if tipe_brand:
     dasar = dasar[dasar["Tipe Brand"].isin(tipe_brand)]
 if status:
     dasar = dasar[dasar["Status"].isin(status)]
+if status_level:
+    dasar = dasar[dasar["Status Level"].isin(status_level)]
 if tahapan:
     dasar = dasar[dasar["Tahapan"].isin(tahapan)]
 if cari.strip():

@@ -11,14 +11,60 @@ SPBU_COLUMN = "No. SPBU"
 SPBU_PLACEHOLDER = "-- Pilih SPBU --"
 
 
+def status_level_filter(df: pd.DataFrame, key: str):
+    """Multiselect Status Level dari master/DDMS."""
+    if "Status Level" not in df.columns:
+        return []
+    opsi = sorted(df["Status Level"].dropna().astype(str).unique().tolist())
+    if not opsi:
+        return []
+    return st.multiselect("Status Level", opsi, key=f"{key}_status_level")
+
+
+def tipe_brand_filter(df: pd.DataFrame, key: str, column: str = "Tipe Brand", label: str = "Tipe Brand"):
+    """Multiselect Tipe Brand langsung dari kolom dataset."""
+    if column not in df.columns:
+        return []
+    opsi = sorted(df[column].dropna().astype(str).unique().tolist())
+    return st.multiselect(label, opsi, key=f"{key}_brand")
+
+
+def spbu_brand_filter(key: str):
+    """Multiselect Tipe Brand berdasarkan tenant yang ada di SPBU."""
+    from src.spbu_universe import brand_types
+
+    return st.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key=f"{key}_brand",
+        help="Memfilter SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
+
+def apply_status_level(df: pd.DataFrame, levels: list[str]) -> pd.DataFrame:
+    if not levels or "Status Level" not in df.columns:
+        return df
+    return df[df["Status Level"].isin(levels)]
+
+
+def apply_spbu_brands(df: pd.DataFrame, brands: list[str]) -> pd.DataFrame:
+    if not brands:
+        return df
+    from src.spbu_universe import spbu_ids_for_brands
+
+    ids = spbu_ids_for_brands(brands)
+    return df[df["No. SPBU"].isin(ids)]
+
+
 def _urut_unik(df: pd.DataFrame, column: str) -> list[str]:
     return sorted(df[column].dropna().astype(str).unique().tolist())
 
 
-def spbu_selector(df: pd.DataFrame, key: str = "spbu") -> str | None:
+def spbu_selector(df: pd.DataFrame, key: str = "spbu", show_header: bool = True) -> str | None:
     """Selectbox No. SPBU dengan pencarian cepat. Mengembalikan None bila kosong."""
     with st.sidebar:
-        st.header("🎛️ Filter Panel")
+        if show_header:
+            st.header("🎛️ Filter Panel")
         keyword = st.text_input(
             "Cari No. SPBU",
             key=f"{key}_search",
@@ -62,6 +108,7 @@ def global_filters(df: pd.DataFrame, key: str = "explorer") -> pd.DataFrame:
             "Kategori", _urut_unik(df, "Kategori"), key=f"{key}_kategori"
         )
         status = st.multiselect("Status", _urut_unik(df, "Status"), key=f"{key}_status")
+        status_level = status_level_filter(df, key)
         tipe_brand = st.multiselect(
             "Tipe Brand", _urut_unik(df, "Tipe Brand"), key=f"{key}_tipe"
         )
@@ -113,6 +160,8 @@ def global_filters(df: pd.DataFrame, key: str = "explorer") -> pd.DataFrame:
         hasil = hasil[hasil["Kategori"].isin(kategori)]
     if status:
         hasil = hasil[hasil["Status"].isin(status)]
+    if status_level:
+        hasil = apply_status_level(hasil, status_level)
     if tipe_brand:
         hasil = hasil[hasil["Tipe Brand"].isin(tipe_brand)]
 

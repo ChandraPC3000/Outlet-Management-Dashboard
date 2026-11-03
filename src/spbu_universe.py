@@ -23,6 +23,7 @@ KOLOM = [
     "Kota/Kabupaten",
     "Latitude",
     "Longitude",
+    "Status Level",
     "Sumber",
 ]
 
@@ -76,6 +77,7 @@ def load_spbu_universe() -> pd.DataFrame:
                 "Latitude": pd.NA,
                 "Longitude": pd.NA,
                 "Sumber": "Existing",
+                "Status Level": "Tidak diketahui",
             }
         )
         info = tambahan.merge(
@@ -102,3 +104,33 @@ def universe_ringkasan(universe: pd.DataFrame) -> dict:
         "reguler": reguler,
         "existing_ekstra": total - reguler,
     }
+
+
+@st.cache_data(show_spinner=False)
+def load_spbu_brand_types() -> pd.DataFrame:
+    """Peta SPBU -> tipe brand tenant (Nasional/Lokal/UMKM/Internasional/Pameran)."""
+    izin = load_izin_prinsip()[["No. SPBU", "Tipe Brand"]].rename(
+        columns={"Tipe Brand": "Tipe Brand"}
+    )
+    sewa = load_sewa_lahan()[["No. SPBU", "Jenis Brand"]].rename(
+        columns={"Jenis Brand": "Tipe Brand"}
+    )
+    data = pd.concat([izin, sewa], ignore_index=True)
+    data["No. SPBU"] = data["No. SPBU"].astype("string").str.strip()
+    data["Tipe Brand"] = data["Tipe Brand"].astype("string").str.strip()
+    data = data.dropna(subset=["No. SPBU", "Tipe Brand"])
+    data = data[data["Tipe Brand"] != ""].drop_duplicates()
+    return data.reset_index(drop=True)
+
+
+def brand_types() -> list[str]:
+    data = load_spbu_brand_types()
+    return sorted(data["Tipe Brand"].unique().tolist())
+
+
+def spbu_ids_for_brands(brands: list[str]) -> set[str]:
+    if not brands:
+        return set()
+    data = load_spbu_brand_types()
+    return set(data.loc[data["Tipe Brand"].isin(brands), "No. SPBU"].unique())
+

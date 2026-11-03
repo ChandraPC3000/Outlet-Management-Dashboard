@@ -8,7 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
-from src.spbu_universe import load_spbu_universe, universe_ringkasan
+from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin, lahan_mentah, sewa_mentah = load_all()
 snapshot = an.snapshot_date(izin)
@@ -40,6 +40,19 @@ with tab_lahan:
         key="lahan_approval",
     )
 
+    f4, f5 = st.columns(2)
+    status_level = f4.multiselect(
+        "Status Level",
+        sorted(lahan["Status Level"].dropna().unique()),
+        key="lahan_status_level",
+    )
+    brand = f5.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key="lahan_brand",
+        help="Memfilter SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
     tampil = lahan
     if region:
         tampil = tampil[tampil["Region"].isin(region)]
@@ -47,6 +60,10 @@ with tab_lahan:
         tampil = tampil[tampil["Status Sewa"].isin(status_sewa)]
     if approval:
         tampil = tampil[tampil["Status Approval"].isin(approval)]
+    if status_level:
+        tampil = tampil[tampil["Status Level"].isin(status_level)]
+    if brand:
+        tampil = tampil[tampil["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
     if tampil.empty:
         st.warning("Tidak ada lahan yang cocok dengan filter.")
@@ -148,6 +165,18 @@ with tab_sewa:
         key="sewa_kategori",
     )
 
+    f5, f6 = st.columns(2)
+    status_level_s = f5.multiselect(
+        "Status Level",
+        sorted(sewa["Status Level"].dropna().unique()),
+        key="sewa_status_level",
+    )
+    brand_s = f6.multiselect(
+        "Tipe Brand",
+        sorted(sewa["Jenis Brand"].dropna().unique()),
+        key="sewa_brand",
+    )
+
     tampil_s = sewa
     if region_s:
         tampil_s = tampil_s[tampil_s["Region"].isin(region_s)]
@@ -157,6 +186,10 @@ with tab_sewa:
         tampil_s = tampil_s[tampil_s["Status Izin Prinsip"].isin(izin_s)]
     if kategori_s:
         tampil_s = tampil_s[tampil_s["Kategori Utama"].isin(kategori_s)]
+    if status_level_s:
+        tampil_s = tampil_s[tampil_s["Status Level"].isin(status_level_s)]
+    if brand_s:
+        tampil_s = tampil_s[tampil_s["Jenis Brand"].isin(brand_s)]
 
     if tampil_s.empty:
         st.warning("Tidak ada kontrak sewa yang cocok dengan filter.")

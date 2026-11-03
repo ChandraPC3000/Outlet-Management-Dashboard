@@ -8,7 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop, load_lahan_or_stop
 from src.formatting import format_angka
-from src.spbu_universe import load_spbu_universe, universe_ringkasan
+from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin = load_data_or_stop()
 lahan = an.prepare_lahan(load_lahan_or_stop(), izin)
@@ -69,6 +69,19 @@ with st.expander("🔎 Filter wilayah & tampilan", expanded=True):
         key="occ_min_total",
     )
 
+    f6, f7 = st.columns(2)
+    status_level = f6.multiselect(
+        "Status Level",
+        sorted(occ_semua["Status Level"].dropna().unique()),
+        key="occ_status_level",
+    )
+    brand = f7.multiselect(
+        "Tipe Brand (tenant SPBU)",
+        brand_types(),
+        key="occ_brand",
+        help="Memfilter SPBU yang memiliki tenant dengan tipe brand tersebut.",
+    )
+
 occ = occ_semua
 if region:
     occ = occ[occ["Region"].isin(region)]
@@ -76,6 +89,10 @@ if provinsi:
     occ = occ[occ["Provinsi"].isin(provinsi)]
 if kota:
     occ = occ[occ["Kab./Kota"].isin(kota)]
+if status_level:
+    occ = occ[occ["Status Level"].isin(status_level)]
+if brand:
+    occ = occ[occ["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
 if occ.empty:
     st.warning("Tidak ada SPBU yang cocok dengan filter wilayah.")

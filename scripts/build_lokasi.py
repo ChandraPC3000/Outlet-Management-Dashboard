@@ -25,6 +25,7 @@ import pandas as pd  # noqa: E402
 
 RAW_MASTER = Path(r"F:/List Lembaga Penyalur 13 Oktober 2026.xlsx")
 RAW_BVT = Path(r"F:/SPBU_All_34_Provinces_20261016.xlsx")
+RAW_DDMS = Path(r"F:/datatarikanmasterddms_terupdate.xlsx")
 OUT_MASTER = ROOT / "Data" / "spbu_master.csv"
 OUT_BVT = ROOT / "Data" / "bvt_spbu.csv"
 
@@ -104,6 +105,21 @@ def main() -> tuple[Path, Path]:
     master["Ownership"] = master["Ownership"].fillna("Tidak diketahui")
     master["Status Operasi"] = master["Status Operasi"].fillna("Tidak diketahui")
 
+    # Status Level: di List semua "-", fallback ke DDMS.
+    if RAW_DDMS.exists():
+        ddms = pd.read_excel(RAW_DDMS, engine="openpyxl")
+        ddms.columns = [str(c).strip() for c in ddms.columns]
+        ddms["No. SPBU"] = ddms["AgenNo"].map(norm_id)
+        ddms["Status Level"] = ddms["StatusLevel"].fillna("Tidak diketahui")
+        ddms = ddms.dropna(subset=["No. SPBU"]).drop_duplicates("No. SPBU")
+        master = master.drop(columns=["Status Level"], errors="ignore")
+        master = master.merge(
+            ddms[["No. SPBU", "Status Level"]], on="No. SPBU", how="left"
+        )
+        master["Status Level"] = master["Status Level"].fillna("Tidak diketahui")
+    else:
+        master["Status Level"] = "Tidak diketahui"
+
     master["Latitude"] = master["Koordinat Y"].map(clean_lat)
     master["Longitude"] = master["Koordinat X"].map(clean_lon)
     master["Sumber Tilok"] = np.where(
@@ -159,6 +175,7 @@ def main() -> tuple[Path, Path]:
                 "Kecamatan",
                 "Kelurahan",
                 "Alamat",
+                "Status Level",
             ]
         ]
         .add_prefix("m_")
@@ -187,6 +204,7 @@ def main() -> tuple[Path, Path]:
     bvt["Jenis Lembaga Penyalur"] = bvt["m_Jenis Lembaga Penyalur"].fillna("Tidak diketahui")
     bvt["Tipe SPBU"] = bvt["m_Tipe SPBU"].fillna("Tidak diketahui")
     bvt["Reguler"] = bvt["m_Reguler"].astype("boolean").fillna(False).astype(bool)
+    bvt["Status Level"] = bvt["m_Status Level"].fillna("Tidak diketahui")
     bvt["Google Maps"] = [maps_link(lat, lon) for lat, lon in zip(bvt["Latitude"], bvt["Longitude"])]
     bvt["Red Ocean"] = bvt["Red Ocean"].fillna("-")
     bvt["Blue Ocean"] = bvt["Blue Ocean"].fillna("-")
@@ -223,6 +241,7 @@ def main() -> tuple[Path, Path]:
             "Longitude",
             "Sumber Tilok",
             "Status Operasi",
+            "Status Level",
             "Google Maps",
         ]
     ].rename(columns={"Kelurahan": "Desa/Kelurahan"})
@@ -251,6 +270,7 @@ def main() -> tuple[Path, Path]:
             "Blue Ocean Score (%)",
             "Kelas BVT",
             "Google Maps",
+            "Status Level",
         ]
     ].rename(columns={"Kelurahan": "Desa/Kelurahan"})
 
