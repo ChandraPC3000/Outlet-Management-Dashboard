@@ -28,7 +28,7 @@ EMPTY_TEXT = {
 }
 
 KLAS_BVT_WARNA = {
-    "Blue Ocean": "#3fb950",
+    "Blue Ocean": "#2f81f7",
     "Peluang Campuran": "#d29922",
     "Red Ocean": "#f85149",
 }

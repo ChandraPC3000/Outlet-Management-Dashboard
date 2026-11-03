@@ -750,7 +750,7 @@ def bvt_map(df: pd.DataFrame) -> go.Figure:
         lon="Longitude",
         color="Kelas BVT",
         color_discrete_map={
-            "Blue Ocean": "#3fb950",
+            "Blue Ocean": "#2f81f7",
             "Peluang Campuran": "#d29922",
             "Red Ocean": "#f85149",
             "Tidak ada data BVT": "#8b949e",
@@ -801,7 +801,7 @@ def bvt_donut(df: pd.DataFrame) -> go.Figure:
         hole=0.45,
         color="Kelas BVT",
         color_discrete_map={
-            "Blue Ocean": "#3fb950",
+            "Blue Ocean": "#2f81f7",
             "Peluang Campuran": "#d29922",
             "Red Ocean": "#f85149",
             "Tidak ada data BVT": "#8b949e",
@@ -832,7 +832,7 @@ def bvt_provinsi(df: pd.DataFrame, top_n: int = 12) -> go.Figure:
         color="Kelas BVT",
         barmode="stack",
         color_discrete_map={
-            "Blue Ocean": "#3fb950",
+            "Blue Ocean": "#2f81f7",
             "Peluang Campuran": "#d29922",
             "Red Ocean": "#f85149",
             "Tidak ada data BVT": "#8b949e",

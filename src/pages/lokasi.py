@@ -191,7 +191,7 @@ top_blue = top_kategori(data, "Blue Ocean", 8)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.success(
+    st.info(
         f"**Untuk Mitra NFR — rekomendasi Blue Ocean**\n\n"
         f"{format_angka(blue)} SPBU punya peluang usaha dengan pesaing minim "
         f"({format_angka(blue / total * 100, 1)}% dari filter). "
@@ -218,7 +218,7 @@ with tab_peta:
         "untuk verifikasi posisi."
     )
     st.markdown(
-        "🟢 **Blue Ocean** &nbsp;·&nbsp; 🟡 **Peluang Campuran** &nbsp;·&nbsp; "
+        "🔵 **Blue Ocean** &nbsp;·&nbsp; 🟡 **Peluang Campuran** &nbsp;·&nbsp; "
         "🔴 **Red Ocean** &nbsp;·&nbsp; ⚪ **Tanpa data BVT**"
     )
     st_html(
@@ -249,7 +249,7 @@ with tab_bvt:
         st.subheader("🔵 Peluang (Blue Ocean)")
         st.caption("Kategori usaha yang masih minim pesaing dan cocok dikembangkan.")
         st.plotly_chart(
-            charts.bar_hitung(top_blue, "Kategori", "Jumlah", "Jumlah SPBU", warna="#3fb950"),
+            charts.bar_hitung(top_blue, "Kategori", "Jumlah", "Jumlah SPBU", warna="#2f81f7"),
             use_container_width=True,
         )
 

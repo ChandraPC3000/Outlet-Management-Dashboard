@@ -7,6 +7,7 @@ import streamlit as st
 
 from src import analytics as _analytics
 from src import charts as _charts
+from src import map_lokasi as _map_lokasi
 from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH
 from src.data_loader import load_data_or_stop
 
@@ -15,6 +16,7 @@ from src.data_loader import load_data_or_stop
 # (tanpa cache data), jadi aman di-reload setiap run.
 importlib.reload(_analytics)
 importlib.reload(_charts)
+importlib.reload(_map_lokasi)
 
 st.set_page_config(
     page_title=APP_TITLE,

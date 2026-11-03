@@ -9,7 +9,7 @@ import pandas as pd
 from folium.plugins import FastMarkerCluster
 
 WARNA = {
-    "Blue Ocean": "#3fb950",
+    "Blue Ocean": "#2f81f7",
     "Peluang Campuran": "#d29922",
     "Red Ocean": "#f85149",
     "Tidak ada data BVT": "#8b949e",
@@ -18,7 +18,7 @@ WARNA = {
 CALLBACK = """
 function (row) {
     var kelas = row[2];
-    var warna = kelas === 'Blue Ocean' ? '#3fb950'
+    var warna = kelas === 'Blue Ocean' ? '#2f81f7'
         : kelas === 'Peluang Campuran' ? '#d29922'
         : kelas === 'Red Ocean' ? '#f85149'
         : '#8b949e';
