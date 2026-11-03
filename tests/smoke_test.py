@@ -211,7 +211,7 @@ def test_lokasi_page() -> None:
     for label in ("Total SPBU", "Blue Ocean", "Red Ocean", "Blue Ocean Share"):
         assert label in metrics, metrics
     assert metrics["Total SPBU"] == "6.525", metrics
-    assert len(app.get("plotly_chart")) >= 6
+    assert len(app.get("plotly_chart")) >= 5
     assert len(app.dataframe) >= 2
     assert len(app.get("download_button")) >= 1
 

@@ -105,11 +105,11 @@ ada tidak ditimpa.
 - Cakupan default **Reguler** (6.525 SPBU), bisa diganti **Semua** atau
   **Non-Reguler**.
 
-**Peta & tilok:** peta memakai OpenStreetMap. Koordinat diambil dari master
-Lembaga Penyalur; jika tidak valid, fallback ke BVT. Kolom Longitude/Latitude
-pada file BVT asli tertukar dan sudah dikoreksi. Setiap SPBU punya tautan
-**Google Maps** (`https://www.google.com/maps?q=lat,lon`) untuk verifikasi.
-Geocoding massal ke Google Maps membutuhkan API key.
+**Peta & tilok:** peta memakai **Folium + tile OpenStreetMap** (marker cluster).
+Koordinat diambil dari master Lembaga Penyalur; jika tidak valid, fallback ke
+BVT. Kolom Longitude/Latitude pada file BVT asli tertukar dan sudah dikoreksi.
+Setiap SPBU punya tautan **Google Maps** (`https://www.google.com/maps?q=lat,lon`)
+untuk verifikasi. Geocoding massal ke Google Maps membutuhkan API key.
 
 ## Ketersediaan lahan untuk mitra
 

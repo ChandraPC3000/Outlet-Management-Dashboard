@@ -165,3 +165,9 @@ hr {
 [data-testid="stAppDeployButton"] {
     display: none;
 }
+
+/* 15. Peta Folium (components.html) memenuhi lebar container */
+iframe[title="st.iframe"] {
+    width: 100% !important;
+    max-width: 100%;
+}

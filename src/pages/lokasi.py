@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
+from streamlit.components.v1 import html as st_html
 
 from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop
 from src.formatting import format_angka
+from src.map_lokasi import build_map
 from src.master_data import load_bvt, load_spbu_master, top_kategori
 
 izin = load_data_or_stop()
@@ -211,11 +213,20 @@ tab_peta, tab_bvt, tab_tabel = st.tabs(
 with tab_peta:
     st.subheader("🗺️ Peta Lokasi SPBU")
     st.caption(
-        "Warna titik = kelas BVT. Peta memakai OpenStreetMap; koordinat berasal dari "
-        "master Lembaga Penyalur (fallback BVT). Gunakan tautan Google Maps di tabel "
+        "Warna titik = kelas BVT. Peta memakai tile **OpenStreetMap**. Koordinat berasal "
+        "dari master Lembaga Penyalur (fallback BVT); gunakan tautan Google Maps di tabel "
         "untuk verifikasi posisi."
     )
-    st.plotly_chart(charts.bvt_map(data), use_container_width=True)
+    st.markdown(
+        "🟢 **Blue Ocean** &nbsp;·&nbsp; 🟡 **Peluang Campuran** &nbsp;·&nbsp; "
+        "🔴 **Red Ocean** &nbsp;·&nbsp; ⚪ **Tanpa data BVT**"
+    )
+    st_html(
+        build_map(data).get_root().render(),
+        height=620,
+        scrolling=False,
+    )
+    st.caption("Peta: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).")
 
     kiri, kanan = st.columns(2)
     with kiri:
