@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop, load_lahan_or_stop
 from src.formatting import format_angka
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin = load_data_or_stop()
@@ -69,13 +70,18 @@ with st.expander("🔎 Filter wilayah & tampilan", expanded=True):
         key="occ_min_total",
     )
 
-    f6, f7 = st.columns(2)
+    f6, f7, f8 = st.columns(3)
     status_level = f6.multiselect(
         "Status Level",
         sorted(occ_semua["Status Level"].dropna().unique()),
         key="occ_status_level",
     )
-    brand = f7.multiselect(
+    tipe_spbu = f7.multiselect(
+        "Tipe SPBU",
+        sorted(occ_semua["Tipe SPBU"].dropna().unique()),
+        key="occ_tipe_spbu",
+    )
+    brand = f8.multiselect(
         "Tipe Brand (tenant SPBU)",
         brand_types(),
         key="occ_brand",
@@ -91,6 +97,8 @@ if kota:
     occ = occ[occ["Kab./Kota"].isin(kota)]
 if status_level:
     occ = occ[occ["Status Level"].isin(status_level)]
+if tipe_spbu:
+    occ = occ[occ["Tipe SPBU"].isin(tipe_spbu)]
 if brand:
     occ = occ[occ["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
@@ -128,6 +136,10 @@ st.caption(
     f"{format_angka(universe['existing_ekstra'])} existing); occupancy hanya untuk SPBU "
     "yang memiliki data lahan."
 )
+
+st.subheader("🗺️ Peta Occupancy per SPBU")
+st.caption("Warna titik = Tipe SPBU; ukuran/zoom mengikuti filter.")
+render_spbu_map(occ, color_col="Tipe SPBU", region_col="Region", height=480)
 
 st.divider()
 

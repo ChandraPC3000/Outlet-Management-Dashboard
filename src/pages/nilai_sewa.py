@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop, load_sewa_or_stop
 from src.formatting import format_angka, format_rupiah
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
@@ -63,7 +64,7 @@ with st.expander("🔎 Filter nilai sewa", expanded=True):
         "Status Sewa", sorted(sewa_semua["Status Sewa"].dropna().unique()), key="ns_status"
     )
 
-    f7, f8, f9 = st.columns([1, 1, 2])
+    f7, f8, f9, f10 = st.columns([1, 1, 1, 2])
     status_izin = f7.multiselect(
         "Status Izin Prinsip",
         sorted(sewa_semua["Status Izin Prinsip"].dropna().unique()),
@@ -74,7 +75,12 @@ with st.expander("🔎 Filter nilai sewa", expanded=True):
         sorted(sewa_semua["Status Level"].dropna().unique()),
         key="ns_status_level",
     )
-    cari = f9.text_input(
+    tipe_spbu = f9.multiselect(
+        "Tipe SPBU",
+        sorted(sewa_semua["Tipe SPBU"].dropna().unique()),
+        key="ns_tipe_spbu",
+    )
+    cari = f10.text_input(
         "Cari tenant / brand / No SPBU", placeholder="contoh: Indomaret", key="ns_cari"
     )
 
@@ -103,6 +109,8 @@ if status_izin:
     tampil = tampil[tampil["Status Izin Prinsip"].isin(status_izin)]
 if status_level:
     tampil = tampil[tampil["Status Level"].isin(status_level)]
+if tipe_spbu:
+    tampil = tampil[tampil["Tipe SPBU"].isin(tipe_spbu)]
 if cari.strip():
     kata = cari.strip()
     cocok = tampil["Nama Tenant"].astype("string").str.contains(kata, case=False, na=False, regex=False)
@@ -129,6 +137,10 @@ st.caption(
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )
+
+st.subheader("🗺️ Peta Sebaran Nilai Sewa")
+st.caption("Warna titik = Tipe SPBU.")
+render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
 st.divider()
 

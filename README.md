@@ -92,11 +92,13 @@ dan peta.
   `CODO Lite` dilebur menjadi `CODO`.
 - Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.
 
-**Filter Status Level & Tipe Brand** ada di seluruh halaman analisis:
+**Filter Status Level, Tipe SPBU & Tipe Brand** ada di seluruh halaman analisis:
 
 - **Status Level** diambil dari `datatarikanmasterddms_terupdate` karena kolom
   `Status Level` di List Lembaga Penyalur seluruhnya `-`. Nilai yang dipakai:
   Pasti Pas, Diamond, Type A, Type B, Non Standard.
+- **Tipe SPBU** dari `Ownership` di List/DDMS, dinormalisasi menjadi COCO, CODO,
+  DODO, Lainnya. Filter ini juga menjadi warna titik pada semua peta.
 - **Tipe Brand** (Nasional, Lokal, UMKM, Internasional, Pameran) tidak tersedia
   di List maupun DDMS, sehingga diambil dari kolom `Tipe Brand` pada Izin
   Prinsip dan `Jenis Brand` pada Sewa Lahan.
@@ -105,6 +107,12 @@ dan peta.
   memiliki tenant dengan tipe brand tersebut”.
 - Pada halaman transaksi (Data Explorer, Management Fee, Nilai Sewa, Lead Time),
   filter Tipe Brand memfilter baris transaksi secara langsung.
+
+**Peta OpenStreetMap** juga tersedia di seluruh halaman analisis, bukan hanya
+LOKASI Intelligence. Peta generik (`src/map_spbu.py`) memakai zoom behavior yang
+sama: zoom out menampilkan lingkaran region, zoom in menampilkan titik/cluster
+SPBU. Warna titik mengikuti **Tipe SPBU**; titik di-deduplikasi per SPBU dan
+popup menampilkan jumlah baris data, Status Level, dan tautan Google Maps.
 
 **Enrichment otomatis:** semua loader (Izin Prinsip, Master Lahan, Sewa Lahan,
 Ketersediaan Lahan) mengisi kolom kosong/`#N/A`/`-`/`NULL` dari master:
@@ -168,6 +176,7 @@ src/
 ├── data_loader.py              # load + validasi + cache seluruh dataset
 ├── analytics.py                # lead time, lahan, sewa, ketersediaan, PIC
 ├── master_data.py              # master SPBU, BVT, enrichment kolom kosong
+├── map_spbu.py                 # peta OSM generik untuk semua section
 ├── spbu_universe.py            # total SPBU Reguler + existing (6.591)
 ├── charts.py                   # builder grafik Plotly
 ├── filters.py                  # filter sidebar

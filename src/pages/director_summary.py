@@ -9,6 +9,7 @@ from src import charts
 from src.data_loader import load_all
 from src.filters import SPBU_COLUMN, spbu_selector
 from src.formatting import format_angka, format_hari, format_rupiah, format_tanggal
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import brand_types, spbu_ids_for_brands
 
 izin, lahan_mentah, sewa_mentah = load_all()
@@ -27,6 +28,11 @@ with st.sidebar:
         sorted(izin["Status Level"].dropna().unique()),
         key="ds_status_level",
     )
+    tipe_spbu = st.multiselect(
+        "Tipe SPBU",
+        sorted(izin["Tipe SPBU"].dropna().unique()),
+        key="ds_tipe_spbu",
+    )
     brand = st.multiselect(
         "Tipe Brand (tenant SPBU)",
         brand_types(),
@@ -37,6 +43,8 @@ with st.sidebar:
 izin_pilih = izin
 if status_level:
     izin_pilih = izin_pilih[izin_pilih["Status Level"].isin(status_level)]
+if tipe_spbu:
+    izin_pilih = izin_pilih[izin_pilih["Tipe SPBU"].isin(tipe_spbu)]
 if brand:
     izin_pilih = izin_pilih[izin_pilih["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
@@ -70,6 +78,9 @@ st.caption(
     f"{format_angka(len(data))} data izin, {format_angka(len(lahan_spbu))} lahan, "
     f"{format_angka(len(sewa_spbu))} kontrak sewa."
 )
+
+st.subheader("🗺️ Lokasi SPBU")
+render_spbu_map(data, color_col="Tipe SPBU", region_col=None, height=380)
 
 tab_izin, tab_lahan, tab_lead, tab_detail = st.tabs(
     ["📊 Izin Prinsip", "🏞️ Lahan & Sewa", "⏱️ Lead Time", "📑 Detail"]

@@ -409,9 +409,11 @@ def occupancy_per_spbu(lahan: pd.DataFrame) -> pd.DataFrame:
         .agg(
             Region=("Region", "first"),
             Provinsi=("Provinsi", "first"),
-            **{"Kab./Kota": ("Kab./Kota", "first"), "Status Level": ("Status Level", "first")},
+            **{"Kab./Kota": ("Kab./Kota", "first"), "Status Level": ("Status Level", "first"), "Tipe SPBU": ("Tipe SPBU", "first")},
             Tersewa=("Tersewa", "sum"),
             Tersedia=("Tersedia", "sum"),
+            Latitude=("Latitude", "first"),
+            Longitude=("Longitude", "first"),
         )
     )
     grouped["Total Lahan"] = grouped["Tersewa"] + grouped["Tersedia"]

@@ -23,7 +23,9 @@ def test_ketersediaan_data() -> None:
     from src.exports import build_ketersediaan_excel
 
     df = load_ketersediaan()
-    assert not set(CLASSIFIED_LAHAN_COLUMNS) & set(df.columns), "kolom classified bocor"
+    larangan = set(CLASSIFIED_LAHAN_COLUMNS) - {"Tipe SPBU"}
+    assert not larangan & set(df.columns), "kolom classified bocor"
+    assert "Tipe SPBU" in df.columns
     assert {"Kontak PIC SPBU", "No Kantor SPBU"} <= set(df.columns)
     assert len(df) > 5_000
     assert df["Kontak PIC SPBU"].dropna().astype(str).str.isdigit().all()

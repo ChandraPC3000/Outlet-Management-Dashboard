@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop
 from src.formatting import format_angka, format_rupiah
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin = load_data_or_stop()
@@ -62,7 +63,7 @@ with st.expander("🔎 Filter management fee", expanded=True):
         "Status", sorted(fee_semua["Status"].dropna().unique()), key="mf_status"
     )
 
-    f7, f8, f9 = st.columns([1, 1, 2])
+    f7, f8, f9, f10 = st.columns([1, 1, 1, 2])
     tahapan = f7.multiselect(
         "Tahapan", sorted(fee_semua["Tahapan"].dropna().unique()), key="mf_tahapan"
     )
@@ -71,15 +72,20 @@ with st.expander("🔎 Filter management fee", expanded=True):
         sorted(fee_semua["Status Level"].dropna().unique()),
         key="mf_status_level",
     )
-    cari = f9.text_input(
+    tipe_spbu = f9.multiselect(
+        "Tipe SPBU",
+        sorted(fee_semua["Tipe SPBU"].dropna().unique()),
+        key="mf_tipe_spbu",
+    )
+    cari = f10.text_input(
         "Cari tenant / brand / No SPBU", placeholder="contoh: Alfamart", key="mf_cari"
     )
 
-    f10, f11 = st.columns([1, 2])
-    hanya_fee = f10.checkbox(
+    f11, f12 = st.columns([1, 2])
+    hanya_fee = f11.checkbox(
         "Hanya transaksi ber-fee", value=True, key="mf_hanya_fee"
     )
-    level = f11.radio(
+    level = f12.radio(
         "Agregasi wilayah",
         ["Region", "Provinsi", "Kab./Kota"],
         index=0,
@@ -102,6 +108,8 @@ if status:
     dasar = dasar[dasar["Status"].isin(status)]
 if status_level:
     dasar = dasar[dasar["Status Level"].isin(status_level)]
+if tipe_spbu:
+    dasar = dasar[dasar["Tipe SPBU"].isin(tipe_spbu)]
 if tahapan:
     dasar = dasar[dasar["Tahapan"].isin(tahapan)]
 if cari.strip():
@@ -139,6 +147,10 @@ st.caption(
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )
+
+st.subheader("🗺️ Peta Sebaran Management Fee")
+st.caption("Warna titik = Tipe SPBU.")
+render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
 if hanya_fee:
     st.caption(

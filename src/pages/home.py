@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 izin, lahan_mentah, sewa_mentah = load_all()
@@ -83,6 +84,10 @@ with kanan:
     st.plotly_chart(charts.nilai_kategori_sewa(sewa), use_container_width=True)
 
 st.divider()
+
+st.subheader("🗺️ Peta Sebaran SPBU Universe")
+st.caption("Warna titik = Tipe SPBU · zoom out menampilkan region, zoom in menampilkan SPBU.")
+render_spbu_map(universe, color_col="Tipe SPBU", region_col="Region", height=560)
 
 with st.expander("ℹ️ Panduan & sumber data", expanded=False):
     st.markdown(

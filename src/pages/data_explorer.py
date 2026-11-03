@@ -8,6 +8,7 @@ from src import charts
 from src.data_loader import load_data_or_stop
 from src.filters import global_filters
 from src.formatting import format_angka, format_rupiah
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import load_spbu_universe, universe_ringkasan
 
 df = load_data_or_stop()
@@ -45,6 +46,10 @@ st.caption(
     f"{format_angka(universe['existing_ekstra'])} existing). "
     "KPI **SPBU di Data** menghitung SPBU yang punya baris pada hasil filter."
 )
+
+st.subheader("🗺️ Peta SPBU Hasil Filter")
+st.caption("Warna titik = Tipe SPBU.")
+render_spbu_map(filtered, color_col="Tipe SPBU", region_col="Region", height=500)
 
 tab_visual, tab_tabel, tab_ringkasan = st.tabs(
     ["📈 Visualisasi", "📑 Tabel", "🧾 Ringkasan"]

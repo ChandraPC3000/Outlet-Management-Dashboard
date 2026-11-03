@@ -10,11 +10,13 @@ from src.config import KETERSEDIAAN_SNAPSHOT
 from src.data_loader import load_ketersediaan_or_stop
 from src.exports import KOLOM_MITRA, build_ketersediaan_excel
 from src.formatting import format_angka
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 df_semua = load_ketersediaan_or_stop()
 df = an.prepare_ketersediaan(df_semua)
-universe = universe_ringkasan(load_spbu_universe())
+universe_df = load_spbu_universe()
+universe = universe_ringkasan(universe_df)
 
 
 @st.cache_data(show_spinner="Menyiapkan file Excel...")
@@ -77,13 +79,18 @@ with st.expander("🔎 Filter lahan tersedia", expanded=True):
         "Volume minimum (KL/bln)", min_value=0.0, value=0.0, step=1000.0, key="ket_volume"
     )
 
-    f10, f11 = st.columns(2)
+    f10, f11, f12 = st.columns(3)
     status_level = f10.multiselect(
         "Status Level",
         sorted(df["Status Level"].dropna().unique()),
         key="ket_status_level",
     )
-    brand = f11.multiselect(
+    tipe_spbu = f11.multiselect(
+        "Tipe SPBU",
+        sorted(df["Tipe SPBU"].dropna().unique()),
+        key="ket_tipe_spbu",
+    )
+    brand = f12.multiselect(
         "Tipe Brand (tenant SPBU)",
         brand_types(),
         key="ket_brand",
@@ -113,6 +120,8 @@ if min_volume > 0:
     tampil = tampil[tampil["Total"].fillna(0) >= min_volume]
 if status_level:
     tampil = tampil[tampil["Status Level"].isin(status_level)]
+if tipe_spbu:
+    tampil = tampil[tampil["Tipe SPBU"].isin(tipe_spbu)]
 if brand:
     tampil = tampil[tampil["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
@@ -142,6 +151,16 @@ st.caption(
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing); KPI SPBU menghitung outlet "
     "yang memiliki lahan tersedia pada filter ini."
+)
+
+st.subheader("🗺️ Peta Lahan Tersedia per SPBU")
+st.caption("Warna titik = Tipe SPBU.")
+peta_region = universe_df[["No. SPBU", "Region"]].drop_duplicates("No. SPBU")
+render_spbu_map(
+    tampil.merge(peta_region, on="No. SPBU", how="left"),
+    color_col="Tipe SPBU",
+    region_col="Region",
+    height=500,
 )
 
 if tanpa_nol and jumlah_nol:

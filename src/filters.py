@@ -109,6 +109,9 @@ def global_filters(df: pd.DataFrame, key: str = "explorer") -> pd.DataFrame:
         )
         status = st.multiselect("Status", _urut_unik(df, "Status"), key=f"{key}_status")
         status_level = status_level_filter(df, key)
+        tipe_spbu = st.multiselect(
+            "Tipe SPBU", _urut_unik(df, "Tipe SPBU"), key=f"{key}_tipe_spbu"
+        )
         tipe_brand = st.multiselect(
             "Tipe Brand", _urut_unik(df, "Tipe Brand"), key=f"{key}_tipe"
         )
@@ -162,6 +165,8 @@ def global_filters(df: pd.DataFrame, key: str = "explorer") -> pd.DataFrame:
         hasil = hasil[hasil["Status"].isin(status)]
     if status_level:
         hasil = apply_status_level(hasil, status_level)
+    if tipe_spbu:
+        hasil = hasil[hasil["Tipe SPBU"].isin(tipe_spbu)]
     if tipe_brand:
         hasil = hasil[hasil["Tipe Brand"].isin(tipe_brand)]
 

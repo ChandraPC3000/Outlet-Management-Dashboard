@@ -190,7 +190,7 @@ def load_ketersediaan(path: str | None = None) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].fillna("Tidak diketahui")
 
-    df = enrich_with_master(df, include_tipe=False)
+    df = enrich_with_master(df, include_tipe=True)
     if "Status Level" not in df.columns:
         df["Status Level"] = "Tidak diketahui"
     return df

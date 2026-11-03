@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_all
 from src.formatting import format_angka, format_rupiah
+from src.map_spbu import render_spbu_map
 from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin, lahan_mentah, sewa_mentah = load_all()
@@ -40,13 +41,18 @@ with tab_lahan:
         key="lahan_approval",
     )
 
-    f4, f5 = st.columns(2)
+    f4, f5, f6 = st.columns(3)
     status_level = f4.multiselect(
         "Status Level",
         sorted(lahan["Status Level"].dropna().unique()),
         key="lahan_status_level",
     )
-    brand = f5.multiselect(
+    tipe_spbu = f5.multiselect(
+        "Tipe SPBU",
+        sorted(lahan["Tipe SPBU"].dropna().unique()),
+        key="lahan_tipe_spbu",
+    )
+    brand = f6.multiselect(
         "Tipe Brand (tenant SPBU)",
         brand_types(),
         key="lahan_brand",
@@ -62,6 +68,8 @@ with tab_lahan:
         tampil = tampil[tampil["Status Approval"].isin(approval)]
     if status_level:
         tampil = tampil[tampil["Status Level"].isin(status_level)]
+    if tipe_spbu:
+        tampil = tampil[tampil["Tipe SPBU"].isin(tipe_spbu)]
     if brand:
         tampil = tampil[tampil["No. SPBU"].isin(spbu_ids_for_brands(brand))]
 
@@ -82,6 +90,10 @@ with tab_lahan:
     kpi2 = st.columns(2)
     kpi2[0].metric("Luas Total", f"{format_angka(tampil['Luas (M2)'].sum())} m²")
     kpi2[1].metric("Nilai Sewa Lahan", format_rupiah(tampil["Harga Sewa (Rp)"].sum()))
+
+    st.subheader("🗺️ Peta Lahan")
+    st.caption("Warna titik = Tipe SPBU.")
+    render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=460)
 
     st.divider()
 
@@ -165,13 +177,18 @@ with tab_sewa:
         key="sewa_kategori",
     )
 
-    f5, f6 = st.columns(2)
+    f5, f6, f7 = st.columns(3)
     status_level_s = f5.multiselect(
         "Status Level",
         sorted(sewa["Status Level"].dropna().unique()),
         key="sewa_status_level",
     )
-    brand_s = f6.multiselect(
+    tipe_spbu_s = f6.multiselect(
+        "Tipe SPBU",
+        sorted(sewa["Tipe SPBU"].dropna().unique()),
+        key="sewa_tipe_spbu",
+    )
+    brand_s = f7.multiselect(
         "Tipe Brand",
         sorted(sewa["Jenis Brand"].dropna().unique()),
         key="sewa_brand",
@@ -188,6 +205,8 @@ with tab_sewa:
         tampil_s = tampil_s[tampil_s["Kategori Utama"].isin(kategori_s)]
     if status_level_s:
         tampil_s = tampil_s[tampil_s["Status Level"].isin(status_level_s)]
+    if tipe_spbu_s:
+        tampil_s = tampil_s[tampil_s["Tipe SPBU"].isin(tipe_spbu_s)]
     if brand_s:
         tampil_s = tampil_s[tampil_s["Jenis Brand"].isin(brand_s)]
 
@@ -203,6 +222,10 @@ with tab_sewa:
     kpi[1].metric("Kontrak Berjalan", format_angka(len(berjalan)))
     kpi[2].metric("Berakhir ≤90 Hari", format_angka(len(segera)))
     kpi[3].metric("Nilai Sewa", format_rupiah(tampil_s["Total Harga Sewa"].sum()))
+
+    st.subheader("🗺️ Peta Kontrak Sewa")
+    st.caption("Warna titik = Tipe SPBU.")
+    render_spbu_map(tampil_s, color_col="Tipe SPBU", region_col="Region", height=460)
 
     st.divider()
 

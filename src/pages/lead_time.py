@@ -8,6 +8,7 @@ from src import analytics as an
 from src import charts
 from src.data_loader import load_data_or_stop
 from src.formatting import format_angka, format_hari
+from src.map_spbu import render_spbu_map
 
 izin = load_data_or_stop()
 snapshot = an.snapshot_date(izin)
@@ -35,11 +36,14 @@ tahap = f2.multiselect(
 )
 status = f3.multiselect("Status", sorted(ldf["Status"].dropna().unique()), key="lt_status")
 
-f4, f5 = st.columns(2)
+f4, f5, f6 = st.columns(3)
 brand = f4.multiselect(
     "Tipe Brand", sorted(ldf["Tipe Brand"].dropna().unique()), key="lt_brand"
 )
-status_level = f5.multiselect(
+tipe_spbu = f5.multiselect(
+    "Tipe SPBU", sorted(ldf["Tipe SPBU"].dropna().unique()), key="lt_tipe_spbu"
+)
+status_level = f6.multiselect(
     "Status Level", sorted(ldf["Status Level"].dropna().unique()), key="lt_status_level"
 )
 
@@ -52,6 +56,8 @@ if status:
     tampil = tampil[tampil["Status"].isin(status)]
 if brand:
     tampil = tampil[tampil["Tipe Brand"].isin(brand)]
+if tipe_spbu:
+    tampil = tampil[tampil["Tipe SPBU"].isin(tipe_spbu)]
 if status_level:
     tampil = tampil[tampil["Status Level"].isin(status_level)]
 
@@ -79,6 +85,10 @@ kpi[3].metric(
     "Pending Terlama",
     format_hari(pending["Umur Pengajuan (hari)"].max()) if not pending.empty else "-",
 )
+
+st.subheader("🗺️ Peta Pengajuan pada Filter Ini")
+st.caption("Warna titik = Tipe SPBU.")
+render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
 st.divider()
 

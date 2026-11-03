@@ -93,6 +93,21 @@ def load_spbu_universe() -> pd.DataFrame:
     universe = pd.concat([reguler, extra_master], ignore_index=True)
     universe = universe.drop_duplicates("No. SPBU").reset_index(drop=True)
     universe["Reguler"] = universe["Reguler"].astype(bool)
+
+    # Region untuk peta/filter (master tidak punya Region).
+    region_map = izin[["No. SPBU", "Region"]].drop_duplicates("No. SPBU")
+    universe = universe.merge(region_map, on="No. SPBU", how="left")
+    prov_region = (
+        izin.assign(Provinsi_key=izin["Provinsi"].astype("string").str.strip().str.title())
+        .groupby("Provinsi_key")["Region"]
+        .agg(lambda s: s.mode().iat[0] if not s.mode().empty else "Tidak diketahui")
+    )
+    prov_key = universe["Provinsi"].astype("string").str.strip().str.title()
+    universe["Region"] = (
+        universe["Region"]
+        .fillna(prov_key.map(prov_region))
+        .fillna("Tidak diketahui")
+    )
     return universe
 
 
