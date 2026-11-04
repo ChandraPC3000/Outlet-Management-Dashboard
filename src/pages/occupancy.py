@@ -9,6 +9,7 @@ from src import charts
 from src.data_loader import load_data_or_stop, load_lahan_or_stop
 from src.formatting import format_angka
 from src.map_spbu import render_spbu_map
+from src.occupancy_export import build_occupancy_excel
 from src.spbu_universe import brand_types, load_spbu_universe, spbu_ids_for_brands, universe_ringkasan
 
 izin = load_data_or_stop()
@@ -205,12 +206,16 @@ st.dataframe(
     },
 )
 st.download_button(
-    "⬇️ Unduh occupancy per SPBU (CSV)",
-    data=tabel.to_csv(index=False).encode("utf-8-sig"),
-    file_name="nfr_occupancy_per_spbu.csv",
-    mime="text/csv",
+    "⬇️ Unduh Excel Occupancy per SPBU (Data + OR_Lahan)",
+    data=build_occupancy_excel(),
+    file_name="nfr_occupancy_per_spbu_November 2026.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
     key="unduh_occ",
+)
+st.caption(
+    "File Excel berisi **seluruh SPBU Reguler** dengan lahan Tersedia/Tersewa "
+    "(sheet `Data` + pivot `OR_Lahan`), tidak mengikuti filter tampilan di atas."
 )
 
 with st.expander("ℹ️ Cara menghitung", expanded=False):

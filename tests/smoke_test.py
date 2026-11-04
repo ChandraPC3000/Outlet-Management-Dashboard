@@ -167,6 +167,32 @@ def test_occupancy_formula() -> None:
     assert abs(weighted - 83.13) < 0.1, weighted
 
 
+def test_occupancy_excel() -> None:
+    import io
+
+    import openpyxl
+
+    from src.occupancy_export import build_occupancy_excel
+
+    data = build_occupancy_excel()
+    wb = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    assert wb.sheetnames[:2] == ["Data", "OR_Lahan"]
+    ws = wb["Data"]
+    assert ws.max_row > 30_000
+    assert ws.cell(4, 3).value == "No SPBU"
+    assert ws.cell(4, 34).value == "Total2"
+    assert ws.cell(3, 29).value == "Volume (KL) / Month"
+    assert ws.cell(3, 32).value == "Transaksi / Month"
+    ws2 = wb["OR_Lahan"]
+    labels = [ws2.cell(r, 1).value for r in range(3, ws2.max_row + 1)]
+    assert labels[-1] == "Grand Total"
+    assert len(labels) == 9, labels
+    assert "Tidak diketahui" not in labels, labels
+    assert ws2.cell(2, 1).value == "Region"
+    assert ws2.cell(2, 5).value == "Occupancy Rate"
+    wb.close()
+
+
 def test_nilai_sewa_page() -> None:
     app = _run("src/pages/nilai_sewa.py")
     judul = [t.value for t in app.title]
@@ -234,6 +260,7 @@ if __name__ == "__main__":
         test_ketersediaan_data,
         test_ketersediaan_page,
         test_occupancy_formula,
+        test_occupancy_excel,
         test_occupancy_page,
         test_nilai_sewa_page,
         test_management_fee_page,

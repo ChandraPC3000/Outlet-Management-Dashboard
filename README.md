@@ -56,6 +56,12 @@ Occupancy (%) = lahan tersewa ÷ (lahan tersewa + lahan tersedia) × 100
   top/bottom 10 SPBU (dengan ambang minimum total lahan).
 - Snapshot: 5.916 SPBU, occupancy weighted **83,1%**, rata-rata per SPBU 82,3%;
   3.070 SPBU penuh dan 470 SPBU di bawah 50%.
+- Tombol unduh menghasilkan **`nfr_occupancy_per_spbu_November 2026.xlsx`**
+  (XlsxWriter, 2 sheet utama): `Data` berisi daftar lahan SPBU **Reguler**
+  (Tersedia + Tersewa) dengan layout mengikuti `occupancy_nfr_2026-09-04.xlsx`,
+  dan `OR_Lahan` berisi pivot per 8 region + `Grand Total` dengan
+  `Occupancy Rate = Tersewa ÷ Grand Total`. File selalu berisi seluruh SPBU
+  Reguler, tidak mengikuti filter tampilan.
 
 ## Nilai sewa & management fee
 
@@ -184,6 +190,7 @@ src/
 ├── filters.py                  # filter sidebar
 ├── formatting.py               # format rupiah/angka/tanggal
 ├── exports.py                  # export Excel format mitra (XlsxWriter)
+├── occupancy_export.py         # generator Excel occupancy (Data + OR_Lahan)
 └── pages/
     ├── home.py
     ├── director_summary.py
