@@ -12,7 +12,13 @@ import streamlit as st
 import src.config as _config
 
 importlib.reload(_config)
-from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH  # noqa: E402
+from src.config import (  # noqa: E402
+    APP_ICON,
+    APP_TITLE,
+    LOGO_DARK_PATH,
+    LOGO_LIGHT_PATH,
+    STYLE_PATH,
+)
 
 import src.wilayah as _wilayah  # noqa: E402
 
@@ -52,8 +58,17 @@ def inject_css(path) -> None:
 
 inject_css(STYLE_PATH)
 
-if LOGO_PATH.exists():
-    st.logo(str(LOGO_PATH), size="medium")
+def _mode_tema() -> str:
+    """Tema aktif pengguna (light/dark); fallback light di Streamlit lama."""
+    try:
+        return "dark" if st.context.theme.type == "dark" else "light"
+    except Exception:
+        return "light"
+
+
+logo_path = LOGO_DARK_PATH if _mode_tema() == "dark" else LOGO_LIGHT_PATH
+if logo_path.exists():
+    st.logo(str(logo_path), size="medium")
 
 load_data_or_stop = _data_loader.load_data_or_stop
 
