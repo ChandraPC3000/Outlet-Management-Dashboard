@@ -145,6 +145,16 @@ Provinsi, Kota/Kabupaten, Kecamatan, Desa/Kelurahan, Alamat, Latitude, Longitude
 Nama SPBU, Jenis Lembaga Penyalur, Tipe SPBU, dan flag Reguler. Nilai yang sudah
 ada tidak ditimpa.
 
+**Normalisasi nama wilayah** (`src/wilayah.py`) menyatukan varian yang merujuk
+tempat sama sebelum data dipakai halaman mana pun:
+- `Kodya`/`Kod.`/`Kota Administrasi` → `Kota`; `Kab.`/`Kab` → `Kabupaten`.
+- Nama tanpa prefiks seperti `Bangka Tengah` dilengkapi menjadi
+  `Kabupaten Bangka Tengah`; nama kota tetap `Kota ...`.
+- `Nanggroe Aceh Daruss` → `Aceh`, `Bangka-Belitung` → `Kepulauan Bangka
+  Belitung`, dan kapitalisasi diseragamkan (`SUMATERA UTARA` → `Sumatera Utara`).
+- Kecamatan/desa ditulis title case agar `MEDAN BARAT` dan `Medan Barat` tidak
+  muncul sebagai dua pilihan.
+
 **BVT** (`bvt_spbu.csv`) dari *SPBU_All_34_Provinces_20261016*:
 - 6.787 SPBU, 34 provinsi; Red Ocean 3.176, Blue Ocean 2.517, Peluang Campuran
   1.094.
@@ -203,6 +213,7 @@ src/
 ├── data_loader.py              # load + validasi + cache seluruh dataset
 ├── analytics.py                # lead time, lahan, sewa, ketersediaan, PIC
 ├── master_data.py              # master SPBU, BVT, enrichment kolom kosong
+├── wilayah.py                  # normalisasi provinsi/kota/kecamatan/desa
 ├── map_spbu.py                 # peta OSM generik untuk semua section
 ├── spbu_universe.py            # total SPBU Reguler + existing (6.594)
 ├── charts.py                   # builder grafik Plotly

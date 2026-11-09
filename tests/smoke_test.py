@@ -217,6 +217,34 @@ def test_management_fee_page() -> None:
     assert len(app.get("download_button")) >= 1
 
 
+def test_wilayah_normalisasi() -> None:
+    from src.data_loader import load_izin_prinsip, load_ketersediaan
+    from src.master_data import load_spbu_master
+
+    izin = load_izin_prinsip()
+    ketersediaan = load_ketersediaan()
+    master = load_spbu_master()
+
+    for df, kolom in (
+        (izin, "Kab./Kota"),
+        (ketersediaan, "Kota/Kab"),
+        (master, "Kota/Kabupaten"),
+    ):
+        nilai = df[kolom].dropna().astype(str)
+        assert not nilai.str.contains(r"Kodya|Kod\.|KAB\.|Kab\.", regex=True).any()
+        assert not nilai.str.fullmatch(r"[A-Z .]+").any()
+        bare = nilai[~nilai.str.startswith(("Kota ", "Kabupaten "))]
+        assert set(bare) <= {"Tidak diketahui"}, sorted(set(bare))[:10]
+
+    provinsi = set(master["Provinsi"].dropna().astype(str))
+    assert "Aceh" in provinsi
+    assert "Kepulauan Bangka Belitung" in provinsi
+    assert "Sumatera Utara" in provinsi
+    assert "Tidak Diketahui" not in provinsi
+    assert "Kota Jakarta Selatan" in set(izin["Kab./Kota"].dropna().astype(str))
+    assert "Kota Surabaya" in set(izin["Kab./Kota"].dropna().astype(str))
+
+
 def test_master_data() -> None:
     from src.master_data import load_bvt, load_spbu_master
 
@@ -264,6 +292,7 @@ if __name__ == "__main__":
         test_occupancy_page,
         test_nilai_sewa_page,
         test_management_fee_page,
+        test_wilayah_normalisasi,
         test_master_data,
         test_lokasi_page,
     ):

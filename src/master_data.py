@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from src.config import DATA_DIR
+from src.wilayah import normalisasi_kolom
 
 # Tidak bergantung pada konstanta baru di config agar tetap aman saat Streamlit
 # Cloud memakai cache modul lama setelah redeploy.
@@ -55,6 +56,15 @@ def load_spbu_master() -> pd.DataFrame:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
     if "Status Level" not in df.columns:
         df["Status Level"] = "Tidak diketahui"
+    normalisasi_kolom(
+        df,
+        {
+            "Provinsi": "provinsi",
+            "Kota/Kabupaten": "kota",
+            "Kecamatan": "kecamatan",
+            "Desa/Kelurahan": "desa",
+        },
+    )
     return df.reset_index(drop=True)
 
 
@@ -71,6 +81,15 @@ def load_bvt() -> pd.DataFrame:
             df[kolom] = df[kolom].fillna("Tidak diketahui")
     if "Status Level" not in df.columns:
         df["Status Level"] = "Tidak diketahui"
+    normalisasi_kolom(
+        df,
+        {
+            "Provinsi": "provinsi",
+            "Kota/Kabupaten": "kota",
+            "Kecamatan": "kecamatan",
+            "Desa/Kelurahan": "desa",
+        },
+    )
     return df.reset_index(drop=True)
 
 

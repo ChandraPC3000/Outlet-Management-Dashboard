@@ -14,6 +14,10 @@ import src.config as _config
 importlib.reload(_config)
 from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH  # noqa: E402
 
+import src.wilayah as _wilayah  # noqa: E402
+
+importlib.reload(_wilayah)
+
 from src import analytics as _analytics  # noqa: E402
 from src import charts as _charts  # noqa: E402
 from src import data_loader as _data_loader  # noqa: E402

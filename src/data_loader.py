@@ -29,6 +29,7 @@ from src.config import (
     SEWA_REQUIRED,
 )
 from src.master_data import enrich_with_master
+from src.wilayah import normalisasi_kolom
 
 
 class DataLoadError(RuntimeError):
@@ -111,6 +112,7 @@ def load_izin_prinsip(path: str | None = None) -> pd.DataFrame:
     df = enrich_with_master(df)
     if "Status Level" not in df.columns:
         df["Status Level"] = "Tidak diketahui"
+    normalisasi_kolom(df, {"Provinsi": "provinsi", "Kab./Kota": "kota"})
     return df
 
 
@@ -193,6 +195,15 @@ def load_ketersediaan(path: str | None = None) -> pd.DataFrame:
     df = enrich_with_master(df, include_tipe=True)
     if "Status Level" not in df.columns:
         df["Status Level"] = "Tidak diketahui"
+    normalisasi_kolom(
+        df,
+        {
+            "Provinsi": "provinsi",
+            "Kota/Kab": "kota",
+            "Kecamatan": "kecamatan",
+            "Desa/Kelurahan": "desa",
+        },
+    )
     return df
 
 
