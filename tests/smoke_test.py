@@ -219,16 +219,18 @@ def test_management_fee_page() -> None:
 
 def test_wilayah_normalisasi() -> None:
     from src.data_loader import load_izin_prinsip, load_ketersediaan
-    from src.master_data import load_spbu_master
+    from src.master_data import load_bvt, load_spbu_master
 
     izin = load_izin_prinsip()
     ketersediaan = load_ketersediaan()
     master = load_spbu_master()
+    bvt = load_bvt()
 
     for df, kolom in (
         (izin, "Kab./Kota"),
         (ketersediaan, "Kota/Kab"),
         (master, "Kota/Kabupaten"),
+        (bvt, "Kota/Kabupaten"),
     ):
         nilai = df[kolom].dropna().astype(str)
         assert not nilai.str.contains(r"Kodya|Kod\.|KAB\.|Kab\.", regex=True).any()

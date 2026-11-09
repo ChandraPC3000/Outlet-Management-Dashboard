@@ -190,6 +190,7 @@ KOTA_ALIAS = {
     "tanjung jabung timur": "Kabupaten Tanjung Jabung Timur",
     "tebo": "Kabupaten Tebo",
     "tegal kodia": "Kota Tegal",
+    "batu bara": "Kabupaten Batubara",
     "kabupaten sangihe": "Kabupaten Kepulauan Sangihe",
     "kabupaten lima puluh koto": "Kabupaten Lima Puluh Kota",
     "kota mamuju": "Kabupaten Mamuju",
@@ -200,6 +201,34 @@ KOTA_ALIAS = {
     "kabupaten batu": "Kota Batu",
     "kota tangerang sel": "Kota Tangerang Selatan",
     "kota jakarta selata": "Kota Jakarta Selatan",
+    # Varian nama di dataset BVT
+    "kota gunungsitoli": "Kota Gunungsitoli",
+    "kota gunung sitoli": "Kota Gunungsitoli",
+    "kota lima puluh": "Kota Lima Puluh",
+    "kota lubuklinggau": "Kota Lubuk Linggau",
+    "kota padang sidimpuan": "Kota Padang Sidempuan",
+    "kota tanjungpinang": "Kota Tanjung Pinang",
+    "kota tidore kepulauan": "Kota Tidore Kepulauan",
+    "aceh singkil": "Kabupaten Aceh Singkil",
+    "belitung": "Kabupaten Belitung",
+    "fakfak": "Kabupaten Fakfak",
+    "gayo lues": "Kabupaten Gayo Lues",
+    "gunungkidul": "Kabupaten Gunungkidul",
+    "hulu sungai selatan": "Kabupaten Hulu Sungai Selatan",
+    "hulu sungai tengah": "Kabupaten Hulu Sungai Tengah",
+    "hulu sungai utara": "Kabupaten Hulu Sungai Utara",
+    "labuhanbatu": "Kabupaten Labuhanbatu",
+    "mamuju tengah": "Kabupaten Mamuju Tengah",
+    "mamuju utara": "Kabupaten Mamuju Utara",
+    "mandailing natal": "Kabupaten Mandailing Natal",
+    "muaro jambi": "Kabupaten Muaro Jambi",
+    "mukomuko": "Kabupaten Mukomuko",
+    "pahuwato": "Kabupaten Pohuwato",
+    "penukal abab lematang ilir": "Kabupaten Penukal Abab Lematang Ilir",
+    "seram bagian barat": "Kabupaten Seram Bagian Barat",
+    "seram bagian timur": "Kabupaten Seram Bagian Timur",
+    "sidenreng rappang": "Kabupaten Sidenreng Rappang",
+    "tojo una una": "Kabupaten Tojo Una-Una",
     "tolikara": "Kabupaten Tolikara",
     "yahukimo": "Kabupaten Yahukimo",
     "yalimo": "Kabupaten Yalimo",
@@ -215,7 +244,12 @@ def _rapikan_teks(nilai) -> str:
     teks = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", teks)
     teks = teks.replace("_", " ").replace("-", " ")
     teks = re.sub(r"[.,]", " ", teks)
-    return _BERSIH.sub(" ", teks).strip()
+    teks = _BERSIH.sub(" ", teks).strip()
+    # "R A Y A" -> "RAYA", "B E O" -> "BEO"
+    bagian = teks.split()
+    if len(bagian) > 1 and all(len(b) == 1 and b.isalpha() for b in bagian):
+        teks = "".join(bagian)
+    return teks
 
 
 def _title(teks: str) -> str:
@@ -307,6 +341,32 @@ def _rapikan_prefiks_kota(series: pd.Series) -> pd.Series:
             if kanonik:
                 nilai.at[idx] = kanonik
     return nilai
+
+
+def selaraskan_kota(series: pd.Series, referensi) -> pd.Series:
+    """Samakan nama kota/kabupaten dengan daftar referensi kanonik.
+
+    Berguna untuk dataset yang banyak menulis nama tanpa prefiks, mis. BVT
+    (``Karawang`` -> ``Kabupaten Karawang``, ``Jakarta Timur`` ->
+    ``Kota Jakarta Timur``). Nama yang punya versi Kota dan Kabupaten sekaligus
+    tidak dipaksa agar tidak salah gabung.
+    """
+    kandidat: dict[str, set[str]] = {}
+    for teks in pd.Series(list(referensi)).dropna().astype(str).unique():
+        if teks.startswith(("Kabupaten ", "Kota ")):
+            kunci = _kunci(re.sub(r"^(Kabupaten|Kota)\s+", "", teks))
+            kandidat.setdefault(kunci, set()).add(teks)
+    peta = {k: next(iter(v)) for k, v in kandidat.items() if len(v) == 1}
+
+    hasil = series.copy()
+    for idx, teks in hasil.items():
+        if not isinstance(teks, str) or teks in ("", SENTINEL):
+            continue
+        kunci = _kunci(re.sub(r"^(Kabupaten|Kota)\s+", "", teks))
+        kanonik = peta.get(kunci)
+        if kanonik:
+            hasil.at[idx] = kanonik
+    return hasil
 
 
 def normalisasi_kolom(

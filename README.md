@@ -150,6 +150,8 @@ tempat sama sebelum data dipakai halaman mana pun:
 - `Kodya`/`Kod.`/`Kota Administrasi` → `Kota`; `Kab.`/`Kab` → `Kabupaten`.
 - Nama tanpa prefiks seperti `Bangka Tengah` dilengkapi menjadi
   `Kabupaten Bangka Tengah`; nama kota tetap `Kota ...`.
+- Dataset BVT yang banyak menulis nama tanpa prefiks diselaraskan dengan master
+  (`Karawang` → `Kabupaten Karawang`, `Jakarta Timur` → `Kota Jakarta Timur`).
 - `Nanggroe Aceh Daruss` → `Aceh`, `Bangka-Belitung` → `Kepulauan Bangka
   Belitung`, dan kapitalisasi diseragamkan (`SUMATERA UTARA` → `Sumatera Utara`).
 - Kecamatan/desa ditulis title case agar `MEDAN BARAT` dan `Medan Barat` tidak

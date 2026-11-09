@@ -8,7 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from src.config import DATA_DIR
-from src.wilayah import normalisasi_kolom
+from src.wilayah import normalisasi_kolom, selaraskan_kota
 
 # Tidak bergantung pada konstanta baru di config agar tetap aman saat Streamlit
 # Cloud memakai cache modul lama setelah redeploy.
@@ -89,6 +89,10 @@ def load_bvt() -> pd.DataFrame:
             "Kecamatan": "kecamatan",
             "Desa/Kelurahan": "desa",
         },
+    )
+    df["Kota/Kabupaten"] = selaraskan_kota(
+        df["Kota/Kabupaten"],
+        load_spbu_master()["Kota/Kabupaten"],
     )
     return df.reset_index(drop=True)
 
