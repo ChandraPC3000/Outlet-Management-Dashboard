@@ -56,7 +56,7 @@
 
 h1, h2, h3, h4, h5, h6,
 button, input, label, textarea, select {
-    font-family: "Roboto", "Segoe UI", sans-serif;
+    font-family: "Roboto", "Segoe UI", sans-serif !important;
 }
 
 h1 {
