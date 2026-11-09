@@ -74,7 +74,7 @@ SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
 BVT_PATH = DATA_DIR / "bvt_spbu.csv"
 
 APP_TITLE = "NFR Analytics Pro"
-APP_ICON = "🚀"
+APP_ICON = str(LOGO_PATH)
 
 IZIN_REQUIRED: tuple[str, ...] = (
     "Tgl Pengajuan",
@@ -195,18 +195,18 @@ CLASSIFIED_LAHAN_COLUMNS = (
     "Fasilitas EV",
 )
 
-# Palet warna senada tema gelap GitHub.
+# Palet warna profesional dengan latar terang.
 PALETTE: tuple[str, ...] = (
-    "#58a6ff",
-    "#3fb950",
-    "#d29922",
-    "#f85149",
-    "#a371f7",
-    "#39c5cf",
-    "#db6d28",
-    "#8b949e",
-    "#ff7b72",
-    "#7ee787",
+    "#111827",
+    "#1d4ed8",
+    "#0f766e",
+    "#b45309",
+    "#b91c1c",
+    "#4338ca",
+    "#0369a1",
+    "#4d7c0f",
+    "#6b7280",
+    "#9a3412",
 )
 
-PLOTLY_TEMPLATE = "plotly_dark"
+PLOTLY_TEMPLATE = "plotly_white"

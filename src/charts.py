@@ -10,12 +10,12 @@ from src.config import PALETTE, PLOTLY_TEMPLATE
 from src.formatting import BULAN_SINGKAT, format_rupiah
 
 KELOMPOK_WARNA = {
-    "Pending": "#d29922",
-    "Terbit / Beroperasi": "#3fb950",
-    "Telah Berakhir": "#58a6ff",
-    "Ditolak / Batal": "#f85149",
-    "Draft": "#8b949e",
-    "Lainnya": "#8b949e",
+    "Pending": "#b45309",
+    "Terbit / Beroperasi": "#4d7c0f",
+    "Telah Berakhir": "#1d4ed8",
+    "Ditolak / Batal": "#b91c1c",
+    "Draft": "#6b7280",
+    "Lainnya": "#6b7280",
 }
 
 
@@ -24,22 +24,22 @@ def _finalize(
     height: int = 360,
     showlegend: bool = True,
 ) -> go.Figure:
-    """Terapkan gaya gelap transparan agar menyatu dengan kartu CSS."""
+    """Terapkan gaya terang dan netral agar menyatu dengan kartu CSS."""
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         colorway=list(PALETTE),
-        font=dict(family="Inter, Segoe UI, sans-serif", size=12, color="#c9d1d9"),
+        font=dict(family="Inter, Segoe UI, sans-serif", size=12, color="#111827"),
         margin=dict(l=10, r=10, t=10, b=10),
         height=height,
         showlegend=showlegend,
         separators=".,",
         legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0),
-        hoverlabel=dict(bgcolor="#161b22", bordercolor="#30363d", font_size=12),
+        hoverlabel=dict(bgcolor="#ffffff", bordercolor="#d1d5db", font_size=12, font_color="#111827"),
     )
-    fig.update_xaxes(gridcolor="rgba(255,255,255,0.06)", zeroline=False, linecolor="#30363d")
-    fig.update_yaxes(gridcolor="rgba(255,255,255,0.06)", zeroline=False, linecolor="#30363d")
+    fig.update_xaxes(gridcolor="#e5e7eb", zeroline=False, linecolor="#d1d5db")
+    fig.update_yaxes(gridcolor="#e5e7eb", zeroline=False, linecolor="#d1d5db")
     return fig
 
 
@@ -519,20 +519,20 @@ def occupancy_gauge(value: float) -> go.Figure:
         go.Indicator(
             mode="gauge+number",
             value=value,
-            number={"suffix": "%", "valueformat": ".1f", "font": {"size": 40, "color": "#fafafa"}},
+            number={"suffix": "%", "valueformat": ".1f", "font": {"size": 40, "color": "#111827"}},
             gauge={
-                "axis": {"range": [0, 100], "tickcolor": "#8b949e"},
-                "bar": {"color": "#58a6ff", "thickness": 0.28},
+                "axis": {"range": [0, 100], "tickcolor": "#6b7280"},
+                "bar": {"color": "#111827", "thickness": 0.28},
                 "bgcolor": "rgba(0,0,0,0)",
                 "borderwidth": 0,
                 "steps": [
-                    {"range": [0, 50], "color": "rgba(248,81,73,0.35)"},
-                    {"range": [50, 75], "color": "rgba(210,153,34,0.35)"},
-                    {"range": [75, 90], "color": "rgba(88,166,255,0.25)"},
-                    {"range": [90, 100], "color": "rgba(63,185,80,0.35)"},
+                    {"range": [0, 50], "color": "rgba(17,24,39,0.10)"},
+                    {"range": [50, 75], "color": "rgba(17,24,39,0.18)"},
+                    {"range": [75, 90], "color": "rgba(17,24,39,0.26)"},
+                    {"range": [90, 100], "color": "rgba(17,24,39,0.34)"},
                 ],
                 "threshold": {
-                    "line": {"color": "#fafafa", "width": 2},
+                    "line": {"color": "#111827", "width": 2},
                     "thickness": 0.75,
                     "value": value,
                 },
@@ -543,7 +543,7 @@ def occupancy_gauge(value: float) -> go.Figure:
         template=PLOTLY_TEMPLATE,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, Segoe UI, sans-serif", color="#c9d1d9"),
+        font=dict(family="Inter, Segoe UI, sans-serif", color="#111827"),
         height=300,
         margin=dict(l=20, r=20, t=20, b=10),
     )
@@ -579,7 +579,7 @@ def occupancy_bar(data: pd.DataFrame, level: str) -> go.Figure:
         text=teks,
         custom_data=["Jumlah SPBU", "Total Lahan", "Tersewa"],
         color="Occupancy (%)",
-        color_continuous_scale=["#f85149", "#d29922", "#58a6ff", "#3fb950"],
+        color_continuous_scale=["#e5e7eb", "#9ca3af", "#4b5563", "#111827"],
         range_color=(0, 100),
         labels={level: "", "Occupancy (%)": "Occupancy (%)"},
     )
@@ -599,7 +599,7 @@ def occupancy_heatmap(pivot: pd.DataFrame) -> go.Figure:
     fig = px.imshow(
         pivot,
         aspect="auto",
-        color_continuous_scale="Blues",
+        color_continuous_scale="Greys",
         labels={"x": "Rentang occupancy", "y": "", "color": "Jumlah SPBU"},
         text_auto=True,
     )
@@ -615,7 +615,7 @@ def occupancy_scatter(occ: pd.DataFrame) -> go.Figure:
         y="Occupancy (%)",
         size="Tersewa",
         color="Occupancy (%)",
-        color_continuous_scale=["#f85149", "#d29922", "#58a6ff", "#3fb950"],
+        color_continuous_scale=["#e5e7eb", "#9ca3af", "#4b5563", "#111827"],
         range_color=(0, 100),
         hover_name="No. SPBU",
         hover_data={"Region": True, "Kab./Kota": True, "Tersewa": True, "Tersedia": True},
@@ -623,7 +623,7 @@ def occupancy_scatter(occ: pd.DataFrame) -> go.Figure:
         opacity=0.7,
     )
     fig.update_traces(
-        marker=dict(line=dict(width=0.5, color="rgba(255,255,255,0.25)")),
+        marker=dict(line=dict(width=0.5, color="rgba(17,24,39,0.15)")),
         hovertemplate=(
             "SPBU %{hovertext}<br>%{customdata[0]} · %{customdata[1]}"
             "<br>Total lahan: %{x}<br>Occupancy: %{y:.1f}%"
@@ -778,9 +778,9 @@ def bvt_map(df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, Segoe UI, sans-serif", size=11, color="#c9d1d9"),
+        font=dict(family="Inter, Segoe UI, sans-serif", size=11, color="#111827"),
         margin=dict(l=0, r=0, t=0, b=0),
-        legend=dict(orientation="h", yanchor="bottom", y=0.01, x=0.01, bgcolor="rgba(14,17,23,0.75)"),
+        legend=dict(orientation="h", yanchor="bottom", y=0.01, x=0.01, bgcolor="rgba(255,255,255,0.85)"),
     )
     return fig
 

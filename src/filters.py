@@ -64,7 +64,7 @@ def spbu_selector(df: pd.DataFrame, key: str = "spbu", show_header: bool = True)
     """Selectbox No. SPBU dengan pencarian cepat. Mengembalikan None bila kosong."""
     with st.sidebar:
         if show_header:
-            st.header("🎛️ Filter Panel")
+            st.header("Filter Panel")
         keyword = st.text_input(
             "Cari No. SPBU",
             key=f"{key}_search",
@@ -101,7 +101,7 @@ def spbu_selector(df: pd.DataFrame, key: str = "spbu", show_header: bool = True)
 def global_filters(df: pd.DataFrame, key: str = "explorer") -> pd.DataFrame:
     """Filter Region/Kategori/Status/Tipe Brand/pencarian/rentang tanggal."""
     with st.sidebar:
-        st.header("🎛️ Filter Data")
+        st.header("Filter Data")
 
         region = st.multiselect("Region", _urut_unik(df, "Region"), key=f"{key}_region")
         kategori = st.multiselect(

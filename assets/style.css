@@ -1,70 +1,95 @@
 /* ============================================================
-   NFR Analytics Pro - tema gelap
+   NFR Analytics Pro - tema terang monokrom
    Dasar warna juga diatur di .streamlit/config.toml
    ============================================================ */
 
 :root {
-    --bg: #0e1117;
-    --surface: #161b22;
-    --surface-2: #1c2128;
-    --border: #30363d;
-    --border-hover: #58a6ff;
-    --text: #fafafa;
-    --text-muted: #8b949e;
-    --accent: #58a6ff;
-    --radius: 12px;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+    --text: #111827;
+    --text-muted: #6b7280;
+    --accent: #111827;
+    --radius: 8px;
 }
 
 /* 1. Latar utama */
 .stApp {
-    background: radial-gradient(circle at 20% 0%, #131a24 0%, var(--bg) 45%) fixed;
+    background: var(--bg);
     color: var(--text);
 }
 
-/* 2. Sidebar */
+[data-testid="stHeader"] {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--border);
+}
+
+/* 2. Sidebar dan logo */
 [data-testid="stSidebar"] {
     background-color: var(--surface);
     border-right: 1px solid var(--border);
 }
 
-[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-    color: #c9d1d9;
+[data-testid="stSidebarHeader"] {
+    padding: 14px 16px 12px !important;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+[data-testid="stSidebarHeader"] img,
+[data-testid="stLogo"] img {
+    max-height: 38px !important;
+    width: auto !important;
+    max-width: 190px;
+    object-fit: contain;
+    display: block;
 }
 
 /* 3. Navigasi antar halaman */
 [data-testid="stSidebarNav"] a {
-    border-radius: 8px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 6px;
+    color: var(--text-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 [data-testid="stSidebarNav"] a:hover {
-    background-color: rgba(88, 166, 255, 0.12);
+    background-color: #f3f4f6;
+    color: var(--text);
 }
 
 [data-testid="stSidebarNav"] a[aria-current="page"] {
-    background-color: rgba(88, 166, 255, 0.18);
+    background-color: var(--accent);
+    color: #ffffff;
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"] * {
+    color: #ffffff !important;
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"]:hover {
+    background-color: #000000;
 }
 
 /* 4. Kartu metric */
 [data-testid="stMetric"] {
-    background-color: var(--surface-2);
+    background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    padding: 16px 18px;
+    box-shadow: none;
+    transition: border-color 0.15s ease;
 }
 
 [data-testid="stMetric"]:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-hover);
-    box-shadow: 0 8px 18px rgba(88, 166, 255, 0.12);
+    border-color: var(--border-strong);
 }
 
 [data-testid="stMetricValue"] {
-    color: var(--accent);
+    color: var(--text);
     font-weight: 700;
-    font-size: 1.55rem !important;
+    font-size: 1.5rem !important;
     white-space: normal !important;
     word-break: break-word;
     line-height: 1.2;
@@ -72,16 +97,16 @@
 
 [data-testid="stMetricLabel"] {
     color: var(--text-muted);
-    font-size: 0.78rem !important;
+    font-size: 0.72rem !important;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.9px;
 }
 
 /* 5. Judul */
 h1, h2, h3 {
     color: var(--text);
     font-family: "Inter", "Segoe UI", sans-serif;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.3px;
 }
 
 h1 {
@@ -90,46 +115,57 @@ h1 {
 
 /* 6. Grafik Plotly sebagai kartu */
 .stPlotlyChart {
-    background-color: var(--surface-2);
+    background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 12px;
-    transition: border-color 0.25s ease;
+    padding: 10px;
 }
 
 .stPlotlyChart:hover {
-    border-color: #444c56;
+    border-color: var(--border-strong);
 }
 
 /* 7. Tabel */
 [data-testid="stDataFrame"] {
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius);
     background-color: var(--surface);
     overflow: hidden;
 }
 
-/* 8. Input & selectbox */
+/* 8. Input dan selectbox */
 .stSelectbox label,
 .stMultiSelect label,
 .stTextInput label,
-.stDateInput label {
-    color: #c9d1d9 !important;
+.stDateInput label,
+.stNumberInput label,
+.stRadio label {
+    color: var(--text) !important;
     font-weight: 600;
+}
+
+[data-baseweb="select"] > div,
+[data-baseweb="input"] > div {
+    border-color: var(--border-strong) !important;
+    background-color: var(--surface) !important;
 }
 
 /* 9. Tombol */
 .stButton button,
 .stDownloadButton button {
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s ease, color 0.2s ease;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
+    background-color: var(--surface);
+    color: var(--accent);
+    font-weight: 600;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .stButton button:hover,
 .stDownloadButton button:hover {
+    background-color: var(--accent);
     border-color: var(--accent);
-    color: var(--accent);
+    color: #ffffff;
 }
 
 /* 10. Divider */
@@ -142,23 +178,40 @@ hr {
 
 /* 11. Tab */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
 }
 
 .stTabs [data-baseweb="tab"] {
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--text) !important;
+    border-bottom: 2px solid var(--accent) !important;
 }
 
 /* 12. Expander */
 [data-testid="stExpander"] {
     background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius);
 }
 
-/* 13. Alert */
+[data-testid="stExpander"] summary {
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* 13. Alert monokrom */
 [data-testid="stAlert"] {
-    border-radius: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background-color: #f9fafb !important;
+    color: var(--text) !important;
 }
 
 /* 14. Sembunyikan tombol Deploy agar tampilan dashboard lebih bersih */
@@ -166,8 +219,10 @@ hr {
     display: none;
 }
 
-/* 15. Peta Folium (components.html) memenuhi lebar container */
+/* 15. Peta Folium memenuhi lebar container */
 iframe[title="st.iframe"] {
     width: 100% !important;
     max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
 }

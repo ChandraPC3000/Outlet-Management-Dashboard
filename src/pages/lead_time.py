@@ -14,7 +14,7 @@ izin = load_data_or_stop()
 snapshot = an.snapshot_date(izin)
 ldf = an.prepare_leadtime(izin, snapshot)
 
-st.title("⏱️ Lead Time & Antrean Tahapan")
+st.title("Lead Time & Antrean Tahapan")
 st.caption(
     f"Snapshot {snapshot:%d %B %Y}. Umur pengajuan dihitung dari tanggal pengajuan "
     "sampai tanggal snapshot; status menunjukkan tahapan berjalan."
@@ -25,7 +25,6 @@ st.info(
     "halaman ini adalah **lead time berjalan (aging)** per tahapan — bukan selisih tanggal "
     "masuk dan keluar tahap. Detail metode ada di file "
     "`Data/Data Lead Time NFR.xlsx` sheet **Metodologi**.",
-    icon="ℹ️",
 )
 
 # --- Filter -----------------------------------------------------------------
@@ -86,7 +85,7 @@ kpi[3].metric(
     format_hari(pending["Umur Pengajuan (hari)"].max()) if not pending.empty else "-",
 )
 
-st.subheader("🗺️ Peta Pengajuan pada Filter Ini")
+st.subheader("Peta Pengajuan pada Filter Ini")
 st.caption("Warna titik = Tipe SPBU.")
 render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
@@ -94,10 +93,10 @@ st.divider()
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🏗️ Funnel Tahapan")
+    st.subheader("Funnel Tahapan")
     st.plotly_chart(charts.funnel_tahapan(funnel), use_container_width=True)
 with kanan:
-    st.subheader("⏳ Aging per Tahapan")
+    st.subheader("Aging per Tahapan")
     if stage.empty:
         st.info("Tidak ada pengajuan pending pada filter ini.")
     else:
@@ -105,13 +104,13 @@ with kanan:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📌 Aging per Status Pending")
+    st.subheader("Aging per Status Pending")
     if aging.empty:
         st.info("Tidak ada pengajuan pending pada filter ini.")
     else:
         st.plotly_chart(charts.aging_status(aging), use_container_width=True)
 with kanan:
-    st.subheader("🗺️ Pending per Region")
+    st.subheader("Pending per Region")
     if region_pending.empty:
         st.info("Tidak ada pengajuan pending pada filter ini.")
     else:
@@ -119,7 +118,7 @@ with kanan:
 
 st.divider()
 
-st.subheader("📊 Resume Lead Time per Tahapan")
+st.subheader("Resume Lead Time per Tahapan")
 if stage.empty:
     st.info("Tidak ada pengajuan pending pada filter ini.")
 else:
@@ -136,7 +135,7 @@ else:
         },
     )
 
-st.subheader("📑 Resume per Status Pending")
+st.subheader("Resume per Status Pending")
 if aging.empty:
     st.info("Tidak ada pengajuan pending pada filter ini.")
 else:
@@ -153,10 +152,10 @@ else:
         },
     )
 
-st.subheader("🚨 20 Pengajuan Pending Terlama")
+st.subheader("20 Pengajuan Pending Terlama")
 terlama = an.oldest_pending(tampil, 20)
 if terlama.empty:
-    st.success("Tidak ada pengajuan pending 🎉")
+    st.success("Tidak ada pengajuan pending")
 else:
     st.dataframe(
         terlama,
@@ -170,7 +169,7 @@ else:
         },
     )
     st.download_button(
-        "⬇️ Unduh daftar pending (CSV)",
+        "Unduh daftar pending (CSV)",
         data=an.oldest_pending(tampil, len(pending))
         .to_csv(index=False)
         .encode("utf-8-sig"),
@@ -180,7 +179,7 @@ else:
         key="unduh_pending",
     )
 
-with st.expander("ℹ️ Metodologi & batasan", expanded=False):
+with st.expander("Metodologi & batasan", expanded=False):
     st.markdown(
         """
         - **Pending** = status Menunggu Verifikasi SBM/SAM/MS3, Menunggu Verifikasi,

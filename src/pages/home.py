@@ -25,7 +25,7 @@ occupancy = tersewa / (tersewa + tersedia) * 100 if (tersewa + tersedia) else 0
 pending = int((ldf["Kelompok"] == "Pending").sum())
 berjalan = int(sewa["Berjalan"].sum())
 
-st.title("🚀 NFR Management System")
+st.title("NFR Management System")
 st.caption(
     "Dashboard gabungan **Izin Prinsip**, **Lahan**, **Sewa**, **Occupancy**, "
     "**Nilai Sewa**, **Management Fee**, dan **Lead Time** · "
@@ -61,49 +61,49 @@ st.divider()
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🏗️ Posisi Tahapan Izin Prinsip")
+    st.subheader("Posisi Tahapan Izin Prinsip")
     st.plotly_chart(charts.funnel_tahapan(an.leadtime_funnel(ldf)), use_container_width=True)
 with kanan:
-    st.subheader("📋 Komposisi Status Pengajuan")
+    st.subheader("Komposisi Status Pengajuan")
     st.plotly_chart(charts.status_donut(izin), use_container_width=True)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🏞️ Occupancy Lahan per Region")
+    st.subheader("Occupancy Lahan per Region")
     st.plotly_chart(charts.occupancy_region(an.lahan_ringkasan(lahan)), use_container_width=True)
 with kanan:
-    st.subheader("📈 Tren Pengajuan per Bulan")
+    st.subheader("Tren Pengajuan per Bulan")
     st.plotly_chart(charts.tren_pengajuan(izin), use_container_width=True)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("⏳ Kontrak Sewa Berakhir 12 Bulan")
+    st.subheader("Kontrak Sewa Berakhir 12 Bulan")
     st.plotly_chart(charts.expiry_timeline(sewa, snapshot), use_container_width=True)
 with kanan:
-    st.subheader("💰 Nilai Sewa per Kategori")
+    st.subheader("Nilai Sewa per Kategori")
     st.plotly_chart(charts.nilai_kategori_sewa(sewa), use_container_width=True)
 
 st.divider()
 
-st.subheader("🗺️ Peta Sebaran SPBU Universe")
+st.subheader("Peta Sebaran SPBU Universe")
 st.caption("Warna titik = Tipe SPBU · zoom out menampilkan region, zoom in menampilkan SPBU.")
 render_spbu_map(universe, color_col="Tipe SPBU", region_col="Region", height=560)
 
-with st.expander("ℹ️ Panduan & sumber data", expanded=False):
+with st.expander("Panduan & sumber data", expanded=False):
     st.markdown(
         f"""
         **Halaman**
 
-        - **📍 Director Summary** — analisis satu SPBU: izin prinsip, lahan, sewa,
+        - **Director Summary** — analisis satu SPBU: izin prinsip, lahan, sewa,
           dan lead time outlet tersebut.
-        - **🔎 Data Explorer** — telusuri seluruh pengajuan izin dengan filter.
-        - **🧭 Ketersediaan Lahan** — daftar lahan siap tawarkan ke mitra + unduh Excel.
-        - **📈 Occupancy Rate** — persentase lahan tersewa per SPBU dan per wilayah.
-        - **🏞️ Lahan & Sewa** — occupancy lahan, nilai sewa, kontrak yang segera berakhir.
-        - **💰 Nilai Sewa** — analisis nilai sewa per wilayah, kategori, tipe brand, brand, tren.
-        - **💳 Management Fee** — analisis Nominal Fee per wilayah, kategori, brand, status, tren.
-        - **🗺️ LOKASI Intelligence** — peta SPBU + BVT Red/Blue Ocean dan tautan Google Maps.
-        - **⏱️ Lead Time** — funnel tahapan, aging pending, SLA, dan prioritas tindak lanjut.
+        - **Data Explorer** — telusuri seluruh pengajuan izin dengan filter.
+        - **Ketersediaan Lahan** — daftar lahan siap tawarkan ke mitra + unduh Excel.
+        - **Occupancy Rate** — persentase lahan tersewa per SPBU dan per wilayah.
+        - **Lahan & Sewa** — occupancy lahan, nilai sewa, kontrak yang segera berakhir.
+        - **Nilai Sewa** — analisis nilai sewa per wilayah, kategori, tipe brand, brand, tren.
+        - **Management Fee** — analisis Nominal Fee per wilayah, kategori, brand, status, tren.
+        - **LOKASI Intelligence** — peta SPBU + BVT Red/Blue Ocean dan tautan Google Maps.
+        - **Lead Time** — funnel tahapan, aging pending, SLA, dan prioritas tindak lanjut.
 
         **Sumber data (snapshot {snapshot:%d %B %Y})**
 

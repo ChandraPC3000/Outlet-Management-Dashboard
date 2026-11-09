@@ -211,8 +211,8 @@ def _load_or_stop(loader, label: str) -> pd.DataFrame:
     try:
         return loader()
     except DataLoadError as exc:
-        st.error(f"❌ {exc}")
-        if st.button("🔄 Muat ulang data", key=f"reload_{label}"):
+        st.error(f"{exc}")
+        if st.button("Muat ulang data", key=f"reload_{label}"):
             st.cache_data.clear()
             st.rerun()
         st.stop()

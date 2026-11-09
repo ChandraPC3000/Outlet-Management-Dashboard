@@ -214,15 +214,15 @@ def build_spbu_map(
             """
             <style>
             .region-label {
-                background: rgba(14, 17, 23, 0.88);
-                border: 1px solid #30363d;
-                color: #fafafa;
+                background: rgba(255, 255, 255, 0.95);
+                border: 1px solid #d1d5db;
+                color: #111827;
                 font-weight: 600;
                 font-size: 11px;
                 padding: 2px 5px;
                 box-shadow: none;
             }
-            .region-label::before { border-top-color: rgba(14, 17, 23, 0.88) !important; }
+            .region-label::before { border-top-color: rgba(255, 255, 255, 0.95) !important; }
             </style>
             """
         )
@@ -242,7 +242,7 @@ def render_spbu_map(
 ) -> None:
     if df.dropna(subset=["Latitude", "Longitude"]).empty:
         st_html(
-            "<div style='padding:24px;color:#8b949e;font-family:Inter,sans-serif'>"
+            "<div style='padding:24px;color:#6b7280;font-family:Inter,sans-serif'>"
             "Tidak ada koordinat SPBU pada filter ini.</div>",
             height=80,
             scrolling=False,

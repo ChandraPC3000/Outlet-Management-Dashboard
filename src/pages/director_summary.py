@@ -18,11 +18,11 @@ ldf = an.prepare_leadtime(izin, snapshot)
 lahan = an.prepare_lahan(lahan_mentah, izin)
 sewa = an.prepare_sewa(sewa_mentah, izin, snapshot)
 
-st.title("📊 Director Summary")
+st.title("Director Summary")
 st.caption("Pilih nomor SPBU di panel filter untuk melihat analisis outlet secara menyeluruh.")
 
 with st.sidebar:
-    st.header("🎛️ Filter Panel")
+    st.header("Filter Panel")
     status_level = st.multiselect(
         "Status Level",
         sorted(izin["Status Level"].dropna().unique()),
@@ -52,7 +52,7 @@ selected = spbu_selector(izin_pilih, show_header=False)
 
 if selected is None:
     st.info(
-        "👈 Pilih **Nomor SPBU** pada dropdown di sidebar untuk menampilkan analisis "
+        "Pilih **Nomor SPBU** pada dropdown di sidebar untuk menampilkan analisis "
         "izin prinsip, lahan, sewa, dan lead time outlet tersebut."
     )
     st.subheader("SPBU dengan tenant terbanyak")
@@ -79,11 +79,11 @@ st.caption(
     f"{format_angka(len(sewa_spbu))} kontrak sewa."
 )
 
-st.subheader("🗺️ Lokasi SPBU")
+st.subheader("Lokasi SPBU")
 render_spbu_map(data, color_col="Tipe SPBU", region_col=None, height=380)
 
 tab_izin, tab_lahan, tab_lead, tab_detail = st.tabs(
-    ["📊 Izin Prinsip", "🏞️ Lahan & Sewa", "⏱️ Lead Time", "📑 Detail"]
+    ["Izin Prinsip", "Lahan & Sewa", "Lead Time", "Detail"]
 )
 
 # ================================================================ IZIN PRINSIP
@@ -107,7 +107,7 @@ with tab_izin:
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("💰 Sewa per Brand")
+        st.subheader("Sewa per Brand")
         st.plotly_chart(
             charts.sewa_per_brand(data, top_n=min(len(data), 20)),
             use_container_width=True,
@@ -115,10 +115,10 @@ with tab_izin:
         if data["Nama Brand"].nunique() > 20:
             st.caption("Menampilkan 20 brand dengan nilai sewa terbesar.")
     with kanan:
-        st.subheader("📋 Status Pengajuan")
+        st.subheader("Status Pengajuan")
         st.plotly_chart(charts.status_donut(data), use_container_width=True)
 
-    st.subheader("📑 Detail Izin Prinsip")
+    st.subheader("Detail Izin Prinsip")
     kolom = [
         "ID Pengajuan",
         "Nama Tenant",
@@ -147,7 +147,7 @@ with tab_izin:
         },
     )
     st.download_button(
-        "⬇️ Unduh data izin SPBU ini (CSV)",
+        "Unduh data izin SPBU ini (CSV)",
         data=data.to_csv(index=False).encode("utf-8-sig"),
         file_name=f"nfr_izin_spbu_{selected}.csv",
         mime="text/csv",
@@ -183,13 +183,13 @@ with tab_lahan:
 
         kiri, kanan = st.columns(2)
         with kiri:
-            st.subheader("🏢 Tenant by Nilai Sewa Lahan")
+            st.subheader("Tenant by Nilai Sewa Lahan")
             if lahan_spbu.empty:
                 st.info("Belum ada data lahan.")
             else:
                 st.plotly_chart(charts.top_tenant_sewa(lahan_spbu), use_container_width=True)
         with kanan:
-            st.subheader("⏳ Kontrak Berakhir 12 Bulan")
+            st.subheader("Kontrak Berakhir 12 Bulan")
             if sewa_spbu.empty:
                 st.info("Belum ada data kontrak sewa.")
             else:
@@ -197,7 +197,7 @@ with tab_lahan:
                     charts.expiry_timeline(sewa_spbu, snapshot), use_container_width=True
                 )
 
-        st.subheader("📑 Detail Lahan")
+        st.subheader("Detail Lahan")
         if lahan_spbu.empty:
             st.info("Belum ada data lahan untuk SPBU ini.")
         else:
@@ -233,7 +233,7 @@ with tab_lahan:
                 },
             )
 
-        st.subheader("📑 Detail Kontrak Sewa")
+        st.subheader("Detail Kontrak Sewa")
         if sewa_spbu.empty:
             st.info("Belum ada kontrak sewa untuk SPBU ini.")
         else:
@@ -270,7 +270,7 @@ with tab_lahan:
                 },
             )
             st.download_button(
-                "⬇️ Unduh kontrak sewa SPBU ini (CSV)",
+                "Unduh kontrak sewa SPBU ini (CSV)",
                 data=sewa_spbu.to_csv(index=False).encode("utf-8-sig"),
                 file_name=f"nfr_sewa_spbu_{selected}.csv",
                 mime="text/csv",
@@ -296,22 +296,22 @@ with tab_lead:
     )
 
     if pending_spbu.empty:
-        st.success("Tidak ada pengajuan pending untuk SPBU ini 🎉")
+        st.success("Tidak ada pengajuan pending untuk SPBU ini")
     else:
         st.divider()
         kiri, kanan = st.columns(2)
         with kiri:
-            st.subheader("📌 Status Pengajuan")
+            st.subheader("Status Pengajuan")
             st.plotly_chart(charts.status_donut(lt_spbu), use_container_width=True)
         with kanan:
-            st.subheader("⏳ Aging per Status")
+            st.subheader("Aging per Status")
             aging_spbu = an.leadtime_aging(lt_spbu)
             if aging_spbu.empty:
                 st.info("Tidak ada data aging.")
             else:
                 st.plotly_chart(charts.aging_status(aging_spbu), use_container_width=True)
 
-        st.subheader("📑 Pengajuan Pending")
+        st.subheader("Pengajuan Pending")
         tabel_pending = pending_spbu.loc[
             :,
             [
@@ -340,7 +340,7 @@ with tab_lead:
             },
         )
         st.download_button(
-            "⬇️ Unduh pending SPBU ini (CSV)",
+            "Unduh pending SPBU ini (CSV)",
             data=pending_spbu.to_csv(index=False).encode("utf-8-sig"),
             file_name=f"nfr_pending_spbu_{selected}.csv",
             mime="text/csv",
@@ -350,7 +350,7 @@ with tab_lead:
 
 # ======================================================================= DETAIL
 with tab_detail:
-    st.subheader("📑 Seluruh Data Izin Prinsip SPBU Ini")
+    st.subheader("Seluruh Data Izin Prinsip SPBU Ini")
     st.dataframe(
         data.drop(columns=["Periode"], errors="ignore"),
         hide_index=True,

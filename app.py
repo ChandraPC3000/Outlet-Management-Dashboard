@@ -53,7 +53,7 @@ def inject_css(path) -> None:
 inject_css(STYLE_PATH)
 
 if LOGO_PATH.exists():
-    st.logo(str(LOGO_PATH), size="large")
+    st.logo(str(LOGO_PATH), size="medium")
 
 load_data_or_stop = _data_loader.load_data_or_stop
 
@@ -64,26 +64,26 @@ load_data_or_stop()
 navigation = st.navigation(
     {
         "Ringkasan": [
-            st.Page("src/pages/home.py", title="Home", icon="🏠", default=True),
-            st.Page("src/pages/director_summary.py", title="Director Summary", icon="📊"),
+            st.Page("src/pages/home.py", title="Home", default=True),
+            st.Page("src/pages/director_summary.py", title="Director Summary"),
         ],
         "Lahan & Mitra": [
-            st.Page("src/pages/ketersediaan.py", title="Ketersediaan Lahan", icon="🧭"),
-            st.Page("src/pages/occupancy.py", title="Occupancy Rate", icon="📈"),
-            st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa", icon="🏞️"),
+            st.Page("src/pages/ketersediaan.py", title="Ketersediaan Lahan"),
+            st.Page("src/pages/occupancy.py", title="Occupancy Rate"),
+            st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa"),
         ],
         "Komersial": [
-            st.Page("src/pages/nilai_sewa.py", title="Nilai Sewa", icon="💰"),
-            st.Page("src/pages/management_fee.py", title="Management Fee", icon="💳"),
+            st.Page("src/pages/nilai_sewa.py", title="Nilai Sewa"),
+            st.Page("src/pages/management_fee.py", title="Management Fee"),
         ],
         "Lokasi & BVT": [
-            st.Page("src/pages/lokasi.py", title="LOKASI Intelligence", icon="🗺️"),
+            st.Page("src/pages/lokasi.py", title="LOKASI Intelligence"),
         ],
         "Eksplorasi": [
-            st.Page("src/pages/data_explorer.py", title="Data Explorer", icon="🔎"),
+            st.Page("src/pages/data_explorer.py", title="Data Explorer"),
         ],
         "Operasional": [
-            st.Page("src/pages/lead_time.py", title="Lead Time", icon="⏱️"),
+            st.Page("src/pages/lead_time.py", title="Lead Time"),
         ],
     }
 )

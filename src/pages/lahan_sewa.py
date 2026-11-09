@@ -17,14 +17,14 @@ lahan = an.prepare_lahan(lahan_mentah, izin)
 sewa = an.prepare_sewa(sewa_mentah, izin, snapshot)
 universe = universe_ringkasan(load_spbu_universe())
 
-st.title("🏞️ Lahan & Sewa")
+st.title("Lahan & Sewa")
 st.caption(
     f"Analisis {format_angka(len(lahan))} lahan dan {format_angka(len(sewa))} kontrak sewa "
     f"per snapshot {snapshot:%d %B %Y} · {format_angka(lahan['No. SPBU'].nunique())} SPBU "
     f"dengan lahan · total universe {format_angka(universe['total'])} SPBU."
 )
 
-tab_lahan, tab_sewa = st.tabs(["🏞️ Master Lahan", "📄 Sewa Lahan"])
+tab_lahan, tab_sewa = st.tabs(["Master Lahan", "Sewa Lahan"])
 
 # ============================================================== MASTER LAHAN
 with tab_lahan:
@@ -91,7 +91,7 @@ with tab_lahan:
     kpi2[0].metric("Luas Total", f"{format_angka(tampil['Luas (M2)'].sum())} m²")
     kpi2[1].metric("Nilai Sewa Lahan", format_rupiah(tampil["Harga Sewa (Rp)"].sum()))
 
-    st.subheader("🗺️ Peta Lahan")
+    st.subheader("Peta Lahan")
     st.caption("Warna titik = Tipe SPBU.")
     render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=460)
 
@@ -99,23 +99,23 @@ with tab_lahan:
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🏙️ Tersewa vs Tersedia per Region")
+        st.subheader("Tersewa vs Tersedia per Region")
         st.plotly_chart(
             charts.occupancy_region(an.lahan_ringkasan(tampil)), use_container_width=True
         )
     with kanan:
-        st.subheader("✅ Status Approval Lahan")
+        st.subheader("Status Approval Lahan")
         st.plotly_chart(charts.approval_lahan(tampil), use_container_width=True)
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🏢 Top 10 Tenant by Nilai Sewa")
+        st.subheader("Top 10 Tenant by Nilai Sewa")
         st.plotly_chart(charts.top_tenant_sewa(tampil), use_container_width=True)
     with kanan:
-        st.subheader("📐 Luas vs Nilai Sewa")
+        st.subheader("Luas vs Nilai Sewa")
         st.plotly_chart(charts.scatter_luas_sewa(tampil), use_container_width=True)
 
-    st.subheader("📑 Detail Lahan")
+    st.subheader("Detail Lahan")
     kolom = [
         "No. SPBU",
         "Region",
@@ -148,7 +148,7 @@ with tab_lahan:
         },
     )
     st.download_button(
-        "⬇️ Unduh data lahan (CSV)",
+        "Unduh data lahan (CSV)",
         data=tabel.to_csv(index=False).encode("utf-8-sig"),
         file_name="nfr_master_lahan.csv",
         mime="text/csv",
@@ -223,7 +223,7 @@ with tab_sewa:
     kpi[2].metric("Berakhir ≤90 Hari", format_angka(len(segera)))
     kpi[3].metric("Nilai Sewa", format_rupiah(tampil_s["Total Harga Sewa"].sum()))
 
-    st.subheader("🗺️ Peta Kontrak Sewa")
+    st.subheader("Peta Kontrak Sewa")
     st.caption("Warna titik = Tipe SPBU.")
     render_spbu_map(tampil_s, color_col="Tipe SPBU", region_col="Region", height=460)
 
@@ -231,23 +231,23 @@ with tab_sewa:
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("📋 Status Kontrak")
+        st.subheader("Status Kontrak")
         st.plotly_chart(charts.sewa_status_donut(tampil_s), use_container_width=True)
     with kanan:
-        st.subheader("⏳ Jadwal Berakhir 12 Bulan")
+        st.subheader("Jadwal Berakhir 12 Bulan")
         st.plotly_chart(charts.expiry_timeline(tampil_s, snapshot), use_container_width=True)
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("💰 Nilai Sewa per Kategori")
+        st.subheader("Nilai Sewa per Kategori")
         st.plotly_chart(charts.nilai_kategori_sewa(tampil_s), use_container_width=True)
     with kanan:
-        st.subheader("🏷️ Top 10 Brand by Nilai Sewa")
+        st.subheader("Top 10 Brand by Nilai Sewa")
         st.plotly_chart(charts.top_brand_sewa(tampil_s), use_container_width=True)
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🏷️ Nilai Sewa per Tipe Brand")
+        st.subheader("Nilai Sewa per Tipe Brand")
         st.plotly_chart(
             charts.pie_nilai(
                 an.sewa_nilai_by(tampil_s, "Jenis Brand"),
@@ -258,7 +258,7 @@ with tab_sewa:
             use_container_width=True,
         )
     with kanan:
-        st.subheader("🧩 Top 10 Sub Kategori")
+        st.subheader("Top 10 Sub Kategori")
         st.plotly_chart(
             charts.bar_nilai(
                 an.sewa_nilai_by(tampil_s, "Sub Kategori"),
@@ -271,7 +271,7 @@ with tab_sewa:
             use_container_width=True,
         )
 
-    st.subheader("📑 Detail Kontrak Sewa")
+    st.subheader("Detail Kontrak Sewa")
     kolom_s = [
         "No. SPBU",
         "Region",
@@ -307,7 +307,7 @@ with tab_sewa:
         },
     )
     st.download_button(
-        "⬇️ Unduh kontrak sewa (CSV)",
+        "Unduh kontrak sewa (CSV)",
         data=tabel_s.to_csv(index=False).encode("utf-8-sig"),
         file_name="nfr_sewa_lahan.csv",
         mime="text/csv",

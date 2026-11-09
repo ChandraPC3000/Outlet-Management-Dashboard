@@ -66,14 +66,14 @@ bvt_semua["Region"] = (
     bvt_semua["Region"].fillna(bvt_semua["Provinsi_key"].map(prov_region)).fillna("Tidak diketahui")
 )
 
-st.title("🗺️ LOKASI Intelligence")
+st.title("LOKASI Intelligence")
 st.caption(
     "Analisis lokasi SPBU + **BVT Red/Blue Ocean**. Rekomendasi untuk mitra adalah "
     "Blue Ocean, tetapi praktik lapangan boleh memakai Red Ocean. Titik peta memakai "
     "koordinat master Lembaga Penyalur/BVT; tautan Google Maps tersedia per SPBU."
 )
 
-with st.expander("🔎 Filter lokasi & BVT", expanded=True):
+with st.expander("Filter lokasi & BVT", expanded=True):
     f1, f2 = st.columns([2, 2])
     cakupan = f1.radio(
         "Cakupan jenis lembaga penyalur",
@@ -222,22 +222,20 @@ with kiri:
         f"{format_angka(blue)} SPBU punya peluang usaha dengan pesaing minim "
         f"({format_angka(blue / total * 100, 1)}% dari filter). "
         "Prioritaskan kategori Blue Ocean di tabel/unduhan.",
-        icon="🔵",
     )
 with kanan:
     st.warning(
         f"**Untuk SPBU Owner — Red Ocean sebagai pembanding**\n\n"
         f"{format_angka(red)} SPBU berada di area dengan bisnis sekitar yang sudah ramai. "
         "Tetap bisa dipakai bila pemilik ingin trafik/proven demand yang sudah ada.",
-        icon="🔴",
     )
 
 tab_peta, tab_bvt, tab_tabel = st.tabs(
-    ["🗺️ Peta & Ringkasan", "🔵 Red/Blue Ocean", "📑 Tabel & Unduh"]
+    ["Peta & Ringkasan", "Red/Blue Ocean", "Tabel & Unduh"]
 )
 
 with tab_peta:
-    st.subheader("🗺️ Peta Lokasi SPBU")
+    st.subheader("Peta Lokasi SPBU")
     st.caption(
         "Warna titik = kelas BVT. Peta memakai tile **OpenStreetMap**. Saat **zoom out "
         "(≤5)** hanya tampil 8 lingkaran besar per region; **zoom in** menampilkan "
@@ -245,8 +243,8 @@ with tab_peta:
         "gunakan tautan Google Maps di tabel untuk verifikasi posisi."
     )
     st.markdown(
-        "🔵 **Blue Ocean** &nbsp;·&nbsp; 🟡 **Peluang Campuran** &nbsp;·&nbsp; "
-        "🔴 **Red Ocean** &nbsp;·&nbsp; ⚪ **Tanpa data BVT**"
+        "**Blue Ocean** &nbsp;·&nbsp; **Peluang Campuran** &nbsp;·&nbsp; "
+        "**Red Ocean** &nbsp;·&nbsp; **Tanpa data BVT**"
     )
     st_html(
         build_map(data).get_root().render(),
@@ -257,30 +255,30 @@ with tab_peta:
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🏷️ Komposisi BVT")
+        st.subheader("Komposisi BVT")
         st.plotly_chart(charts.bvt_donut(data), use_container_width=True)
     with kanan:
-        st.subheader("🗺️ BVT per Provinsi")
+        st.subheader("BVT per Provinsi")
         st.plotly_chart(charts.bvt_provinsi(data), use_container_width=True)
 
 with tab_bvt:
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🔴 Pesaing Sekitar (Red Ocean)")
+        st.subheader("Pesaing Sekitar (Red Ocean)")
         st.caption("Kategori usaha yang sudah banyak/jenuh di sekitar SPBU.")
         st.plotly_chart(
             charts.bar_hitung(top_red, "Kategori", "Jumlah", "Jumlah SPBU", warna="#f85149"),
             use_container_width=True,
         )
     with kanan:
-        st.subheader("🔵 Peluang (Blue Ocean)")
+        st.subheader("Peluang (Blue Ocean)")
         st.caption("Kategori usaha yang masih minim pesaing dan cocok dikembangkan.")
         st.plotly_chart(
             charts.bar_hitung(top_blue, "Kategori", "Jumlah", "Jumlah SPBU", warna="#2f81f7"),
             use_container_width=True,
         )
 
-    st.subheader("📊 Sebaran Blue Ocean Score")
+    st.subheader("Sebaran Blue Ocean Score")
     bins = [-0.01, 20, 40, 60, 80, 100]
     label = ["0–20", "20–40", "40–60", "60–80", "80–100"]
     skor = pd.cut(data["Blue Ocean Score (%)"], bins=bins, labels=label, include_lowest=True)
@@ -292,7 +290,7 @@ with tab_bvt:
         use_container_width=True,
     )
 
-    st.subheader("🏆 Top 20 Blue Ocean")
+    st.subheader("Top 20 Blue Ocean")
     top20 = (
         data[data["Kelas BVT"] == "Blue Ocean"]
         .nlargest(20, "Blue Ocean Score (%)")
@@ -320,7 +318,7 @@ with tab_bvt:
     )
 
 with tab_tabel:
-    st.subheader("📑 Detail SPBU + BVT")
+    st.subheader("Detail SPBU + BVT")
     kolom = [
         "No. SPBU",
         "Nama SPBU",
@@ -361,7 +359,7 @@ with tab_tabel:
         },
     )
     st.download_button(
-        "⬇️ Unduh data LOKASI Intelligence (CSV)",
+        "Unduh data LOKASI Intelligence (CSV)",
         data=tabel.to_csv(index=False).encode("utf-8-sig"),
         file_name="nfr_lokasi_intelligence.csv",
         mime="text/csv",
@@ -376,7 +374,7 @@ with tab_tabel:
         "Kolom kosong pada tabel dashboard diisi dari master ini."
     )
 
-with st.expander("ℹ️ Definisi BVT, sumber data & catatan tilok", expanded=False):
+with st.expander("Definisi BVT, sumber data & catatan tilok", expanded=False):
     st.markdown(
         """
         **Red Ocean** — usaha/bisnis di sekitar SPBU yang sudah jenuh atau banyak

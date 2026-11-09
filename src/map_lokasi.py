@@ -97,10 +97,10 @@ def _popup_region(item: dict) -> str:
         f"<div style='min-width:180px'>"
         f"<b>REGION {html.escape(item['region'])}</b><br>"
         f"<span style='font-size:18px'><b>{item['jumlah']:,}</b></span> SPBU<br>"
-        f"🔵 Blue Ocean: {item['blue']:,}<br>"
-        f"🟡 Peluang Campuran: {item['campuran']:,}<br>"
-        f"🔴 Red Ocean: {item['red']:,}<br>"
-        f"⚪ Tanpa data BVT: {item['tanpa']:,}<br>"
+        f"Blue Ocean: {item['blue']:,}<br>"
+        f"Peluang Campuran: {item['campuran']:,}<br>"
+        f"Red Ocean: {item['red']:,}<br>"
+        f"Tanpa data BVT: {item['tanpa']:,}<br>"
         f"Rata-rata Blue Score: {skor}"
         f"</div>"
     ).replace(",", ".")
@@ -124,15 +124,15 @@ def build_map(df: pd.DataFrame) -> folium.Map:
             """
             <style>
             .region-label {
-                background: rgba(14, 17, 23, 0.88);
-                border: 1px solid #30363d;
-                color: #fafafa;
+                background: rgba(255, 255, 255, 0.95);
+                border: 1px solid #d1d5db;
+                color: #111827;
                 font-weight: 600;
                 font-size: 11px;
                 padding: 2px 5px;
                 box-shadow: none;
             }
-            .region-label::before { border-top-color: rgba(14, 17, 23, 0.88) !important; }
+            .region-label::before { border-top-color: rgba(255, 255, 255, 0.95) !important; }
             </style>
             """
         )

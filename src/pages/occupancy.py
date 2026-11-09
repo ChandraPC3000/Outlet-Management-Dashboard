@@ -17,13 +17,13 @@ lahan = an.prepare_lahan(load_lahan_or_stop(), izin)
 occ_semua = an.occupancy_per_spbu(lahan)
 universe = universe_ringkasan(load_spbu_universe())
 
-st.title("📈 Occupancy Rate Lahan")
+st.title("Occupancy Rate Lahan")
 st.caption(
     "Persentase lahan tersewa per SPBU. Rumus: **lahan tersewa ÷ (tersewa + tersedia)**, "
     "dihitung per SPBU lalu diagregasi sesuai level wilayah."
 )
 
-with st.expander("🔎 Filter wilayah & tampilan", expanded=True):
+with st.expander("Filter wilayah & tampilan", expanded=True):
     f1, f2, f3 = st.columns(3)
 
     def _reset_provinsi() -> None:
@@ -138,7 +138,7 @@ st.caption(
     "yang memiliki data lahan."
 )
 
-st.subheader("🗺️ Peta Occupancy per SPBU")
+st.subheader("Peta Occupancy per SPBU")
 st.caption("Warna titik = Tipe SPBU; ukuran/zoom mengikuti filter.")
 render_spbu_map(occ, color_col="Tipe SPBU", region_col="Region", height=480)
 
@@ -146,10 +146,10 @@ st.divider()
 
 kiri, kanan = st.columns([1, 1])
 with kiri:
-    st.subheader("🎯 Occupancy Keseluruhan")
+    st.subheader("Occupancy Keseluruhan")
     st.plotly_chart(charts.occupancy_gauge(occupancy), use_container_width=True)
 with kanan:
-    st.subheader("🏷️ Sebaran SPBU")
+    st.subheader("Sebaran SPBU")
     st.plotly_chart(charts.occupancy_status_donut(an.occupancy_status(occ)), use_container_width=True)
 
 data_level = an.occupancy_by(occ, level)
@@ -159,21 +159,21 @@ if len(data_level) > 30:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader(f"📊 Occupancy per {level}")
+    st.subheader(f"Occupancy per {level}")
     st.plotly_chart(charts.occupancy_bar(data_chart, level), use_container_width=True)
 with kanan:
-    st.subheader("🔥 Distribusi Occupancy per Wilayah")
+    st.subheader("Distribusi Occupancy per Wilayah")
     heat_data = an.occupancy_heatmap(occ, level)
     heat_data = heat_data.loc[heat_data.sum(axis=1).nlargest(20).index]
     st.plotly_chart(charts.occupancy_heatmap(heat_data), use_container_width=True)
 
-st.subheader("🔵 Total Lahan vs Occupancy per SPBU")
+st.subheader("Total Lahan vs Occupancy per SPBU")
 st.plotly_chart(charts.occupancy_scatter(occ), use_container_width=True)
 
 sub = occ[occ["Total Lahan"] >= min_total]
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🏆 10 SPBU Occupancy Tertinggi")
+    st.subheader("10 SPBU Occupancy Tertinggi")
     if sub.empty:
         st.info("Tidak ada SPBU dengan total lahan memenuhi ambang minimum.")
     else:
@@ -182,7 +182,7 @@ with kiri:
             use_container_width=True,
         )
 with kanan:
-    st.subheader("🚨 10 SPBU Occupancy Terendah")
+    st.subheader("10 SPBU Occupancy Terendah")
     if sub.empty:
         st.info("Tidak ada SPBU dengan total lahan memenuhi ambang minimum.")
     else:
@@ -193,7 +193,7 @@ with kanan:
 
 st.divider()
 
-st.subheader("📑 Detail Occupancy per SPBU")
+st.subheader("Detail Occupancy per SPBU")
 kolom = ["No. SPBU", "Region", "Provinsi", "Kab./Kota", "Tersewa", "Tersedia", "Total Lahan", "Occupancy (%)"]
 tabel = occ.loc[:, kolom].sort_values("Occupancy (%)", ascending=False)
 st.dataframe(
@@ -206,7 +206,7 @@ st.dataframe(
     },
 )
 st.download_button(
-    "⬇️ Unduh Excel Occupancy per SPBU (Data + OR_Lahan)",
+    "Unduh Excel Occupancy per SPBU (Data + OR_Lahan)",
     data=build_occupancy_excel(),
     file_name="nfr_occupancy_per_spbu_November 2026.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -218,7 +218,7 @@ st.caption(
     "(sheet `Data` + pivot `OR_Lahan`), tidak mengikuti filter tampilan di atas."
 )
 
-with st.expander("ℹ️ Cara menghitung", expanded=False):
+with st.expander("Cara menghitung", expanded=False):
     st.markdown(
         """
         - **Per SPBU:** `Occupancy = lahan tersewa ÷ (lahan tersewa + lahan tersedia)`.

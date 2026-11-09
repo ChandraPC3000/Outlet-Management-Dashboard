@@ -73,10 +73,10 @@ def test_director_summary() -> None:
     headers = [h.value for h in app.header]
     assert any(header.startswith("SPBU ") for header in headers), headers
     assert [t.label for t in app.tabs] == [
-        "📊 Izin Prinsip",
-        "🏞️ Lahan & Sewa",
-        "⏱️ Lead Time",
-        "📑 Detail",
+        "Izin Prinsip",
+        "Lahan & Sewa",
+        "Lead Time",
+        "Detail",
     ]
 
     metrics = {m.label: m.value for m in app.metric}
@@ -101,7 +101,7 @@ def test_data_explorer() -> None:
 
 def test_lahan_sewa() -> None:
     app = _run("src/pages/lahan_sewa.py")
-    assert [t.label for t in app.tabs] == ["🏞️ Master Lahan", "📄 Sewa Lahan"]
+    assert [t.label for t in app.tabs] == ["Master Lahan", "Sewa Lahan"]
     metrics = {m.label: m.value for m in app.metric}
     for label in ("Total Lahan", "Tersewa", "Tersedia", "Occupancy"):
         assert label in metrics, metrics

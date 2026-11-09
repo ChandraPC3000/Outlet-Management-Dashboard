@@ -24,7 +24,7 @@ def _excel_cached(data: object, deskripsi: str) -> bytes:
     return build_ketersediaan_excel(data, deskripsi)
 
 
-st.title("🧭 Ketersediaan Lahan NFR")
+st.title("Ketersediaan Lahan NFR")
 st.caption(
     f"Daftar lahan **tersedia** untuk mitra yang mencari lokasi outlet baru di SPBU · "
     f"snapshot {KETERSEDIAAN_SNAPSHOT}."
@@ -34,10 +34,9 @@ st.info(
     "Kolom **harga sewa, tipe SPBU, kelas SPBU, GES, dan fasilitas EV tidak ditampilkan** "
     "(classified). Nomor PIC diambil dari *List Lembaga Penyalur 13 Oktober 2026*: "
     "kolom T (owner/manager) dan kolom V (kantor SPBU).",
-    icon="🔒",
 )
 
-with st.expander("🔎 Filter lahan tersedia", expanded=True):
+with st.expander("Filter lahan tersedia", expanded=True):
     f1, f2, f3 = st.columns(3)
 
     def _clear_kota() -> None:
@@ -178,7 +177,7 @@ st.caption(
     "yang memiliki lahan tersedia pada filter ini."
 )
 
-st.subheader("🗺️ Peta Lahan Tersedia per SPBU")
+st.subheader("Peta Lahan Tersedia per SPBU")
 st.caption("Warna titik = Tipe SPBU.")
 peta_region = universe_df[["No. SPBU", "Region"]].drop_duplicates("No. SPBU")
 render_spbu_map(
@@ -202,26 +201,26 @@ spbu = an.volume_per_spbu(tampil)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🗺️ Top 10 Provinsi")
+    st.subheader("Top 10 Provinsi")
     st.plotly_chart(charts.top_provinsi_lahan(ringkasan), use_container_width=True)
 with kanan:
-    st.subheader("🛣️ Road Type")
+    st.subheader("Road Type")
     st.plotly_chart(charts.road_type_bar(tampil), use_container_width=True)
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📊 SES Dominan")
+    st.subheader("SES Dominan")
     st.plotly_chart(charts.ses_bar(tampil), use_container_width=True)
 with kanan:
-    st.subheader("⛽ Top 10 SPBU by Volume")
+    st.subheader("Top 10 SPBU by Volume")
     st.plotly_chart(charts.volume_spbu_bar(spbu), use_container_width=True)
 
-st.subheader("📐 Distribusi Luas Lahan")
+st.subheader("Distribusi Luas Lahan")
 st.plotly_chart(charts.luas_bar(an.luas_kategori(tampil)), use_container_width=True)
 
 st.divider()
 
-st.subheader("📑 Daftar Lahan untuk Mitra")
+st.subheader("Daftar Lahan untuk Mitra")
 st.caption(
     f"{format_angka(len(tampil))} lahan · {format_angka(tampil['No. SPBU'].nunique())} SPBU · "
     "kolom classified tidak ditampilkan."
@@ -273,7 +272,7 @@ filter_desc = "; ".join(deskripsi_filter)
 unduh1, unduh2 = st.columns(2)
 with unduh1:
     st.download_button(
-        "⬇️ Unduh Excel (format mitra)",
+        "Unduh Excel (format mitra)",
         data=_excel_cached(tampil, filter_desc),
         file_name="Ketersediaan Lahan NFR - November 2026.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -282,7 +281,7 @@ with unduh1:
     )
 with unduh2:
     st.download_button(
-        "⬇️ Unduh CSV",
+        "Unduh CSV",
         data=tabel.to_csv(index=False).encode("utf-8-sig"),
         file_name="Ketersediaan Lahan NFR - November 2026.csv",
         mime="text/csv",
@@ -290,7 +289,7 @@ with unduh2:
         key="unduh_ketersediaan_csv",
     )
 
-with st.expander("ℹ️ Tentang data & format unduhan", expanded=False):
+with st.expander("Tentang data & format unduhan", expanded=False):
     st.markdown(
         """
         - **Sumber:** `Ketersediaan Lahan NFR - November 2026.xlsx` (hanya baris

@@ -14,7 +14,7 @@ from src.spbu_universe import load_spbu_universe, universe_ringkasan
 df = load_data_or_stop()
 universe = universe_ringkasan(load_spbu_universe())
 
-st.title("🔎 Data Explorer")
+st.title("Data Explorer")
 st.caption(
     "Telusuri seluruh pengajuan. Gunakan panel filter di sidebar; "
     "hasil filter langsung terlihat di KPI, grafik, dan tabel."
@@ -47,12 +47,12 @@ st.caption(
     "KPI **SPBU di Data** menghitung SPBU yang punya baris pada hasil filter."
 )
 
-st.subheader("🗺️ Peta SPBU Hasil Filter")
+st.subheader("Peta SPBU Hasil Filter")
 st.caption("Warna titik = Tipe SPBU.")
 render_spbu_map(filtered, color_col="Tipe SPBU", region_col="Region", height=500)
 
 tab_visual, tab_tabel, tab_ringkasan = st.tabs(
-    ["📈 Visualisasi", "📑 Tabel", "🧾 Ringkasan"]
+    ["Visualisasi", "Tabel", "Ringkasan"]
 )
 
 with tab_visual:
@@ -61,18 +61,18 @@ with tab_visual:
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🏷️ Kategori Teratas")
+        st.subheader("Kategori Teratas")
         st.plotly_chart(charts.kategori_bar(filtered), use_container_width=True)
     with kanan:
-        st.subheader("📋 Komposisi Status")
+        st.subheader("Komposisi Status")
         st.plotly_chart(charts.status_donut(filtered), use_container_width=True)
 
     kiri, kanan = st.columns(2)
     with kiri:
-        st.subheader("🗺️ Sebaran Region")
+        st.subheader("Sebaran Region")
         st.plotly_chart(charts.region_bar(filtered), use_container_width=True)
     with kanan:
-        st.subheader("💰 Brand dengan Sewa Terbesar")
+        st.subheader("Brand dengan Sewa Terbesar")
         st.plotly_chart(charts.sewa_per_brand(filtered, top_n=10), use_container_width=True)
 
 with tab_tabel:
@@ -103,7 +103,7 @@ with tab_tabel:
     )
 
     st.download_button(
-        "⬇️ Unduh hasil filter (CSV)",
+        "Unduh hasil filter (CSV)",
         data=filtered.drop(columns=["Periode"], errors="ignore")
         .to_csv(index=False)
         .encode("utf-8-sig"),

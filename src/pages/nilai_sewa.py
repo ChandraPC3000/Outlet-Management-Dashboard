@@ -16,13 +16,13 @@ snapshot = an.snapshot_date(izin)
 sewa_semua = an.prepare_sewa(load_sewa_or_stop(), izin, snapshot)
 universe = universe_ringkasan(load_spbu_universe())
 
-st.title("💰 Nilai Sewa Lahan")
+st.title("Nilai Sewa Lahan")
 st.caption(
     "Analisis nilai sewa dari **Pengajuan NFR Sewa Lahan**: per wilayah, kategori, "
     "tipe brand, brand, sub kategori, status, dan tren bulanan."
 )
 
-with st.expander("🔎 Filter nilai sewa", expanded=True):
+with st.expander("Filter nilai sewa", expanded=True):
     f1, f2, f3 = st.columns(3)
 
     def _reset_provinsi() -> None:
@@ -138,7 +138,7 @@ st.caption(
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )
 
-st.subheader("🗺️ Peta Sebaran Nilai Sewa")
+st.subheader("Peta Sebaran Nilai Sewa")
 st.caption("Warna titik = Tipe SPBU.")
 render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
@@ -147,13 +147,13 @@ st.divider()
 data_level = an.sewa_nilai_by(tampil, level)
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader(f"🗺️ Nilai Sewa per {level}")
+    st.subheader(f"Nilai Sewa per {level}")
     st.plotly_chart(
         charts.bar_nilai(data_level, level, "Nilai Sewa (Rp)", "Nilai sewa (Rp)"),
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏷️ Nilai Sewa per Tipe Brand")
+    st.subheader("Nilai Sewa per Tipe Brand")
     st.plotly_chart(
         charts.pie_nilai(
             an.sewa_nilai_by(tampil, "Jenis Brand"),
@@ -166,7 +166,7 @@ with kanan:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📦 Nilai Sewa per Kategori")
+    st.subheader("Nilai Sewa per Kategori")
     st.plotly_chart(
         charts.bar_nilai(
             an.sewa_nilai_by(tampil, "Kategori Utama"),
@@ -178,7 +178,7 @@ with kiri:
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏢 Top 10 Brand by Nilai Sewa")
+    st.subheader("Top 10 Brand by Nilai Sewa")
     st.plotly_chart(
         charts.bar_nilai(
             an.sewa_nilai_by(tampil, "Nama Brand"),
@@ -193,7 +193,7 @@ with kanan:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("🧩 Top 10 Sub Kategori")
+    st.subheader("Top 10 Sub Kategori")
     st.plotly_chart(
         charts.bar_nilai(
             an.sewa_nilai_by(tampil, "Sub Kategori"),
@@ -206,7 +206,7 @@ with kiri:
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏆 Top 10 SPBU by Nilai Sewa")
+    st.subheader("Top 10 SPBU by Nilai Sewa")
     st.plotly_chart(
         charts.bar_nilai(
             an.sewa_nilai_spbu(tampil),
@@ -218,13 +218,13 @@ with kanan:
         use_container_width=True,
     )
 
-st.subheader("🔥 Kategori × Tipe Brand")
+st.subheader("Kategori × Tipe Brand")
 st.plotly_chart(
     charts.heatmap_nilai(an.sewa_nilai_heatmap(tampil), "Nilai sewa (Rp)"),
     use_container_width=True,
 )
 
-st.subheader("📈 Tren Nilai Sewa per Bulan Mulai")
+st.subheader("Tren Nilai Sewa per Bulan Mulai")
 st.plotly_chart(
     charts.tren_nilai(
         an.sewa_nilai_tren(tampil), "Bulan Mulai", "Nilai Sewa (Rp)", "Nilai sewa (Rp)"
@@ -234,7 +234,7 @@ st.plotly_chart(
 
 st.divider()
 
-st.subheader("📑 Detail Kontrak Sewa")
+st.subheader("Detail Kontrak Sewa")
 kolom = [
     "No. SPBU",
     "Region",
@@ -271,7 +271,7 @@ st.dataframe(
     },
 )
 st.download_button(
-    "⬇️ Unduh nilai sewa (CSV)",
+    "Unduh nilai sewa (CSV)",
     data=tabel.to_csv(index=False).encode("utf-8-sig"),
     file_name="nfr_nilai_sewa.csv",
     mime="text/csv",
@@ -279,7 +279,7 @@ st.download_button(
     key="unduh_nilai_sewa",
 )
 
-with st.expander("ℹ️ Tentang data nilai sewa", expanded=False):
+with st.expander("Tentang data nilai sewa", expanded=False):
     st.markdown(
         """
         - Sumber: `Pengajuan NFR Sewa Lahan 09-November-2026.xlsx`.

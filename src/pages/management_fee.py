@@ -15,13 +15,13 @@ izin = load_data_or_stop()
 fee_semua = an.prepare_fee(izin)
 universe = universe_ringkasan(load_spbu_universe())
 
-st.title("💳 Management Fee")
+st.title("Management Fee")
 st.caption(
     "Analisis **Nominal Fee** pengajuan izin prinsip: per wilayah, kategori, tipe brand, "
     "brand, status, tren bulanan, dan sebaran nilai."
 )
 
-with st.expander("🔎 Filter management fee", expanded=True):
+with st.expander("Filter management fee", expanded=True):
     f1, f2, f3 = st.columns(3)
 
     def _reset_provinsi() -> None:
@@ -148,7 +148,7 @@ st.caption(
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )
 
-st.subheader("🗺️ Peta Sebaran Management Fee")
+st.subheader("Peta Sebaran Management Fee")
 st.caption("Warna titik = Tipe SPBU.")
 render_spbu_map(tampil, color_col="Tipe SPBU", region_col="Region", height=480)
 
@@ -163,13 +163,13 @@ st.divider()
 data_level = an.fee_by(tampil, level)
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader(f"🗺️ Fee per {level}")
+    st.subheader(f"Fee per {level}")
     st.plotly_chart(
         charts.bar_nilai(data_level, level, "Total Fee (Rp)", "Total fee (Rp)"),
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏷️ Fee per Tipe Brand")
+    st.subheader("Fee per Tipe Brand")
     st.plotly_chart(
         charts.pie_nilai(
             an.fee_by(tampil, "Tipe Brand"), "Tipe Brand", "Total Fee (Rp)", "Total fee (Rp)"
@@ -179,7 +179,7 @@ with kanan:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📦 Fee per Kategori")
+    st.subheader("Fee per Kategori")
     st.plotly_chart(
         charts.bar_nilai(
             an.fee_by(tampil, "Kategori"),
@@ -192,7 +192,7 @@ with kiri:
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏢 Top 10 Brand by Fee")
+    st.subheader("Top 10 Brand by Fee")
     st.plotly_chart(
         charts.bar_nilai(
             an.fee_by(tampil, "Nama Brand"),
@@ -207,7 +207,7 @@ with kanan:
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📋 Fee per Status")
+    st.subheader("Fee per Status")
     st.plotly_chart(
         charts.bar_nilai(
             an.fee_by(tampil, "Status"),
@@ -219,7 +219,7 @@ with kiri:
         use_container_width=True,
     )
 with kanan:
-    st.subheader("🏆 Top 10 SPBU by Fee")
+    st.subheader("Top 10 SPBU by Fee")
     st.plotly_chart(
         charts.bar_nilai(
             an.fee_spbu(tampil),
@@ -231,7 +231,7 @@ with kanan:
         use_container_width=True,
     )
 
-st.subheader("🔥 Kategori × Tipe Brand")
+st.subheader("Kategori × Tipe Brand")
 st.plotly_chart(
     charts.heatmap_nilai(an.fee_heatmap(tampil), "Total fee (Rp)"),
     use_container_width=True,
@@ -239,7 +239,7 @@ st.plotly_chart(
 
 kiri, kanan = st.columns(2)
 with kiri:
-    st.subheader("📈 Tren Fee per Bulan Pengajuan")
+    st.subheader("Tren Fee per Bulan Pengajuan")
     st.plotly_chart(
         charts.tren_nilai(
             an.fee_tren(tampil), "Periode", "Total Fee (Rp)", "Total fee (Rp)"
@@ -247,7 +247,7 @@ with kiri:
         use_container_width=True,
     )
 with kanan:
-    st.subheader("📊 Sebaran Nilai Fee")
+    st.subheader("Sebaran Nilai Fee")
     st.plotly_chart(
         charts.bar_jumlah(
             an.fee_distribution(dasar),
@@ -260,7 +260,7 @@ with kanan:
 
 st.divider()
 
-st.subheader("📑 Detail Transaksi Management Fee")
+st.subheader("Detail Transaksi Management Fee")
 kolom = [
     "ID Pengajuan",
     "No. SPBU",
@@ -296,7 +296,7 @@ st.dataframe(
     },
 )
 st.download_button(
-    "⬇️ Unduh management fee (CSV)",
+    "Unduh management fee (CSV)",
     data=tabel.to_csv(index=False).encode("utf-8-sig"),
     file_name="nfr_management_fee.csv",
     mime="text/csv",
@@ -304,7 +304,7 @@ st.download_button(
     key="unduh_fee",
 )
 
-with st.expander("ℹ️ Tentang management fee", expanded=False):
+with st.expander("Tentang management fee", expanded=False):
     st.markdown(
         """
         - Sumber: kolom **`Nominal Fee`** pada `Pengajuan NFR Izin Prinsip 02-November 2026`.
