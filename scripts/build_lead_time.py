@@ -1,4 +1,4 @@
-"""Bangun ulang 'Data Lead Time NFR 02112026.xlsx' dari dataset Izin Prinsip.
+"""Bangun ulang 'Data Lead Time NFR.xlsx' dari dataset Izin Prinsip terbaru.
 
 Jalankan: python scripts/build_lead_time.py
 """

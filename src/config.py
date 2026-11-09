@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+from datetime import date
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,10 +13,61 @@ STYLE_PATH = ASSETS_DIR / "style.css"
 LOGO_PATH = ASSETS_DIR / "logo.png"
 
 # --- Dataset -----------------------------------------------------------------
-IZIN_PATH = DATA_DIR / "Pengajuan NFR Izin Prinsip 02-November-2026.xlsx"
-LAHAN_PATH = DATA_DIR / "NFR Master Lahan 02-November-2026.xlsx"
-SEWA_PATH = DATA_DIR / "Pengajuan NFR Sewa Lahan 02-November-2026.xlsx"
-LEADTIME_PATH = DATA_DIR / "Data Lead Time NFR 02112026.xlsx"
+_BULAN = {
+    "januari": 1,
+    "februari": 2,
+    "maret": 3,
+    "april": 4,
+    "mei": 5,
+    "juni": 6,
+    "juli": 7,
+    "agustus": 8,
+    "september": 9,
+    "oktober": 10,
+    "november": 11,
+    "desember": 12,
+}
+
+
+def _tanggal_dari_nama(path: Path) -> date | None:
+    """Ambil tanggal dari nama file, mis. '09-November-2026'."""
+    cocok = re.search(r"(\d{1,2})-([A-Za-z]+)-(\d{4})", path.stem)
+    if not cocok:
+        return None
+    hari, bulan, tahun = cocok.groups()
+    nomor_bulan = _BULAN.get(bulan.lower())
+    if not nomor_bulan:
+        return None
+    try:
+        return date(int(tahun), nomor_bulan, int(hari))
+    except ValueError:
+        return None
+
+
+def _file_terbaru(pola: str, fallback: str) -> Path:
+    """Pilih file dengan tanggal terbaru pada nama; fallback bila tidak ada."""
+    kandidat = list(DATA_DIR.glob(pola))
+    if not kandidat:
+        return DATA_DIR / fallback
+    return max(
+        kandidat,
+        key=lambda p: (_tanggal_dari_nama(p) or date.min, p.name),
+    )
+
+
+IZIN_PATH = _file_terbaru(
+    "Pengajuan NFR Izin Prinsip *.xlsx",
+    "Pengajuan NFR Izin Prinsip 09-November-2026.xlsx",
+)
+LAHAN_PATH = _file_terbaru(
+    "NFR Master Lahan *.xlsx",
+    "NFR Master Lahan 09-November-2026.xlsx",
+)
+SEWA_PATH = _file_terbaru(
+    "Pengajuan NFR Sewa Lahan *.xlsx",
+    "Pengajuan NFR Sewa Lahan 09-November-2026.xlsx",
+)
+LEADTIME_PATH = DATA_DIR / "Data Lead Time NFR.xlsx"
 KETERSEDIAAN_PATH = DATA_DIR / "Ketersediaan Lahan NFR - November 2026.xlsx"
 KETERSEDIAAN_SNAPSHOT = "November 2026"
 SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"

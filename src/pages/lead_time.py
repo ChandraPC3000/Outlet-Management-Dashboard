@@ -24,7 +24,7 @@ st.info(
     "Dataset pengajuan tidak memuat timestamp transisi antar tahap. Karena itu angka di "
     "halaman ini adalah **lead time berjalan (aging)** per tahapan — bukan selisih tanggal "
     "masuk dan keluar tahap. Detail metode ada di file "
-    "`Data/Data Lead Time NFR 02112026.xlsx` sheet **Metodologi**.",
+    "`Data/Data Lead Time NFR.xlsx` sheet **Metodologi**.",
     icon="ℹ️",
 )
 
@@ -188,7 +188,7 @@ with st.expander("ℹ️ Metodologi & batasan", expanded=False):
         - **Umur pengajuan** = tanggal snapshot − `Tgl Pengajuan`. Untuk pengajuan yang
           masih pending, ini menunjukkan berapa lama pengajuan tertahan.
         - **Lewat Batas** hanya dapat dihitung untuk baris yang memiliki `Batas`
-          (717 dari 46.003 baris).
+          (635 dari 46.523 baris).
         - **Tidak ada** timestamp transisi tahap di dataset sumber, sehingga lead time
           antar tahap (SBM → SAM → MS3 → fee → invoice) tidak bisa dihitung sebagai
           selisih tanggal. Bila file mentah workflow November tersedia, analisis tahap

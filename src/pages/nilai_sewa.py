@@ -282,7 +282,7 @@ st.download_button(
 with st.expander("ℹ️ Tentang data nilai sewa", expanded=False):
     st.markdown(
         """
-        - Sumber: `Pengajuan NFR Sewa Lahan 02-November-2026.xlsx`.
+        - Sumber: `Pengajuan NFR Sewa Lahan 09-November-2026.xlsx`.
         - `Jenis Brand` adalah tipe brand: Nasional, Lokal, UMKM, Internasional, Pameran.
         - `Kategori/Sub Kategori` dipecah menjadi kolom **Kategori** dan **Sub Kategori**.
         - Region/Provinsi/Kab-Kota dipetakan dari `No. SPBU` menggunakan dataset Izin Prinsip.

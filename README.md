@@ -5,13 +5,16 @@ Pertamina: pengajuan **Izin Prinsip**, **Master Lahan**, **Sewa Lahan**,
 **occupancy rate**, **nilai sewa**, **management fee**, **lead time** perizinan,
 dan **ketersediaan lahan** untuk mitra.
 
-Snapshot data: **2 November 2026** · Ketersediaan lahan: **November 2026**.
+Snapshot data: **9 November 2026** · Ketersediaan lahan: **November 2026**.
+
+Aplikasi otomatis memakai file bertanggal terbaru di folder `Data/`, jadi update
+mingguan cukup menaruh file baru di sana tanpa mengubah kode.
 
 ## Halaman & analisis
 
 | Halaman | Yang bisa dilihat |
 | --- | --- |
-| **🏠 Home** | KPI lintas dataset (46.003 pengajuan, **6.591 SPBU universe**, occupancy lahan 83,1%, nilai sewa lahan Rp 1,20 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
+| **🏠 Home** | KPI lintas dataset (46.523 pengajuan, **6.594 SPBU universe**, occupancy lahan 83,2%, nilai sewa lahan Rp 1,19 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
 | **📊 Director Summary** | Analisis satu SPBU: lokasi, KPI izin, sewa per brand, status pengajuan, lahan & kontrak sewa outlet tersebut, aging/lead time, dan detail lengkap |
 | **🔎 Data Explorer** | Telusuri seluruh pengajuan izin dengan filter Region, Kategori, Status, Tipe Brand, kata kunci, dan rentang tanggal; unduh CSV |
 | **🧭 Ketersediaan Lahan** | Daftar lahan tersedia untuk mitra: filter provinsi/kota/road type/SES/luas/volume/PIC, analisis sebaran, dan unduh Excel format mitra |
@@ -28,13 +31,27 @@ File yang dibaca aplikasi ada di folder `Data/`:
 
 | File | Baris | Isi utama |
 | --- | ---: | --- |
-| `Pengajuan NFR Izin Prinsip 02-November-2026.xlsx` | 46.003 | 43.447 ID unik, 15 status, tahapan, SLA, nilai sewa |
-| `NFR Master Lahan 02-November-2026.xlsx` | 35.845 | 32.837 lahan, 5.965 SPBU, status sewa & approval, luas, harga sewa |
-| `Pengajuan NFR Sewa Lahan 02-November-2026.xlsx` | 26.704 | 21.091 kontrak berjalan, status izin, periode & nilai sewa |
-| `Data Lead Time NFR 02112026.xlsx` | 10 sheet | Resume, funnel, aging per tahap/status, detail pending, dataset turunan, metodologi |
+| `Pengajuan NFR Izin Prinsip 09-November-2026.xlsx` | 46.523 | 43.972 ID unik, 15 status, tahapan, SLA, nilai sewa |
+| `NFR Master Lahan 09-November-2026.xlsx` | 35.989 | 32.988 lahan, 5.976 SPBU, status sewa & approval, luas, harga sewa |
+| `Pengajuan NFR Sewa Lahan 09-November-2026.xlsx` | 26.814 | 21.142 kontrak berjalan, status izin, periode & nilai sewa |
+| `Data Lead Time NFR.xlsx` | 10 sheet | Resume, funnel, aging per tahap/status, detail pending, dataset turunan, metodologi |
 | `Ketersediaan Lahan NFR - November 2026.xlsx` | 5.732 | Lahan tersedia + PIC (sanitized, tanpa kolom classified) |
 | `spbu_master.csv` | 15.103 | Master SPBU dari List Lembaga Penyalur + Status Level DDMS: jenis lembaga, tipe SPBU, wilayah, koordinat (tanpa PIC) |
 | `bvt_spbu.csv` | 6.787 | BVT 34 provinsi: Red/Blue Ocean, skor, kelas, road type, SES, koordinat |
+
+### Update data mingguan
+
+Aplikasi **otomatis memilih file bertanggal terbaru** di `Data/`, jadi tidak perlu
+mengubah kode setiap minggu. Setelah mengunduh tiga file baru:
+
+```powershell
+python scripts/update_data.py --source "C:\Users\acer\Downloads" --push
+```
+
+Skrip menyalin file terbaru, menghapus versi lama dengan jenis yang sama,
+membangun ulang `Data Lead Time NFR.xlsx`, lalu commit & push. Streamlit Cloud
+akan redeploy otomatis dari `main`. Tanpa `--push`, perubahan hanya disiapkan
+secara lokal untuk diperiksa dulu.
 
 ## Occupancy rate
 
@@ -54,8 +71,8 @@ Occupancy (%) = lahan tersewa ÷ (lahan tersewa + lahan tersedia) × 100
 - Visual: gauge occupancy total, donut SPBU penuh/sebagian/kosong, bar per
   wilayah, heatmap distribusi occupancy, scatter total lahan vs occupancy, serta
   top/bottom 10 SPBU (dengan ambang minimum total lahan).
-- Snapshot: 5.916 SPBU, occupancy weighted **83,1%**, rata-rata per SPBU 82,3%;
-  3.070 SPBU penuh dan 470 SPBU di bawah 50%.
+- Snapshot: 5.929 SPBU, occupancy weighted **83,2%**, rata-rata per SPBU 82,5%;
+  3.096 SPBU penuh dan 460 SPBU di bawah 50%.
 - Tombol unduh menghasilkan **`nfr_occupancy_per_spbu_November 2026.xlsx`**
   (XlsxWriter, 2 sheet utama): `Data` berisi daftar lahan SPBU **Reguler**
   (Tersedia + Tersewa) dengan layout mengikuti `occupancy_nfr_2026-09-04.xlsx`,
@@ -69,13 +86,13 @@ Occupancy (%) = lahan tersewa ÷ (lahan tersewa + lahan tersedia) × 100
 menyediakan analisis per wilayah (Region/Provinsi/Kab-Kota), kategori, sub
 kategori, tipe brand (`Jenis Brand`), brand, status sewa/izin, top SPBU,
 heatmap kategori × tipe brand, dan tren nilai sewa per bulan mulai. Total nilai
-sewa: **Rp 1,19 T** dari 26.704 kontrak.
+sewa: **Rp 1,19 T** dari 26.814 kontrak.
 
 **💳 Management Fee** memakai `Nominal Fee` dari Pengajuan Izin Prinsip dengan
 dimensi yang sama: wilayah, kategori, tipe brand, brand, status, tahapan, top
 SPBU, heatmap kategori × tipe brand, tren bulanan, serta sebaran nilai fee.
-- Total fee: **Rp 53,53 M** dari 21.472 transaksi ber-fee.
-- 24.531 pengajuan bernilai fee 0; tidak dihitung sebagai transaksi ber-fee,
+- Total fee: **Rp 54,30 M** dari 21.832 transaksi ber-fee.
+- 24.691 pengajuan bernilai fee 0; tidak dihitung sebagai transaksi ber-fee,
   tetapi total fee tetap dihitung dari seluruh baris.
 - `Fee Ratio (%) = Nominal Fee ÷ Total Harga Sewa × 100`; hanya indikasi karena
   rasio bisa ekstrem saat harga sewa 0.
@@ -89,11 +106,11 @@ dan peta.
 13 Oktober 2026*:
 - 15.103 SPBU; **6.525 SPBU Reguler**; sisanya PERTASHOP, SPBU Kompak, Mini,
   Modular, SPBUN, SPBB, AMT, dan SPBU T.
-- **Total SPBU universe = 6.591** = 6.525 Reguler + **66 SPBU existing** di luar
+- **Total SPBU universe = 6.594** = 6.525 Reguler + **69 SPBU existing** di luar
   Reguler yang muncul di file izin/lahan/sewa/ketersediaan (union, bukan
   penjumlahan). Angka ini dipakai di KPI Home.
 - Halaman lain tetap menampilkan jumlah SPBU sesuai konteks datanya (mis. “SPBU
-  dengan Fee”, “SPBU dengan Lahan”) dan mencantumkan denominator universe 6.591.
+  dengan Fee”, “SPBU dengan Lahan”) dan mencantumkan denominator universe 6.594.
 - `Tipe SPBU` dinormalisasi: COCO, CODO, DODO; varian `CODO I`, `CODO II`,
   `CODO Lite` dilebur menjadi `CODO`.
 - Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.
@@ -185,7 +202,7 @@ src/
 ├── analytics.py                # lead time, lahan, sewa, ketersediaan, PIC
 ├── master_data.py              # master SPBU, BVT, enrichment kolom kosong
 ├── map_spbu.py                 # peta OSM generik untuk semua section
-├── spbu_universe.py            # total SPBU Reguler + existing (6.591)
+├── spbu_universe.py            # total SPBU Reguler + existing (6.594)
 ├── charts.py                   # builder grafik Plotly
 ├── filters.py                  # filter sidebar
 ├── formatting.py               # format rupiah/angka/tanggal
@@ -205,7 +222,8 @@ src/
 scripts/
 ├── build_lead_time.py          # regenerasi file lead time Excel
 ├── build_ketersediaan.py       # sanitasi + gabung PIC ketersediaan lahan
-└── build_lokasi.py             # master SPBU + dataset BVT
+├── build_lokasi.py             # master SPBU + dataset BVT
+└── update_data.py              # salin 3 file NFR terbaru + rebuild + push
 tests/smoke_test.py             # smoke test AppTest
 Data/                           # dataset yang dipakai aplikasi
 assets/style.css                # tema gelap

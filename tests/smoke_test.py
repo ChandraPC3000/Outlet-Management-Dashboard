@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT))
 
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
-TOTAL_IZIN = "46.003"
+TOTAL_IZIN = "46.523"
 
 
 def test_ketersediaan_data() -> None:
@@ -57,7 +57,7 @@ def test_home() -> None:
     assert judul and "NFR Management System" in judul[0], judul
     metrics = {m.label: m.value for m in app.metric}
     assert metrics["Total Pengajuan Izin"] == f"{TOTAL_IZIN} baris", metrics
-    assert metrics["Jumlah SPBU"] == "6.591", metrics
+    assert metrics["Jumlah SPBU"] == "6.594", metrics
     assert len(app.get("plotly_chart")) >= 6
 
 
@@ -143,14 +143,14 @@ def test_occupancy_page() -> None:
     metrics = {m.label: m.value for m in app.metric}
     for label in ("Occupancy Total", "Rata-rata per SPBU", "SPBU dengan Lahan", "Total Lahan"):
         assert label in metrics, metrics
-    assert metrics["Occupancy Total"] == "83,1%", metrics
+    assert metrics["Occupancy Total"] == "83,2%", metrics
     assert len(app.get("plotly_chart")) >= 6
     assert len(app.dataframe) >= 1
 
     region = app.multiselect(key="occ_region")
     region.select(region.options[0]).run()
     assert not app.exception
-    assert int(app.metric[2].value.replace(".", "")) < 5_916
+    assert int(app.metric[2].value.replace(".", "")) < 5_929
 
 
 def test_occupancy_formula() -> None:
@@ -164,7 +164,7 @@ def test_occupancy_formula() -> None:
     assert (occ["Tersewa"] + occ["Tersedia"] == occ["Total Lahan"]).all()
     assert occ["Occupancy (%)"].between(0, 100).all()
     weighted = occ["Tersewa"].sum() / occ["Total Lahan"].sum() * 100
-    assert abs(weighted - 83.13) < 0.1, weighted
+    assert abs(weighted - 83.23) < 0.1, weighted
 
 
 def test_occupancy_excel() -> None:
