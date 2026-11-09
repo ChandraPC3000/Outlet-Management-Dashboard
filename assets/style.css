@@ -37,9 +37,13 @@
 }
 
 [data-testid="stSidebarHeader"] {
-    padding: 18px 16px 14px !important;
+    min-height: 108px !important;
+    height: auto !important;
+    padding: 16px !important;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
+    display: flex;
+    align-items: center;
 }
 
 [data-testid="stSidebarHeader"] img,
