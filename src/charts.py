@@ -5,6 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import streamlit as st
 
 from src.config import PALETTE, PLOTLY_TEMPLATE
 from src.formatting import BULAN_SINGKAT, format_rupiah
@@ -18,28 +19,84 @@ KELOMPOK_WARNA = {
     "Lainnya": "#6b7280",
 }
 
+PALETTE_GELAP = (
+    "#f3f4f6",
+    "#60a5fa",
+    "#34d399",
+    "#fbbf24",
+    "#f87171",
+    "#a78bfa",
+    "#38bdf8",
+    "#a3e635",
+    "#9ca3af",
+    "#fb923c",
+)
+
+SKALA_ABU_TERANG = ["#e5e7eb", "#9ca3af", "#4b5563", "#111827"]
+SKALA_ABU_GELAP = ["#374151", "#6b7280", "#9ca3af", "#e5e7eb"]
+
+
+def _gelap() -> bool:
+    """True bila pengguna memakai tema gelap Streamlit."""
+    try:
+        return st.context.theme.type == "dark"
+    except Exception:
+        return False
+
+
+def _gaya_tema() -> dict:
+    if _gelap():
+        return {
+            "template": "plotly_dark",
+            "font": "#e5e7eb",
+            "grid": "#374151",
+            "line": "#4b5563",
+            "hover_bg": "#111827",
+            "hover_border": "#4b5563",
+            "hover_font": "#f3f4f6",
+            "colorway": list(PALETTE_GELAP),
+            "skala_abu": SKALA_ABU_GELAP,
+        }
+    return {
+        "template": PLOTLY_TEMPLATE,
+        "font": "#111827",
+        "grid": "#e5e7eb",
+        "line": "#d1d5db",
+        "hover_bg": "#ffffff",
+        "hover_border": "#d1d5db",
+        "hover_font": "#111827",
+        "colorway": list(PALETTE),
+        "skala_abu": SKALA_ABU_TERANG,
+    }
+
 
 def _finalize(
     fig: go.Figure,
     height: int = 360,
     showlegend: bool = True,
 ) -> go.Figure:
-    """Terapkan gaya terang dan netral agar menyatu dengan kartu CSS."""
+    """Terapkan gaya sesuai tema aktif (light/dark)."""
+    gaya = _gaya_tema()
     fig.update_layout(
-        template=PLOTLY_TEMPLATE,
+        template=gaya["template"],
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        colorway=list(PALETTE),
-        font=dict(family="Inter, Segoe UI, sans-serif", size=12, color="#111827"),
+        colorway=gaya["colorway"],
+        font=dict(family="Inter, Segoe UI, sans-serif", size=12, color=gaya["font"]),
         margin=dict(l=10, r=10, t=10, b=10),
         height=height,
         showlegend=showlegend,
         separators=".,",
         legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0),
-        hoverlabel=dict(bgcolor="#ffffff", bordercolor="#d1d5db", font_size=12, font_color="#111827"),
+        hoverlabel=dict(
+            bgcolor=gaya["hover_bg"],
+            bordercolor=gaya["hover_border"],
+            font_size=12,
+            font_color=gaya["hover_font"],
+        ),
     )
-    fig.update_xaxes(gridcolor="#e5e7eb", zeroline=False, linecolor="#d1d5db")
-    fig.update_yaxes(gridcolor="#e5e7eb", zeroline=False, linecolor="#d1d5db")
+    fig.update_xaxes(gridcolor=gaya["grid"], zeroline=False, linecolor=gaya["line"])
+    fig.update_yaxes(gridcolor=gaya["grid"], zeroline=False, linecolor=gaya["line"])
     return fig
 
 
@@ -515,24 +572,28 @@ def luas_bar(kategori: pd.DataFrame) -> go.Figure:
 
 # --- Occupancy rate ----------------------------------------------------------
 def occupancy_gauge(value: float) -> go.Figure:
+    gelap = _gelap()
+    teks = "#f3f4f6" if gelap else "#111827"
+    tick = "#9ca3af" if gelap else "#6b7280"
+    langkah = "255,255,255" if gelap else "17,24,39"
     fig = go.Figure(
         go.Indicator(
             mode="gauge+number",
             value=value,
-            number={"suffix": "%", "valueformat": ".1f", "font": {"size": 40, "color": "#111827"}},
+            number={"suffix": "%", "valueformat": ".1f", "font": {"size": 40, "color": teks}},
             gauge={
-                "axis": {"range": [0, 100], "tickcolor": "#6b7280"},
-                "bar": {"color": "#111827", "thickness": 0.28},
+                "axis": {"range": [0, 100], "tickcolor": tick},
+                "bar": {"color": teks, "thickness": 0.28},
                 "bgcolor": "rgba(0,0,0,0)",
                 "borderwidth": 0,
                 "steps": [
-                    {"range": [0, 50], "color": "rgba(17,24,39,0.10)"},
-                    {"range": [50, 75], "color": "rgba(17,24,39,0.18)"},
-                    {"range": [75, 90], "color": "rgba(17,24,39,0.26)"},
-                    {"range": [90, 100], "color": "rgba(17,24,39,0.34)"},
+                    {"range": [0, 50], "color": f"rgba({langkah},0.10)"},
+                    {"range": [50, 75], "color": f"rgba({langkah},0.18)"},
+                    {"range": [75, 90], "color": f"rgba({langkah},0.26)"},
+                    {"range": [90, 100], "color": f"rgba({langkah},0.34)"},
                 ],
                 "threshold": {
-                    "line": {"color": "#111827", "width": 2},
+                    "line": {"color": teks, "width": 2},
                     "thickness": 0.75,
                     "value": value,
                 },
@@ -540,10 +601,10 @@ def occupancy_gauge(value: float) -> go.Figure:
         )
     )
     fig.update_layout(
-        template=PLOTLY_TEMPLATE,
+        template="plotly_dark" if gelap else PLOTLY_TEMPLATE,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, Segoe UI, sans-serif", color="#111827"),
+        font=dict(family="Inter, Segoe UI, sans-serif", color=teks),
         height=300,
         margin=dict(l=20, r=20, t=20, b=10),
     )
@@ -579,7 +640,7 @@ def occupancy_bar(data: pd.DataFrame, level: str) -> go.Figure:
         text=teks,
         custom_data=["Jumlah SPBU", "Total Lahan", "Tersewa"],
         color="Occupancy (%)",
-        color_continuous_scale=["#e5e7eb", "#9ca3af", "#4b5563", "#111827"],
+        color_continuous_scale=_gaya_tema()["skala_abu"],
         range_color=(0, 100),
         labels={level: "", "Occupancy (%)": "Occupancy (%)"},
     )
@@ -615,7 +676,7 @@ def occupancy_scatter(occ: pd.DataFrame) -> go.Figure:
         y="Occupancy (%)",
         size="Tersewa",
         color="Occupancy (%)",
-        color_continuous_scale=["#e5e7eb", "#9ca3af", "#4b5563", "#111827"],
+        color_continuous_scale=_gaya_tema()["skala_abu"],
         range_color=(0, 100),
         hover_name="No. SPBU",
         hover_data={"Region": True, "Kab./Kota": True, "Tersewa": True, "Tersedia": True},
@@ -775,12 +836,19 @@ def bvt_map(df: pd.DataFrame) -> go.Figure:
         labels={"Kelas BVT": "Kelas"},
     )
     fig.update_traces(marker=dict(size=7, opacity=0.8))
+    gaya = _gaya_tema()
     fig.update_layout(
-        template=PLOTLY_TEMPLATE,
+        template=gaya["template"],
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, Segoe UI, sans-serif", size=11, color="#111827"),
+        font=dict(family="Inter, Segoe UI, sans-serif", size=11, color=gaya["font"]),
         margin=dict(l=0, r=0, t=0, b=0),
-        legend=dict(orientation="h", yanchor="bottom", y=0.01, x=0.01, bgcolor="rgba(255,255,255,0.85)"),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=0.01,
+            x=0.01,
+            bgcolor=gaya["hover_bg"],
+        ),
     )
     return fig
 

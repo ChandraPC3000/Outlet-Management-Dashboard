@@ -1,6 +1,7 @@
 /* ============================================================
-   NFR Analytics Pro - tema terang monokrom
-   Dasar warna juga diatur di .streamlit/config.toml
+   NFR Analytics Pro - tema profesional (light/dark)
+   Nilai :root di bawah adalah default terang. app.py menimpa
+   variabel ini saat pengguna memakai tema gelap.
    ============================================================ */
 
 :root {
@@ -12,6 +13,9 @@
     --text: #111827;
     --text-muted: #6b7280;
     --accent: #111827;
+    --on-accent: #ffffff;
+    --hover: #f3f4f6;
+    --alert-bg: #f9fafb;
     --radius: 8px;
 }
 
@@ -22,7 +26,7 @@
 }
 
 [data-testid="stHeader"] {
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--bg);
     border-bottom: 1px solid var(--border);
 }
 
@@ -33,17 +37,17 @@
 }
 
 [data-testid="stSidebarHeader"] {
-    padding: 14px 16px 12px !important;
+    padding: 18px 16px 14px !important;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
 }
 
 [data-testid="stSidebarHeader"] img,
 [data-testid="stLogo"] img {
-    height: 52px !important;
-    max-height: 52px !important;
+    height: 76px !important;
+    max-height: 76px !important;
     width: auto !important;
-    max-width: 190px;
+    max-width: 230px;
     object-fit: contain;
     display: block;
 }
@@ -55,22 +59,26 @@
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+[data-testid="stSidebarNav"] a * {
+    color: inherit !important;
+}
+
 [data-testid="stSidebarNav"] a:hover {
-    background-color: #f3f4f6;
+    background-color: var(--hover);
     color: var(--text);
 }
 
 [data-testid="stSidebarNav"] a[aria-current="page"] {
-    background-color: var(--accent);
-    color: #ffffff;
+    background-color: var(--text);
+    color: var(--on-accent);
 }
 
 [data-testid="stSidebarNav"] a[aria-current="page"] * {
-    color: #ffffff !important;
+    color: var(--on-accent) !important;
 }
 
 [data-testid="stSidebarNav"] a[aria-current="page"]:hover {
-    background-color: #000000;
+    background-color: var(--text);
 }
 
 /* 4. Kartu metric */
@@ -151,22 +159,33 @@ h1 {
     background-color: var(--surface) !important;
 }
 
+[data-baseweb="select"] input,
+[data-baseweb="input"] input,
+[data-baseweb="select"] span,
+[data-baseweb="input"] span {
+    color: var(--text) !important;
+}
+
+::placeholder {
+    color: var(--text-muted) !important;
+}
+
 /* 9. Tombol */
 .stButton button,
 .stDownloadButton button {
     border-radius: 6px;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--text);
     background-color: var(--surface);
-    color: var(--accent);
+    color: var(--text);
     font-weight: 600;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .stButton button:hover,
 .stDownloadButton button:hover {
-    background-color: var(--accent);
-    border-color: var(--accent);
-    color: #ffffff;
+    background-color: var(--text);
+    border-color: var(--text);
+    color: var(--on-accent);
 }
 
 /* 10. Divider */
@@ -189,9 +208,13 @@ hr {
     font-weight: 600;
 }
 
+.stTabs [data-baseweb="tab"] * {
+    color: inherit !important;
+}
+
 .stTabs [aria-selected="true"] {
     color: var(--text) !important;
-    border-bottom: 2px solid var(--accent) !important;
+    border-bottom: 2px solid var(--text) !important;
 }
 
 /* 12. Expander */
@@ -201,17 +224,30 @@ hr {
     border-radius: var(--radius);
 }
 
+[data-testid="stExpander"] details,
+[data-testid="stExpander"] summary {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+}
+
 [data-testid="stExpander"] summary {
     font-weight: 600;
-    color: var(--text);
+}
+
+[data-testid="stExpander"] summary * {
+    color: var(--text) !important;
 }
 
 /* 13. Alert monokrom */
 [data-testid="stAlert"] {
     border-radius: var(--radius);
     border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    background-color: #f9fafb !important;
+    border-left: 3px solid var(--text);
+    background-color: var(--alert-bg) !important;
+    color: var(--text) !important;
+}
+
+[data-testid="stAlert"] * {
     color: var(--text) !important;
 }
 
