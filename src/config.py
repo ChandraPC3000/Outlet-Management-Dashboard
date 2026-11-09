@@ -10,9 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "Data"
 ASSETS_DIR = BASE_DIR / "assets"
 STYLE_PATH = ASSETS_DIR / "style.css"
-LOGO_PATH = ASSETS_DIR / "logo.png"
+LOGO_PATH = ASSETS_DIR / "logo_dark.png"
 LOGO_LIGHT_PATH = ASSETS_DIR / "logo_light.png"
-LOGO_DARK_PATH = ASSETS_DIR / "logo_dark.png"
 
 # --- Dataset -----------------------------------------------------------------
 _BULAN = {
