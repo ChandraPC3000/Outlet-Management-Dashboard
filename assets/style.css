@@ -40,7 +40,8 @@
 
 [data-testid="stSidebarHeader"] img,
 [data-testid="stLogo"] img {
-    max-height: 38px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     width: auto !important;
     max-width: 190px;
     object-fit: contain;
@@ -212,6 +213,10 @@ hr {
     border-left: 3px solid var(--accent);
     background-color: #f9fafb !important;
     color: var(--text) !important;
+}
+
+[data-testid="stAlert"] svg {
+    display: none !important;
 }
 
 /* 14. Sembunyikan tombol Deploy agar tampilan dashboard lebih bersih */
