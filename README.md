@@ -35,7 +35,7 @@ File yang dibaca aplikasi ada di folder `Data/`:
 | `NFR Master Lahan 09-November-2026.xlsx` | 35.989 | 32.988 lahan, 5.976 SPBU, status sewa & approval, luas, harga sewa |
 | `Pengajuan NFR Sewa Lahan 09-November-2026.xlsx` | 26.814 | 21.142 kontrak berjalan, status izin, periode & nilai sewa |
 | `Data Lead Time NFR.xlsx` | 10 sheet | Resume, funnel, aging per tahap/status, detail pending, dataset turunan, metodologi |
-| `Ketersediaan Lahan NFR - November 2026.xlsx` | 5.732 | Lahan tersedia + PIC (sanitized, tanpa kolom classified) |
+| `Ketersediaan Lahan NFR - November 2026.xlsx` | 5.726 | Lahan tersedia + PIC (sanitized, tanpa kolom classified) |
 | `spbu_master.csv` | 15.103 | Master SPBU dari List Lembaga Penyalur + Status Level DDMS: jenis lembaga, tipe SPBU, wilayah, koordinat (tanpa PIC) |
 | `bvt_spbu.csv` | 6.787 | BVT 34 provinsi: Red/Blue Ocean, skor, kelas, road type, SES, koordinat |
 
@@ -169,7 +169,7 @@ Halaman **🧭 Ketersediaan Lahan** dipakai saat mitra meminta daftar lahan NFR
 yang masih tersedia untuk outlet baru.
 
 - **Sumber:** `Ketersediaan Lahan NFR - November 2026.xlsx` (hanya
-  `Status Sewa = Tersedia`), 5.732 lahan di 2.846 SPBU.
+  `Status Sewa = Tersedia`), 5.726 lahan di 2.833 SPBU.
 - **Duplikat:** satu `Kode Lahan` yang terdiri dari beberapa pecahan luas
   digabung menjadi satu baris; luasnya dijumlahkan (total luas tidak berubah).
 - **PIC lengkap:** `Kontak PIC SPBU` = nomor owner/manager (kolom **T** *List

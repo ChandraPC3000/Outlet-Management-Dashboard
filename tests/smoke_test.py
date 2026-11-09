@@ -126,14 +126,14 @@ def test_ketersediaan_page() -> None:
     metrics = {m.label: m.value for m in app.metric}
     for label in ("Lahan Tersedia", "SPBU dengan Lahan Tersedia", "Total Luas", "PIC Lengkap"):
         assert label in metrics, metrics
-    assert metrics["Lahan Tersedia"] == "5.583", metrics
+    assert metrics["Lahan Tersedia"] == "5.580", metrics
     assert len(app.get("plotly_chart")) >= 5
     assert len(app.get("download_button")) == 2
 
     prov = app.multiselect(key="ket_prov")
     prov.select(prov.options[0]).run()
     assert not app.exception
-    assert int(app.metric[0].value.replace(".", "")) < 5_732
+    assert int(app.metric[0].value.replace(".", "")) < 5_726
 
 
 def test_occupancy_page() -> None:
