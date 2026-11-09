@@ -6,16 +6,27 @@
 
 :root {
     --bg: #ffffff;
+    --bg: light-dark(#ffffff, #0e1117);
     --surface: #ffffff;
+    --surface: light-dark(#ffffff, #0e1117);
     --surface-2: #fafafa;
+    --surface-2: light-dark(#fafafa, #161b22);
     --border: #e5e7eb;
+    --border: light-dark(#e5e7eb, #30363d);
     --border-strong: #d1d5db;
+    --border-strong: light-dark(#d1d5db, #4b5563);
     --text: #111827;
+    --text: light-dark(#111827, #f3f4f6);
     --text-muted: #6b7280;
+    --text-muted: light-dark(#6b7280, #9ca3af);
     --accent: #111827;
+    --accent: light-dark(#111827, #f3f4f6);
     --on-accent: #ffffff;
+    --on-accent: light-dark(#ffffff, #111827);
     --hover: #f3f4f6;
+    --hover: light-dark(#f3f4f6, #1f2937);
     --alert-bg: #f9fafb;
+    --alert-bg: light-dark(#f9fafb, #161b22);
     --radius: 8px;
 }
 

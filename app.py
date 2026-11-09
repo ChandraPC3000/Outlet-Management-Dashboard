@@ -52,37 +52,6 @@ def inject_css(path) -> None:
 
 inject_css(STYLE_PATH)
 
-
-def _mode_tema() -> str:
-    """Tema aktif pengguna (light/dark); fallback light di Streamlit lama."""
-    try:
-        return "dark" if st.context.theme.type == "dark" else "light"
-    except Exception:
-        return "light"
-
-
-if _mode_tema() == "dark":
-    st.markdown(
-        """
-        <style>
-        :root {
-            --bg: #0e1117;
-            --surface: #0e1117;
-            --surface-2: #161b22;
-            --border: #30363d;
-            --border-strong: #4b5563;
-            --text: #f3f4f6;
-            --text-muted: #9ca3af;
-            --accent: #f3f4f6;
-            --on-accent: #111827;
-            --hover: #1f2937;
-            --alert-bg: #161b22;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
 if LOGO_PATH.exists():
     st.logo(str(LOGO_PATH), size="medium")
 
