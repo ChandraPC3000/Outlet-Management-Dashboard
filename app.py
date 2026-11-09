@@ -12,8 +12,6 @@ import streamlit as st
 import src.config as _config
 
 importlib.reload(_config)
-from streamlit.components.v1 import html as st_html  # noqa: E402
-
 from src.config import (  # noqa: E402
     APP_ICON,
     APP_TITLE,
@@ -71,29 +69,6 @@ def _mode_tema() -> str:
 logo_path = LOGO_DARK_PATH if _mode_tema() == "dark" else LOGO_LIGHT_PATH
 if logo_path.exists():
     st.logo(str(logo_path), size="medium")
-
-# Streamlit tidak rerun otomatis saat tema diganti. Muat ulang halaman sekali
-# agar logo (dan chart) memakai varian tema yang benar.
-st_html(
-    """
-    <script>
-    (() => {
-        const doc = window.parent.document;
-        const app = doc.querySelector('.stApp');
-        if (!app) return;
-        let scheme = getComputedStyle(app).colorScheme;
-        setInterval(() => {
-            const next = getComputedStyle(app).colorScheme;
-            if (next !== scheme) {
-                scheme = next;
-                window.parent.location.reload();
-            }
-        }, 700);
-    })();
-    </script>
-    """,
-    height=0,
-)
 
 load_data_or_stop = _data_loader.load_data_or_stop
 
