@@ -48,7 +48,7 @@
 }
 
 [data-testid="stSidebarHeader"] {
-    min-height: 108px !important;
+    min-height: 124px !important;
     height: auto !important;
     padding: 16px !important;
     border-bottom: 1px solid var(--border);
@@ -59,8 +59,8 @@
 
 [data-testid="stSidebarHeader"] img,
 [data-testid="stLogo"] img {
-    height: 76px !important;
-    max-height: 76px !important;
+    height: 88px !important;
+    max-height: 88px !important;
     width: auto !important;
     max-width: 230px;
     object-fit: contain;
