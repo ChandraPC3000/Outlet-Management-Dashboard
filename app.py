@@ -3,19 +3,25 @@
 from __future__ import annotations
 
 import importlib
+
 import streamlit as st
 
-from src import analytics as _analytics
-from src import charts as _charts
-from src import data_loader as _data_loader
-from src import filters as _filters
-from src import map_lokasi as _map_lokasi
-from src import master_data as _master_data
-from src import spbu_universe as _spbu_universe
-from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH
-
 # Streamlit Cloud kadang mempertahankan cache modul lama setelah redeploy.
-# Reload modul (termasuk loader) agar skema/kolom baru langsung terpakai.
+# Reload config lebih dulu agar path dataset terbaru ikut terpakai, lalu modul
+# lain yang mengimpor konstanta dari config.
+import src.config as _config
+
+importlib.reload(_config)
+from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH  # noqa: E402
+
+from src import analytics as _analytics  # noqa: E402
+from src import charts as _charts  # noqa: E402
+from src import data_loader as _data_loader  # noqa: E402
+from src import filters as _filters  # noqa: E402
+from src import map_lokasi as _map_lokasi  # noqa: E402
+from src import master_data as _master_data  # noqa: E402
+from src import spbu_universe as _spbu_universe  # noqa: E402
+
 importlib.reload(_master_data)
 importlib.reload(_data_loader)
 importlib.reload(_spbu_universe)
