@@ -42,16 +42,18 @@ File yang dibaca aplikasi ada di folder `Data/`:
 ### Update data mingguan
 
 Aplikasi **otomatis memilih file bertanggal terbaru** di `Data/`, jadi tidak perlu
-mengubah kode setiap minggu. Setelah mengunduh tiga file baru:
+mengubah kode setiap minggu. Setelah mengunduh tiga file NFR baru (dan file
+`Ketersediaan Lahan NFR - <Bulan> <Tahun>.xlsx` bila ada):
 
 ```powershell
 python scripts/update_data.py --source "C:\Users\acer\Downloads" --push
 ```
 
 Skrip menyalin file terbaru, menghapus versi lama dengan jenis yang sama,
-membangun ulang `Data Lead Time NFR.xlsx`, lalu commit & push. Streamlit Cloud
-akan redeploy otomatis dari `main`. Tanpa `--push`, perubahan hanya disiapkan
-secara lokal untuk diperiksa dulu.
+menyanitasi Ketersediaan Lahan (membuang kolom classified), membangun ulang
+`Data Lead Time NFR.xlsx`, lalu commit & push. Streamlit Cloud akan redeploy
+otomatis dari `main`. Tanpa `--push`, perubahan hanya disiapkan secara lokal
+untuk diperiksa dulu.
 
 ## Occupancy rate
 

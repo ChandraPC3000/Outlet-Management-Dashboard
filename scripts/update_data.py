@@ -1,4 +1,4 @@
-"""Salin tiga file NFR terbaru ke folder Data/ dan bangun ulang lead time.
+"""Salin file NFR terbaru ke folder Data/ dan bangun ulang lead time.
 
 Contoh pemakaian (Windows PowerShell):
 
@@ -9,11 +9,15 @@ File yang dicari (tanggal pada nama menentukan versi terbaru):
 - Pengajuan NFR Izin Prinsip <tanggal>.xlsx
 - NFR Master Lahan <tanggal>.xlsx
 - Pengajuan NFR Sewa Lahan <tanggal>.xlsx
+
+Bila ada, file Ketersediaan Lahan NFR - <Bulan> <Tahun>.xlsx juga ikut
+disanitasi otomatis (kolom classified dibuang).
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import subprocess
 import sys
@@ -30,6 +34,38 @@ POLA = {
     "NFR Master Lahan": "NFR Master Lahan *.xlsx",
     "Pengajuan NFR Sewa Lahan": "Pengajuan NFR Sewa Lahan *.xlsx",
 }
+
+
+POLA_KETERSEDIAAN = re.compile(
+    r"^Ketersediaan Lahan NFR - ([A-Za-z]+) (\d{4})\.xlsx$", re.IGNORECASE
+)
+_BULAN = {
+    "januari": 1, "februari": 2, "maret": 3, "april": 4, "mei": 5, "juni": 6,
+    "juli": 7, "agustus": 8, "september": 9, "oktober": 10, "november": 11,
+    "desember": 12,
+}
+
+
+def _pilih_ketersediaan(folder: Path) -> Path | None:
+    kandidat = []
+    for path in folder.glob("Ketersediaan Lahan NFR - *.xlsx"):
+        cocok = POLA_KETERSEDIAAN.match(path.name)
+        if not cocok or not path.is_file():
+            continue
+        bulan = _BULAN.get(cocok.group(1).lower())
+        if bulan:
+            kandidat.append((int(cocok.group(2)), bulan, path))
+    if not kandidat:
+        return None
+    return max(kandidat, key=lambda item: (item[0], item[1]))[2]
+
+
+def _cari_file_pic(folder: Path) -> Path | None:
+    for lokasi in (folder, Path("F:/")):
+        kandidat = [p for p in lokasi.glob("List Lembaga Penyalur *.xlsx") if p.is_file()]
+        if kandidat:
+            return max(kandidat, key=lambda p: p.stat().st_mtime)
+    return None
 
 
 def _pilih_terbaru(folder: Path, awalan: str) -> Path:
@@ -77,6 +113,22 @@ def main() -> None:
         tujuan = DATA_DIR / path.name
         shutil.copy2(path, tujuan)
         print(f"  + {tujuan.name} ({tujuan.stat().st_size / 1e6:.2f} MB)")
+
+    ketersediaan = _pilih_ketersediaan(source)
+    if ketersediaan is not None:
+        print(f"  + sanitasi {ketersediaan.name} ...")
+        perintah = [
+            sys.executable,
+            str(ROOT / "scripts" / "build_ketersediaan.py"),
+            "--source",
+            str(ketersediaan),
+        ]
+        pic = _cari_file_pic(source)
+        if pic is not None:
+            perintah += ["--pic", str(pic)]
+        subprocess.run(perintah, cwd=ROOT, check=True)
+    else:
+        print("  - Ketersediaan Lahan terbaru tidak ditemukan; dilewati.")
 
     print("Membangun ulang Data Lead Time NFR.xlsx ...")
     subprocess.run(

@@ -12,6 +12,7 @@ Jalankan: python scripts/build_ketersediaan.py
 
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 from pathlib import Path
@@ -81,13 +82,15 @@ def normalize_phone(value) -> str | None:
     return teks or None
 
 
-def main() -> Path:
-    if not RAW_AVAIL.exists():
-        raise SystemExit(f"File sumber tidak ditemukan: {RAW_AVAIL}")
-    if not RAW_PIC.exists():
-        raise SystemExit(f"File PIC tidak ditemukan: {RAW_PIC}")
+def main(
+    source: Path = RAW_AVAIL,
+    pic_path: Path = RAW_PIC,
+    output: Path = OUTPUT,
+) -> Path:
+    if not source.exists():
+        raise SystemExit(f"File sumber tidak ditemukan: {source}")
 
-    df = pd.read_excel(RAW_AVAIL, header=3, engine="openpyxl")
+    df = pd.read_excel(source, header=3, engine="openpyxl")
     df.columns = [str(c).strip() for c in df.columns]
     df = df.loc[:, [c for c in df.columns if not c.startswith("Unnamed")]]
     df = df.drop(columns=[c for c in CLASSIFIED if c in df.columns])
@@ -111,21 +114,29 @@ def main() -> Path:
     df = df.reset_index().drop(columns=["Kode Lahan"])
 
     # PIC: kolom T = Nomor Owner/Manager, kolom V = Nomor Kantor SPBU.
-    pic = pd.read_excel(RAW_PIC, sheet_name="Authors", engine="openpyxl")
-    pic.columns = [str(c).strip() for c in pic.columns]
-    pic["No. SPBU"] = pic["No. SPBU"].map(normalize_id)
-    pic["No Owner/Manager"] = pic["No Kontak PIC"].map(normalize_phone)
-    pic["No Kantor"] = pic["No Telp"].map(normalize_phone)
-    pic = pic.dropna(subset=["No. SPBU"]).drop_duplicates("No. SPBU")
+    # File PIC opsional karena file mentah terbaru sudah memuat Kontak PIC SPBU.
+    if pic_path.exists():
+        pic = pd.read_excel(pic_path, sheet_name="Authors", engine="openpyxl")
+        pic.columns = [str(c).strip() for c in pic.columns]
+        pic["No. SPBU"] = pic["No. SPBU"].map(normalize_id)
+        pic["No Owner/Manager"] = pic["No Kontak PIC"].map(normalize_phone)
+        pic["No Kantor"] = pic["No Telp"].map(normalize_phone)
+        pic = pic.dropna(subset=["No. SPBU"]).drop_duplicates("No. SPBU")
 
-    df = df.merge(
-        pic[["No. SPBU", "No Owner/Manager", "No Kantor"]],
-        on="No. SPBU",
-        how="left",
-    )
-    df["Kontak PIC SPBU"] = df["Kontak PIC SPBU"].fillna(df["No Owner/Manager"])
-    df["No Kantor SPBU"] = df["No Kantor"]
-    df = df.drop(columns=["No Owner/Manager", "No Kantor"])
+        df = df.merge(
+            pic[["No. SPBU", "No Owner/Manager", "No Kantor"]],
+            on="No. SPBU",
+            how="left",
+        )
+        if "Kontak PIC SPBU" not in df.columns:
+            df["Kontak PIC SPBU"] = pd.NA
+        df["Kontak PIC SPBU"] = df["Kontak PIC SPBU"].fillna(df["No Owner/Manager"])
+        df["No Kantor SPBU"] = df["No Kantor"]
+        df = df.drop(columns=["No Owner/Manager", "No Kantor"])
+    else:
+        if "Kontak PIC SPBU" not in df.columns:
+            df["Kontak PIC SPBU"] = pd.NA
+        df["No Kantor SPBU"] = pd.NA
 
     # Teks yang kosong / "#N/A" diberi label netral.
     for col in ("Provinsi", "Kota/Kab", "Kecamatan", "Desa/Kelurahan", "Road Type", "SES", "Red Ocean", "Blue Ocean"):
@@ -141,14 +152,19 @@ def main() -> Path:
     if sisa_classified:
         raise SystemExit(f"Kolom classified masih ada: {sisa_classified}")
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    df.to_excel(OUTPUT, index=False, sheet_name="Ketersediaan Lahan", engine="openpyxl")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    df.to_excel(output, index=False, sheet_name="Ketersediaan Lahan", engine="openpyxl")
 
     print(f"Baris: {len(df):,} | SPBU: {df['No. SPBU'].nunique():,} | Provinsi: {df['Provinsi'].nunique()}")
     print(f"PIC owner: {df['Kontak PIC SPBU'].notna().sum():,} | PIC kantor: {df['No Kantor SPBU'].notna().sum():,}")
-    print(f"Output: {OUTPUT} ({OUTPUT.stat().st_size / 1e6:.2f} MB)")
-    return OUTPUT
+    print(f"Output: {output} ({output.stat().st_size / 1e6:.2f} MB)")
+    return output
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=RAW_AVAIL)
+    parser.add_argument("--pic", type=Path, default=RAW_PIC)
+    parser.add_argument("--output", type=Path, default=OUTPUT)
+    args = parser.parse_args()
+    main(source=args.source, pic_path=args.pic, output=args.output)
