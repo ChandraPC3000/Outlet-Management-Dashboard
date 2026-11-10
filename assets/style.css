@@ -104,27 +104,55 @@ h3 {
     display: block;
 }
 
+/* Item nav: highlight penuh selebar sidebar (persegi panjang), seperti web rujukan */
 [data-testid="stSidebarNav"] a {
-    border-radius: 3px;
+    position: relative;
+    z-index: 0;
+    border-radius: 0;
+    background: transparent !important;
     color: var(--sidebar-muted);
     font-size: 13px;
-    padding: 7px 13px;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    padding: 7px 13px 7px 0;
+    transition: color 0.15s ease;
+}
+
+[data-testid="stSidebarNav"] a > span {
+    position: relative;
+    z-index: 1;
+}
+
+[data-testid="stSidebarNav"] a::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -21px;
+    right: -20px;
+    background: var(--sidebar-active);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+
+[data-testid="stSidebarNav"] a:hover::before {
+    opacity: 1;
+    background: var(--sidebar-hover);
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"]::before {
+    opacity: 1;
+    background: var(--sidebar-active);
+}
+
+[data-testid="stSidebarNav"] a:hover,
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+    color: var(--sidebar-text);
 }
 
 [data-testid="stSidebarNav"] a * {
     color: inherit !important;
     font-size: 13px;
-}
-
-[data-testid="stSidebarNav"] a:hover {
-    background-color: var(--sidebar-hover);
-    color: var(--sidebar-text);
-}
-
-[data-testid="stSidebarNav"] a[aria-current="page"] {
-    background-color: var(--sidebar-active);
-    color: var(--sidebar-text);
 }
 
 [data-testid="stSidebarNav"] a[aria-current="page"] * {
