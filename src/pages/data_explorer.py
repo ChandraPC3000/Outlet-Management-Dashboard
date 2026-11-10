@@ -41,7 +41,7 @@ kpi[2].metric("Brand Unik", format_angka(filtered["Nama Brand"].nunique()))
 kpi[3].metric("Total Nilai Sewa", format_rupiah(filtered["Total Harga Sewa"].sum()))
 
 st.caption(
-    f"Total SPBU universe: **{format_angka(universe['total'])}** "
+    f"Total SPBU Pertamina: **{format_angka(universe['total'])}** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing). "
     "KPI **SPBU di Data** menghitung SPBU yang punya baris pada hasil filter."

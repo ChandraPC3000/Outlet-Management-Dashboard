@@ -143,7 +143,7 @@ kpi2[1].metric("SPBU dengan Fee", format_angka(dasar["No. SPBU"].nunique()))
 kpi2[2].metric("Pengajuan Ber-fee", f"{format_angka(persen_ber_fee, 1)}%")
 
 st.caption(
-    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"dari **{format_angka(universe['total'])} total SPBU Pertamina** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )

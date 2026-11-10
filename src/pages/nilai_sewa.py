@@ -133,7 +133,7 @@ kpi[5].metric("Tenant Unik", format_angka(tampil["Nama Tenant"].nunique()))
 
 st.caption(
     f"**{format_angka(tampil['No. SPBU'].nunique())} SPBU** memiliki kontrak pada filter ini · "
-    f"total SPBU universe **{format_angka(universe['total'])}** "
+    f"total SPBU Pertamina **{format_angka(universe['total'])}** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing)."
 )

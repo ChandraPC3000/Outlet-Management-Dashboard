@@ -171,7 +171,7 @@ baris2[2].metric("Rerata Volume/SPBU", f"{format_angka(kpi['rerata_volume'])} KL
 baris2[3].metric("PIC Lengkap", f"{format_angka(kpi['pic_lengkap'], 1)}%")
 
 st.caption(
-    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"dari **{format_angka(universe['total'])} total SPBU Pertamina** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing); KPI SPBU menghitung outlet "
     "yang memiliki lahan tersedia pada filter ini."

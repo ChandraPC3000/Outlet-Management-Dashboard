@@ -41,7 +41,7 @@ st.caption(
     f"**{format_angka(info_universe['reguler'])} SPBU Reguler** + "
     f"**{format_angka(info_universe['existing_ekstra'])} SPBU existing** di luar Reguler "
     "(dari file izin, lahan, sewa, dan ketersediaan) = "
-    f"**{format_angka(info_universe['total'])} total SPBU universe**."
+    f"**{format_angka(info_universe['total'])} total SPBU Pertamina**."
 )
 
 baris2 = st.columns(3)
@@ -85,7 +85,7 @@ with kanan:
 
 st.divider()
 
-st.subheader("Peta Sebaran SPBU Universe")
+st.subheader("Peta Sebaran SPBU Pertamina")
 st.caption("Warna titik = Tipe SPBU · zoom out menampilkan region, zoom in menampilkan SPBU.")
 render_spbu_map(universe, color_col="Tipe SPBU", region_col="Region", height=560)
 

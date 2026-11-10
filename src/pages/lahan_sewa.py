@@ -21,7 +21,7 @@ st.title("Lahan & Sewa")
 st.caption(
     f"Analisis {format_angka(len(lahan))} lahan dan {format_angka(len(sewa))} kontrak sewa "
     f"per snapshot {snapshot:%d %B %Y} · {format_angka(lahan['No. SPBU'].nunique())} SPBU "
-    f"dengan lahan · total universe {format_angka(universe['total'])} SPBU."
+    f"dengan lahan · total SPBU Pertamina {format_angka(universe['total'])}."
 )
 
 tab_lahan, tab_sewa = st.tabs(["Master Lahan", "Sewa Lahan"])

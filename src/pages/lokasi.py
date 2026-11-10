@@ -206,7 +206,7 @@ kpi2[2].metric("Median Blue Score", f"{format_angka(data['Blue Ocean Score (%)']
 kpi2[3].metric("BVT Coverage", f"{format_angka(bvt_coverage, 1)}%")
 
 st.caption(
-    f"Total SPBU universe: **{format_angka(universe['total'])}** "
+    f"Total SPBU Pertamina: **{format_angka(universe['total'])}** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing). Halaman ini default "
     "menampilkan **Reguler**; pilih Semua untuk seluruh master."

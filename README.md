@@ -14,7 +14,7 @@ mingguan cukup menaruh file baru di sana tanpa mengubah kode.
 
 | Halaman | Yang bisa dilihat |
 | --- | --- |
-| **🏠 Home** | KPI lintas dataset (46.523 pengajuan, **6.594 SPBU universe**, occupancy lahan 83,2%, nilai sewa lahan Rp 1,19 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
+| **🏠 Home** | KPI lintas dataset (46.523 pengajuan, **6.594 SPBU Pertamina**, occupancy lahan 83,2%, nilai sewa lahan Rp 1,19 T), funnel tahapan, komposisi status, occupancy per region, tren pengajuan bulanan, jadwal kontrak berakhir, nilai sewa per kategori |
 | **📊 Director Summary** | Analisis satu SPBU: lokasi, KPI izin, sewa per brand, status pengajuan, lahan & kontrak sewa outlet tersebut, aging/lead time, dan detail lengkap |
 | **🔎 Data Explorer** | Telusuri seluruh pengajuan izin dengan filter Region, Kategori, Status, Tipe Brand, kata kunci, dan rentang tanggal; unduh CSV |
 | **🧭 Ketersediaan Lahan** | Daftar lahan tersedia untuk mitra: filter provinsi/kota/road type/SES/luas/volume/PIC, analisis sebaran, dan unduh Excel format mitra |
@@ -108,11 +108,11 @@ dan peta.
 13 Oktober 2026*:
 - 15.103 SPBU; **6.525 SPBU Reguler**; sisanya PERTASHOP, SPBU Kompak, Mini,
   Modular, SPBUN, SPBB, AMT, dan SPBU T.
-- **Total SPBU universe = 6.594** = 6.525 Reguler + **69 SPBU existing** di luar
+- **Total SPBU Pertamina = 6.594** = 6.525 Reguler + **69 SPBU existing** di luar
   Reguler yang muncul di file izin/lahan/sewa/ketersediaan (union, bukan
   penjumlahan). Angka ini dipakai di KPI Home.
 - Halaman lain tetap menampilkan jumlah SPBU sesuai konteks datanya (mis. “SPBU
-  dengan Fee”, “SPBU dengan Lahan”) dan mencantumkan denominator universe 6.594.
+  dengan Fee”, “SPBU dengan Lahan”) dan mencantumkan denominator SPBU Pertamina 6.594.
 - `Tipe SPBU` dinormalisasi: COCO, CODO, DODO; varian `CODO I`, `CODO II`,
   `CODO Lite` dilebur menjadi `CODO`.
 - Nomor PIC/email/telepon **tidak** disertakan di master yang di-commit.

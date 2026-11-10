@@ -132,7 +132,7 @@ st.caption(
     "**Rata-rata per SPBU** = rata-rata persentase tiap SPBU."
 )
 st.caption(
-    f"dari **{format_angka(universe['total'])} total SPBU universe** "
+    f"dari **{format_angka(universe['total'])} total SPBU Pertamina** "
     f"({format_angka(universe['reguler'])} Reguler + "
     f"{format_angka(universe['existing_ekstra'])} existing); occupancy hanya untuk SPBU "
     "yang memiliki data lahan."
