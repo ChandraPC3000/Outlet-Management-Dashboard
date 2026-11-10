@@ -185,6 +185,23 @@ h3 {
     color: var(--sidebar-text) !important;
 }
 
+/* Judul section sidebar (Ringkasan, Lahan & Mitra, Komersial, dst.) */
+[data-testid="stNavSectionHeader"],
+[data-testid="stNavSectionHeader"] * {
+    color: var(--sidebar-muted) !important;
+}
+
+/* Tombol collapse di header sidebar */
+[data-testid="stSidebarHeader"] button,
+[data-testid="stSidebarHeader"] button * {
+    color: var(--sidebar-muted) !important;
+}
+
+[data-testid="stSidebarHeader"] button:hover,
+[data-testid="stSidebarHeader"] button:hover * {
+    color: var(--sidebar-text) !important;
+}
+
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] .stMarkdown {
