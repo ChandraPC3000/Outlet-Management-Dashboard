@@ -12,7 +12,13 @@ import streamlit as st
 import src.config as _config
 
 importlib.reload(_config)
-from src.config import APP_ICON, APP_TITLE, LOGO_PATH, STYLE_PATH  # noqa: E402
+from src.config import (  # noqa: E402
+    APP_ICON,
+    APP_TITLE,
+    LOGO_LIGHT_PATH,
+    LOGO_PATH,
+    STYLE_PATH,
+)
 
 import src.wilayah as _wilayah  # noqa: E402
 
@@ -53,7 +59,13 @@ def inject_css(path) -> None:
 inject_css(STYLE_PATH)
 
 if LOGO_PATH.exists():
-    st.logo(str(LOGO_PATH), size="medium")
+    # Saat sidebar terbuka: logo putih (kontras di navy).
+    # Saat sidebar ditutup: logo gelap (kontras di header terang).
+    st.logo(
+        str(LOGO_PATH),
+        size="medium",
+        icon_image=str(LOGO_LIGHT_PATH) if LOGO_LIGHT_PATH.exists() else None,
+    )
 
 load_data_or_stop = _data_loader.load_data_or_stop
 
