@@ -12,6 +12,7 @@ ASSETS_DIR = BASE_DIR / "assets"
 STYLE_PATH = ASSETS_DIR / "style.css"
 LOGO_PATH = ASSETS_DIR / "logo_dark.png"
 LOGO_LIGHT_PATH = ASSETS_DIR / "logo_light.png"
+FAVICON_PATH = ASSETS_DIR / "favicon.png"
 
 # --- Dataset -----------------------------------------------------------------
 _BULAN = {
@@ -75,7 +76,7 @@ SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
 BVT_PATH = DATA_DIR / "bvt_spbu.csv"
 
 APP_TITLE = "NFR Analytics Pro"
-APP_ICON = str(LOGO_LIGHT_PATH)
+APP_ICON = str(FAVICON_PATH)
 
 IZIN_REQUIRED: tuple[str, ...] = (
     "Tgl Pengajuan",
