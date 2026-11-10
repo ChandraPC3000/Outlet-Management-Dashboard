@@ -71,7 +71,8 @@ def inject_color_scheme() -> None:
         return
     if theme_type in ("light", "dark"):
         st.markdown(
-            f"<style>:root {{ color-scheme: {theme_type}; }}</style>",
+            "<style>:root, body, .stApp "
+            f"{{ color-scheme: {theme_type} !important; }}</style>",
             unsafe_allow_html=True,
         )
 
