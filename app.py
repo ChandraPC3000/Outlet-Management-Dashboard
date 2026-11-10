@@ -58,6 +58,26 @@ def inject_css(path) -> None:
 
 inject_css(STYLE_PATH)
 
+
+def inject_color_scheme() -> None:
+    """Selaraskan color-scheme CSS dengan tema aktif Streamlit (light/dark).
+
+    Dengan color-scheme yang benar, semua pasangan light-dark() di style.css
+    otomatis memakai warna yang sesuai: light = teks gelap, dark = teks terang.
+    """
+    try:
+        theme_type = st.context.theme.type
+    except Exception:
+        return
+    if theme_type in ("light", "dark"):
+        st.markdown(
+            f"<style>:root {{ color-scheme: {theme_type}; }}</style>",
+            unsafe_allow_html=True,
+        )
+
+
+inject_color_scheme()
+
 if LOGO_PATH.exists():
     # Saat sidebar terbuka: logo putih (kontras di navy).
     # Saat sidebar ditutup: logo gelap (kontras di header terang).
