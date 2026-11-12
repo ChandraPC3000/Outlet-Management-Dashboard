@@ -21,13 +21,15 @@ LEBAR = {
     "Status Web Kemitraan": 24,
     "Status Brightspace": 22,
     "ID Agent (Brightspace)": 20,
+    "Metrik": 34,
+    "Nilai": 24,
+    "Kategori": 30,
+    "Jumlah": 16,
+    "Persentase": 14,
 }
 
 
-def build_excel(df: pd.DataFrame, sheet_name: str = "Data") -> bytes:
-    """Bangun file Excel (.xlsx) dari DataFrame, lengkap dengan header, filter, dan freeze."""
-    buffer = BytesIO()
-    workbook = xlsxwriter.Workbook(buffer, {"in_memory": True})
+def _write_sheet(workbook: xlsxwriter.Workbook, df: pd.DataFrame, sheet_name: str) -> None:
     worksheet = workbook.add_worksheet((sheet_name or "Data")[:31])
 
     header = workbook.add_format(
@@ -70,5 +72,22 @@ def build_excel(df: pd.DataFrame, sheet_name: str = "Data") -> bytes:
     worksheet.freeze_panes(1, 0)
     if len(df.columns):
         worksheet.autofilter(0, 0, len(df), len(df.columns) - 1)
+
+
+def build_excel(df: pd.DataFrame, sheet_name: str = "Data") -> bytes:
+    """Bangun file Excel (.xlsx) satu sheet dari DataFrame."""
+    buffer = BytesIO()
+    workbook = xlsxwriter.Workbook(buffer, {"in_memory": True})
+    _write_sheet(workbook, df, sheet_name)
+    workbook.close()
+    return buffer.getvalue()
+
+
+def build_workbook(sheets: dict[str, pd.DataFrame]) -> bytes:
+    """Bangun workbook Excel multi-sheet dari pasangan nama sheet -> DataFrame."""
+    buffer = BytesIO()
+    workbook = xlsxwriter.Workbook(buffer, {"in_memory": True})
+    for sheet_name, df in sheets.items():
+        _write_sheet(workbook, df, sheet_name)
     workbook.close()
     return buffer.getvalue()

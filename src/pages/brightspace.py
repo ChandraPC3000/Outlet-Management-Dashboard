@@ -13,6 +13,7 @@ from src.brightspace import (
     load_brightspace_summary,
     ringkasan_brightspace,
 )
+from src.analysis_export import build_brightspace_excel
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
 from src.excel_export import build_excel
@@ -21,6 +22,11 @@ from src.formatting import format_angka
 df = load_brightspace()
 summary = load_brightspace_summary()
 info = ringkasan_brightspace(df, summary)
+
+
+@st.cache_data(show_spinner="Menyiapkan Excel analisis lengkap...")
+def _excel_analisis() -> bytes:
+    return build_brightspace_excel(load_brightspace(), load_brightspace_summary())
 
 
 def _gelap() -> bool:
@@ -257,4 +263,16 @@ st.download_button(
     file_name="brightspace_lahan.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     key="bright_download",
+)
+
+st.download_button(
+    "Unduh Excel analisis lengkap",
+    data=_excel_analisis(),
+    file_name="analisis_brightspace.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    key="bright_download_analisis",
+)
+st.caption(
+    "Workbook analisis lengkap berisi sheet **Ringkasan**, **Data** (semua lahan), "
+    "**Per Status**, **Posisi Lahan**, dan **Top Brand**."
 )

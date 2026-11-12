@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from src.analysis_export import build_banding_excel
 from src.brightspace import load_brightspace, load_brightspace_summary, ringkasan_brightspace
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
@@ -17,6 +18,18 @@ web = load_web_kemitraan()
 bright = load_brightspace()
 web_info = ringkasan_web_kemitraan(web)
 bright_info = ringkasan_brightspace(bright, load_brightspace_summary())
+
+
+@st.cache_data(show_spinner="Menyiapkan Excel analisis lengkap...")
+def _excel_analisis() -> bytes:
+    w = load_web_kemitraan()
+    b = load_brightspace()
+    return build_banding_excel(
+        w,
+        b,
+        ringkasan_web_kemitraan(w),
+        ringkasan_brightspace(b, load_brightspace_summary()),
+    )
 
 
 def _gelap() -> bool:
@@ -225,3 +238,16 @@ with tab_beda:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         key="banding_download",
     )
+
+st.divider()
+st.download_button(
+    "Unduh Excel analisis lengkap",
+    data=_excel_analisis(),
+    file_name="analisis_banding_lahan.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    key="banding_download_analisis",
+)
+st.caption(
+    "Workbook analisis lengkap berisi sheet **Ringkasan KPI**, **Kecocokan Lahan**, "
+    "**Status Berbeda**, dan **Semua Kode Lahan**."
+)

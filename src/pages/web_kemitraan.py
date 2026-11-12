@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from src.analysis_export import build_web_kemitraan_excel
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
 from src.excel_export import build_excel
@@ -19,6 +20,11 @@ from src.web_kemitraan import (
 
 df = load_web_kemitraan()
 info = ringkasan_web_kemitraan(df)
+
+
+@st.cache_data(show_spinner="Menyiapkan Excel analisis lengkap...")
+def _excel_analisis() -> bytes:
+    return build_web_kemitraan_excel(load_web_kemitraan())
 
 
 def _gelap() -> bool:
@@ -243,4 +249,16 @@ st.download_button(
     file_name="web_kemitraan_lahan.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     key="web_download",
+)
+
+st.download_button(
+    "Unduh Excel analisis lengkap",
+    data=_excel_analisis(),
+    file_name="analisis_web_kemitraan.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    key="web_download_analisis",
+)
+st.caption(
+    "Workbook analisis lengkap berisi sheet **Ringkasan**, **Data** (semua lahan), "
+    "**Per Status**, **Per Provinsi**, dan **Top Tenant**."
 )
