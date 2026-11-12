@@ -76,6 +76,7 @@ SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
 BVT_PATH = DATA_DIR / "bvt_spbu.csv"
 BRIGHTSPACE_PATH = DATA_DIR / "brightspace_lahan.csv"
 BRIGHTSPACE_SUMMARY_PATH = DATA_DIR / "brightspace_summary.csv"
+WEB_KEMITRAAN_PATH = DATA_DIR / "web_kemitraan_lahan.csv"
 
 APP_TITLE = "NFR Analytics Pro"
 APP_ICON = str(FAVICON_PATH)
