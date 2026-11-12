@@ -15,6 +15,7 @@ from src.brightspace import (
 )
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
+from src.excel_export import build_excel
 from src.formatting import format_angka
 
 df = load_brightspace()
@@ -251,9 +252,9 @@ st.dataframe(
 )
 
 st.download_button(
-    "Unduh CSV hasil filter",
-    data=tabel.to_csv(index=False).encode("utf-8"),
-    file_name="brightspace_lahan.csv",
-    mime="text/csv",
+    "Unduh Excel hasil filter",
+    data=build_excel(tabel, "Brightspace"),
+    file_name="brightspace_lahan.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     key="bright_download",
 )

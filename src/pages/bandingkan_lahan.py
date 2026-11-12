@@ -9,6 +9,7 @@ import streamlit as st
 from src.brightspace import load_brightspace, load_brightspace_summary, ringkasan_brightspace
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
+from src.excel_export import build_excel
 from src.formatting import format_angka
 from src.web_kemitraan import load_web_kemitraan, ringkasan_web_kemitraan
 
@@ -218,9 +219,9 @@ with tab_beda:
         hide_index=True,
     )
     st.download_button(
-        "Unduh CSV status berbeda",
-        data=mism[kolom].to_csv(index=False).encode("utf-8"),
-        file_name="selisih_status_web_vs_brightspace.csv",
-        mime="text/csv",
+        "Unduh Excel status berbeda",
+        data=build_excel(mism[kolom], "Status Berbeda"),
+        file_name="selisih_status_web_vs_brightspace.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         key="banding_download",
     )

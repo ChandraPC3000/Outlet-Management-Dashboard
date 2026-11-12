@@ -8,6 +8,7 @@ import streamlit as st
 
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
+from src.excel_export import build_excel
 from src.formatting import format_angka
 from src.web_kemitraan import (
     STATUS_TERSEWA,
@@ -237,9 +238,9 @@ st.dataframe(
 )
 
 st.download_button(
-    "Unduh CSV hasil filter",
-    data=tabel.to_csv(index=False).encode("utf-8"),
-    file_name="web_kemitraan_lahan.csv",
-    mime="text/csv",
+    "Unduh Excel hasil filter",
+    data=build_excel(tabel, "Web Kemitraan"),
+    file_name="web_kemitraan_lahan.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     key="web_download",
 )
