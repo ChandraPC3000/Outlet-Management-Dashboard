@@ -74,6 +74,8 @@ KETERSEDIAAN_PATH = DATA_DIR / "Ketersediaan Lahan NFR - November 2026.xlsx"
 KETERSEDIAAN_SNAPSHOT = "November 2026"
 SPBU_MASTER_PATH = DATA_DIR / "spbu_master.csv"
 BVT_PATH = DATA_DIR / "bvt_spbu.csv"
+BRIGHTSPACE_PATH = DATA_DIR / "brightspace_lahan.csv"
+BRIGHTSPACE_SUMMARY_PATH = DATA_DIR / "brightspace_summary.csv"
 
 APP_TITLE = "NFR Analytics Pro"
 APP_ICON = str(FAVICON_PATH)

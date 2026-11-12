@@ -25,6 +25,7 @@ import src.wilayah as _wilayah  # noqa: E402
 importlib.reload(_wilayah)
 
 from src import analytics as _analytics  # noqa: E402
+from src import brightspace as _brightspace  # noqa: E402
 from src import charts as _charts  # noqa: E402
 from src import data_loader as _data_loader  # noqa: E402
 from src import filters as _filters  # noqa: E402
@@ -37,6 +38,7 @@ importlib.reload(_data_loader)
 importlib.reload(_spbu_universe)
 importlib.reload(_filters)
 importlib.reload(_analytics)
+importlib.reload(_brightspace)
 importlib.reload(_charts)
 importlib.reload(_map_lokasi)
 
@@ -104,6 +106,7 @@ navigation = st.navigation(
             st.Page("src/pages/ketersediaan.py", title="Ketersediaan Lahan"),
             st.Page("src/pages/occupancy.py", title="Occupancy Rate"),
             st.Page("src/pages/lahan_sewa.py", title="Lahan & Sewa"),
+            st.Page("src/pages/brightspace.py", title="Data Brightspace"),
         ],
         "Komersial": [
             st.Page("src/pages/nilai_sewa.py", title="Nilai Sewa"),
