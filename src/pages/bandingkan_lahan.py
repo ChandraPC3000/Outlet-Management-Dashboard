@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.analysis_export import build_banding_excel
+from src.analysis_export import build_banding_excel, spbu_nfr_stats
 from src.brightspace import load_brightspace, load_brightspace_summary, ringkasan_brightspace
 from src.charts import PALETTE_GELAP
 from src.config import PALETTE
@@ -52,12 +52,15 @@ st.caption(
 )
 
 # --- Ringkasan angka ---------------------------------------------------------
+spbu_stats = spbu_nfr_stats(web, bright)
 comp = pd.DataFrame(
     [
         ("Jumlah SPBU", web_info["spbu"], bright_info["spbu"]),
         ("Lahan terdaftar", web_info["total_lahan"], bright_info["total_lahan"]),
         ("Tersewa NFR aktif", web_info["tersewa"], bright_info["tersewa"]),
         ("Lahan vacant", web_info["vacant"], bright_info["vacant"]),
+        ("SPBU tanpa NFR aktif", spbu_stats["web_tanpa_aktif"], spbu_stats["bright_tanpa_aktif"]),
+        ("SPBU tanpa data NFR", spbu_stats["web_tanpa_data"], spbu_stats["bright_tanpa_data"]),
     ],
     columns=["Metrik", "Web Kemitraan", "Brightspace"],
 )
@@ -88,10 +91,12 @@ with tab_ringkas:
         f"**{web_info['vacancy_rate']:.1f}%** vs Brightspace "
         f"**{bright_info['vacancy_rate']:.1f}%**. "
         "Jumlah SPBU dihitung dari identifier masing-masing sumber "
-        "(`No SPBU` vs `IdAgent_FK`), jadi selisihnya bersifat indikatif."
+        "(`No SPBU` vs `IdAgent_FK`), jadi selisihnya bersifat indikatif. "
+        "SPBU tanpa NFR aktif = SPBU universe 6.594 yang tidak punya minimal 1 lahan Tersewa; "
+        "termasuk yang belum punya data lahan."
     )
 
-    melted = comp.melt(
+    melted = comp.iloc[:4].melt(
         id_vars="Metrik",
         value_vars=["Web Kemitraan", "Brightspace"],
         var_name="Sumber",

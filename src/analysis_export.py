@@ -158,14 +158,61 @@ def build_brightspace_excel(
     )
 
 
+def spbu_nfr_stats(
+    web: pd.DataFrame,
+    bright: pd.DataFrame,
+    universe_ids: set[str] | None = None,
+) -> dict:
+    """Hitung SPBU tanpa NFR aktif/data terhadap universe SPBU (6.594)."""
+    if universe_ids is None:
+        from src.spbu_universe import load_spbu_universe
+
+        universe_ids = set(load_spbu_universe()["No. SPBU"].astype(str))
+    total = len(universe_ids)
+
+    web_ids = set(web["No SPBU"].dropna().astype(str)) & universe_ids
+    web_aktif = (
+        set(web.loc[web["Status Sewa"].eq("Tersewa"), "No SPBU"].dropna().astype(str))
+        & universe_ids
+    )
+
+    bright_prefix = (
+        bright["LandCode"].dropna().astype(str).str.split("-").str[0].str.strip()
+    )
+    bright_ids = set(bright_prefix) & universe_ids
+    bright_aktif = (
+        set(
+            bright.loc[bright["RentStatName"].eq("Tersewa"), "LandCode"]
+            .dropna()
+            .astype(str)
+            .str.split("-")
+            .str[0]
+            .str.strip()
+        )
+        & universe_ids
+    )
+
+    return {
+        "universe": total,
+        "web_tanpa_aktif": total - len(web_aktif),
+        "bright_tanpa_aktif": total - len(bright_aktif),
+        "web_tanpa_data": total - len(web_ids),
+        "bright_tanpa_data": total - bright["IdAgent_FK"].nunique(),
+    }
+
+
 def build_banding_excel(
     web: pd.DataFrame,
     bright: pd.DataFrame,
     web_info: dict | None = None,
     bright_info: dict | None = None,
+    universe_total: int = 6594,
+    universe_ids: set[str] | None = None,
 ) -> bytes:
     web_info = web_info or ringkasan_web_kemitraan(web)
     bright_info = bright_info or ringkasan_brightspace(bright, {})
+
+    spbu_stats = spbu_nfr_stats(web, bright, universe_ids)
 
     comp = pd.DataFrame(
         [
@@ -173,6 +220,16 @@ def build_banding_excel(
             ("Lahan terdaftar", web_info["total_lahan"], bright_info["total_lahan"]),
             ("Tersewa NFR aktif", web_info["tersewa"], bright_info["tersewa"]),
             ("Lahan vacant", web_info["vacant"], bright_info["vacant"]),
+            (
+                "SPBU tanpa NFR aktif",
+                spbu_stats["web_tanpa_aktif"],
+                spbu_stats["bright_tanpa_aktif"],
+            ),
+            (
+                "SPBU tanpa data NFR",
+                spbu_stats["web_tanpa_data"],
+                spbu_stats["bright_tanpa_data"],
+            ),
         ],
         columns=["Metrik", "Web Kemitraan", "Brightspace"],
     )
@@ -180,6 +237,33 @@ def build_banding_excel(
     comp["Bright vs Web (%)"] = (
         comp["Brightspace"] / comp["Web Kemitraan"] * 100
     ).round(1)
+    definisi = {
+        "Jumlah SPBU": "SPBU unik yang punya data lahan di sumber.",
+        "Lahan terdaftar": "Jumlah baris lahan (row-level), termasuk multi-tenant/duplikat.",
+        "Tersewa NFR aktif": "Baris dengan Status Sewa = Tersewa.",
+        "Lahan vacant": "Baris dengan Status Sewa = Tersedia; bukan ukuran fisik kosong.",
+        "SPBU tanpa NFR aktif": "SPBU universe yang tidak punya minimal 1 lahan Tersewa; termasuk SPBU tanpa data.",
+        "SPBU tanpa data NFR": "SPBU universe yang tidak muncul di sumber (tidak punya baris lahan).",
+    }
+    comp["Definisi"] = comp["Metrik"].map(definisi)
+
+    metodologi = pd.DataFrame(
+        [
+            ("Definisi", "Penjelasan"),
+            ("Universe SPBU", "6.594 SPBU = 6.525 SPBU Reguler + 69 SPBU existing di luar Reguler."),
+            ("Jumlah SPBU", "SPBU unik yang punya data lahan di sumber. Web: No SPBU; Brightspace: IdAgent_FK."),
+            ("Lahan terdaftar", "Jumlah baris lahan (row-level), termasuk multi-tenant/duplikat. Bukan jumlah bidang tanah unik."),
+            ("Tersewa NFR aktif", "Baris dengan Status Sewa = Tersewa."),
+            ("Lahan vacant", "Baris dengan Status Sewa = Tersedia. Status administratif, bukan ukuran fisik lahan kosong."),
+            ("SPBU tanpa NFR aktif", "SPBU universe yang tidak punya minimal 1 lahan Tersewa. Termasuk SPBU tanpa data lahan."),
+            ("SPBU tanpa data NFR", "SPBU universe yang tidak muncul di sumber (tidak punya baris lahan)."),
+            ("Basis kecocokan lahan", "Kode Lahan (Web) = LandCode (Brightspace), dideduplikasi per kode."),
+            ("Catatan Web", "5.291 dari 5.802 baris Tersedia masih punya string tenant/brand; status Sewa tetap otoritatif."),
+            ("Catatan Brightspace", "5.843 agent; 5.842 prefix SPBU cocok ke universe; 1 agent tidak terpetakan. Untuk KPI tanpa data dipakai 6.594 - 5.843 = 751."),
+            ("Basis KPI vs kecocokan", "Ringkasan KPI memakai basis baris; sheet Kecocokan Lahan memakai basis kode unik. Jangan dicampur saat menyimpulkan."),
+        ],
+        columns=["Definisi", "Penjelasan"],
+    )
 
     web_u = web.drop_duplicates("Kode Lahan")[
         ["Kode Lahan", "No SPBU", "Status Sewa"]
@@ -250,6 +334,7 @@ def build_banding_excel(
     return build_workbook(
         {
             "Ringkasan KPI": comp,
+            "Metodologi": metodologi,
             "Kecocokan Lahan": kategori,
             "Status Berbeda": mism,
             "Semua Kode Lahan": semua,
