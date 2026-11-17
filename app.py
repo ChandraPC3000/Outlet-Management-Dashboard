@@ -25,9 +25,11 @@ import src.wilayah as _wilayah  # noqa: E402
 importlib.reload(_wilayah)
 
 from src import analytics as _analytics  # noqa: E402
+from src import analysis_export as _analysis_export  # noqa: E402
 from src import brightspace as _brightspace  # noqa: E402
 from src import charts as _charts  # noqa: E402
 from src import data_loader as _data_loader  # noqa: E402
+from src import excel_export as _excel_export  # noqa: E402
 from src import filters as _filters  # noqa: E402
 from src import map_lokasi as _map_lokasi  # noqa: E402
 from src import master_data as _master_data  # noqa: E402
@@ -41,6 +43,8 @@ importlib.reload(_filters)
 importlib.reload(_analytics)
 importlib.reload(_brightspace)
 importlib.reload(_web_kemitraan)
+importlib.reload(_excel_export)
+importlib.reload(_analysis_export)
 importlib.reload(_charts)
 importlib.reload(_map_lokasi)
 
